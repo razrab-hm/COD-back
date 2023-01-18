@@ -1,15 +1,37 @@
-from fastapi import FastAPI
-import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
-load_dotenv()
-if __name__ == '__main__':
-    print('hello')
-    POSTGRES_USER = os.getenv('POSTGRES_USER')
-    POSTGRES_DB = os.getenv('POSTGRES_DB')
-    POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
-    POSTGRES_HOST = os.getenv('POSTGRES_HOST')
-    engine = create_engine(
-        f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}'
-    )
-    print(engine)
+from fastapi import Depends, FastAPI
+
+from core.db import User, create_db_and_tables
+from users.schemas import UserCreate, UserRead, UserUpdate
+from users.backauth import auth_backend, current_active_user, fastapi_users
+
+app = FastAPI()
+
+app.include_router(
+    fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
+)
+app.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_reset_password_router(),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_verify_router(UserRead),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
+)
+
+
+@app.get("/authenticated-route")
+async def authenticated_route(user: User = Depends(current_active_user)):
+    return {"message": f"Hello {user.email}!"}
+
