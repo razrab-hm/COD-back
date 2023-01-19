@@ -1,11 +1,24 @@
-from fastapi_users.db import SQLAlchemyBaseUserTable
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from core.db import Base
 
 
-class User(Base, SQLAlchemyBaseUserTable):
-    name = Column(String, unique=True)
-    id_role = Column(Integer)
-    password = Column(String)
-    id_company = Column(Integer)
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True, unique=True)
+    email = Column(String(50))
+    hash_password = Column(String(50))
+    permission_id = Column(Integer, ForeignKey('permission.id'))
+
+
+class Permission(Base):
+    __tablename__ = 'permission'
+
+    id = Column(Integer, primary_key=True, unique=True)
+    permission_name = Column(String(50))
+    user = relationship('User')
+
+
+

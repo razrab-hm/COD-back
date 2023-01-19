@@ -1,37 +1,19 @@
-from fastapi import Depends, FastAPI
+import uvicorn
+from fastapi import FastAPI, Request
+from fastapi_jwt_auth.exceptions import AuthJWTException
+from starlette.responses import JSONResponse
 
-from core.db import User, create_db_and_tables
-from users.schemas import UserCreate, UserRead, UserUpdate
-from users.backauth import auth_backend, current_active_user, fastapi_users
+from users.routs import router as user_router
 
 app = FastAPI()
-
-app.include_router(
-    fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
-)
-app.include_router(
-    fastapi_users.get_register_router(UserRead, UserCreate),
-    prefix="/auth",
-    tags=["auth"],
-)
-app.include_router(
-    fastapi_users.get_reset_password_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
-app.include_router(
-    fastapi_users.get_verify_router(UserRead),
-    prefix="/auth",
-    tags=["auth"],
-)
-app.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/users",
-    tags=["users"],
-)
+app.include_router(user_router)
 
 
-@app.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):
-    return {"message": f"Hello {user.email}!"}
+@app.exception_handler(AuthJWTException)
+def authjwt_exception_handler(request: Request, exc: AuthJWTException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message})
 
+
+# uvicorn.run(app)

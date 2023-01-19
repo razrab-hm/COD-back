@@ -1,15 +1,25 @@
-import uuid
-
-from fastapi_users import schemas
+from pydantic import BaseModel
 
 
-class UserRead(schemas.BaseUser[uuid.UUID]):
+class UserBase(BaseModel):
+    email: str
+    password: str
+
+
+class UserCreate(UserBase):
     pass
 
 
-class UserCreate(schemas.BaseUserCreate):
-    pass
+class Settings(BaseModel):
+    authjwt_secret_key: str = "secret"
 
 
-class UserUpdate(schemas.BaseUserUpdate):
-    pass
+class TokenBase(BaseModel):
+    access_token: str
+
+
+class User(BaseModel):
+    permission_id: int
+    id: str
+    email: str
+    hash_password: str
