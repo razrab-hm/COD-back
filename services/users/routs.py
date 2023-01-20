@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from users import schemas, base
-from users.base import get_db
+from services.users import base, schemas
+from core.base import get_db
 
 router = APIRouter(prefix='/user')
 
@@ -14,6 +14,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     data = base.create_user(db=db, user=user)
+    print(data)
     return data
 
 
@@ -24,7 +25,8 @@ def login_user(user: schemas.UserBase, db: Session = Depends(get_db), authorize:
         raise HTTPException(status_code=401, detail="Email not registred!")
     if not user.password + 'notreallyhashed' == db_user.hash_password:
         raise HTTPException(status_code=401, detail="Password incorrect!")
-    access_token = authorize.create_access_token(subject=user.email, expires_time=900)
+
+    access_token = authorize.create_access_token(subject=db_user.id, expires_time=900)
     refresh_token = authorize.create_refresh_token(subject=user.email)
     return {"access_token": access_token, "refresh_token": refresh_token}
 
@@ -45,9 +47,22 @@ def refresh(authorize: AuthJWT = Depends()):
 
 
 @router.get('/user')
-def user(authorize: AuthJWT = Depends()):
+def user(authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     authorize.jwt_required()
 
     current_user = authorize.get_jwt_subject()
-    return {"user": current_user}
+    return {"user": base.get_user_by_id(db, current_user)}
 
+
+@router.post('/set_company')
+def set_user_company(email: str, company_id: int, authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    authorize.jwt_required()
+    print(email)
+    current_user = authorize.get_jwt_subject()
+    user_permission = base.get_user_by_id(db, current_user).permission_id
+
+    if not user_permission < 3:
+        raise HTTPException(status_code=401, detail="You don't have permissions")
+
+    data = base.set_user_company(db, email, company_id)
+    return data

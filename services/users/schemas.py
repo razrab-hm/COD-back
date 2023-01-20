@@ -7,7 +7,8 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass
+    company_id: int = 0
+    permission_id: int = 3
 
 
 class Settings(BaseModel):
@@ -20,6 +21,11 @@ class TokenBase(BaseModel):
 
 class User(BaseModel):
     permission_id: int
-    id: str
+    company_id: int
+    id: int
     email: str
     hash_password: str
+
+    class Config:
+        orm_mode = True
+
