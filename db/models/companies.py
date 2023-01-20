@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from core.db import Base
+from db.core_db import Base
 
 
 class Company(Base):
@@ -11,6 +11,6 @@ class Company(Base):
     name = Column(String(30), unique=True)
     contact_name = Column(String(30))
     contact_email = Column(String(30))
-    hash = relationship('Hash')
+    hash = relationship('Hashrate')
     user = relationship('User')
 

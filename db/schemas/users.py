@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic.schema import Optional
 
 
 class UserBase(BaseModel):
@@ -7,8 +8,9 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    company_id: int = 0
-    permission_id: int = 3
+    pass
+    # company_id: int
+    # permission_id: int
 
 
 class Settings(BaseModel):
@@ -20,8 +22,8 @@ class TokenBase(BaseModel):
 
 
 class User(BaseModel):
-    permission_id: int
-    company_id: int
+    permission_id: Optional[int]
+    company_id: Optional[int]
     id: int
     email: str
     hash_password: str

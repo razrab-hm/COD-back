@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from core.db import Base
+from db.core_db import Base
 
 
 class Permission(Base):

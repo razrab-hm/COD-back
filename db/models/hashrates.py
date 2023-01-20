@@ -1,11 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, ForeignKey, Date, Float
 
-from core.db import Base
+from db.core_db import Base
 
 
-class Hash(Base):
-    __tablename__ = 'hash'
+class Hashrate(Base):
+    __tablename__ = 'hashrate'
 
     id = Column(Integer, primary_key=True, unique=True)
     date = Column(Date)

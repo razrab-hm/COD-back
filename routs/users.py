@@ -2,25 +2,34 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from services.users import base, schemas
-from core.base import get_db
+from db.base import get_db
+from db import schemas
+from utils import utils
 
 router = APIRouter(prefix='/user')
 
 
-@router.post('/register', response_model=schemas.User)
-def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = base.get_user_by_email(db, email=user.email)
+@router.post('/register', response_model=schemas.users.User)
+def register_user(user: schemas.users.UserCreate, db: Session = Depends(get_db), authorization: AuthJWT = Depends()):
+    db_user = utils.get_user_by_email(db, email=user.email)
+
+    # if user.company_id or user.permission_id:
+    #     authorization.jwt_required()
+    #     current_user = authorization.get_jwt_subject()
+    #     current_user = utils.get_user_by_id(db, current_user)
+    #     if not current_user.permission_id < 2:
+    #         raise HTTPException(status_code=400, detail="You don't have permissions")
+
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    data = base.create_user(db=db, user=user)
+    data = utils.create_user(db=db, user=user)
     print(data)
     return data
 
 
-@router.post('/login', response_model=schemas.TokenBase)
-def login_user(user: schemas.UserBase, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
-    db_user = base.get_user_by_email(db, email=user.email)
+@router.post('/login', response_model=schemas.users.TokenBase)
+def login_user(user: schemas.users.UserBase, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+    db_user = utils.get_user_by_email(db, email=user.email)
     if not db_user:
         raise HTTPException(status_code=401, detail="Email not registred!")
     if not user.password + 'notreallyhashed' == db_user.hash_password:
@@ -51,7 +60,7 @@ def user(authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     authorize.jwt_required()
 
     current_user = authorize.get_jwt_subject()
-    return {"user": base.get_user_by_id(db, current_user)}
+    return {"user": utils.get_user_by_id(db, current_user)}
 
 
 @router.post('/set_company')
@@ -59,10 +68,11 @@ def set_user_company(email: str, company_id: int, authorize: AuthJWT = Depends()
     authorize.jwt_required()
     print(email)
     current_user = authorize.get_jwt_subject()
-    user_permission = base.get_user_by_id(db, current_user).permission_id
+    user_permission = utils.get_user_by_id(db, current_user).permission_id
 
     if not user_permission < 3:
         raise HTTPException(status_code=401, detail="You don't have permissions")
 
-    data = base.set_user_company(db, email, company_id)
+    data = utils.set_user_company(db, email, company_id)
     return data
+

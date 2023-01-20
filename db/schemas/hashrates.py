@@ -3,14 +3,14 @@ from datetime import date
 from pydantic import BaseModel
 
 
-class HashBase(BaseModel):
+class HashrateBase(BaseModel):
     date: date
     average: int
     hash: int
     company_id: int
 
 
-class Hash(BaseModel):
+class Hashrate(BaseModel):
     id: int
     date: date
     average: float

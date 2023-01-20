@@ -2,24 +2,22 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from core.base import get_db
-from services.hashs import schemas, base
-from services.users import base as user_base
-from services.companies import base as company_base
+from db.base import get_db
+from utils import utils as base
+from db.schemas import hashrates as dto_hashrates
 
-router = APIRouter(prefix='/hash')
+router = APIRouter(prefix='/hashrate')
 
 
-@router.post('/create', response_model=schemas.Hash)
-def create_hash(hash: schemas.HashBase, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+@router.post('/create', response_model=dto_hashrates.Hashrate)
+def create_hash(hashrate: dto_hashrates.HashrateBase, db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
     authorize.jwt_required()
     current_user = authorize.get_jwt_subject()
-    user_permission = user_base.get_user_by_id(db, current_user).permission_id
-
+    user_permission = base.get_user_by_id(db, current_user).permission_id
     if not user_permission < 3:
         raise HTTPException(status_code=401, detail="You don't have permissions")
 
-    data = base.create_hash(db, hash)
+    data = base.create_hash(db, hashrate)
     return data
 
 
@@ -28,7 +26,7 @@ def get_user_hash(db: Session = Depends(get_db), authorize: AuthJWT = Depends())
     authorize.jwt_required()
 
     current_user = authorize.get_jwt_subject()
-    company_id = user_base.get_user_by_id(db, current_user).company_id
+    company_id = base.get_user_by_id(db, current_user).company_id
     data = base.get_hash_by_company_id(db, company_id)
 
     return data
