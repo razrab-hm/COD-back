@@ -1,5 +1,5 @@
 from db.core_db import SessionLocal, Base
-from db.models import companies, hashrates, permissions, users
+from db.models import companies, hashrates, users
 
 
 def get_db():

@@ -1,23 +1,30 @@
 from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from db.schemas import (companies as dto_companies,
                         hashrates as dto_hashrates,
-                        permissions as dto_permissions,
                         users as dto_users)
 from db.models import (companies as db_companies,
                        hashrates as db_hashrates,
-                       permissions as db_permissions,
                        users as db_users)
 
 
 def create_company(db: Session, company: dto_companies.CompanyBase):
-    db_company = db_companies.Company(name=company.name, contact_name=company.contact_name, contact_email=company.contact_email)
+    db_company = db_companies.Company(name=company.name, contact_name=company.contact_name, contact_email=company.contact_email, inactive=False)
     db.add(db_company)
     db.commit()
     db.refresh(db_company)
     return db_company
+
+
+def create_super_user(db, username, password):
+    user = db_users.User(email=username, hash_password=password + 'notreallyhashed', role='root', inactive=False)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 def get_company_by_id(db: Session, company_id: int):
@@ -36,18 +43,6 @@ def get_hash_by_company_id(db: Session, id: int):
     return db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.company_id == id).all()
 
 
-def create_permission(db: Session, permission: dto_permissions.PermissionBase):
-    db_permission = db_permissions.Permission(permission_name=permission.permission_name)
-    db.add(db_permission)
-    db.commit()
-    db.refresh(db_permission)
-    return db_permission
-
-
-def get_permission_name(db: Session, permission_id):
-    return db.query(db_permissions.Permission).filter(db_permissions.Permission.id == permission_id).first()
-
-
 def get_user_by_email(db: Session, email: str):
     return db.query(db_users.User).filter(db_users.User.email == email).first()
 
@@ -58,9 +53,15 @@ def get_user_by_id(db: Session, id: int):
 
 def create_user(db: Session, user: dto_users.UserCreate):
     fake_hashed_password = user.password + "notreallyhashed"
-    db_user = db_users.User(email=user.email, hash_password=fake_hashed_password)
+    db_user = db_users.User(email=user.email, hash_password=fake_hashed_password, role=user.role, inactive=False)
+    if user.company_id:
+        db_user.company_id = user.company_id
     db.add(db_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        print(e)
+        raise HTTPException(status_code=403, detail="Company not registered!")
     db.refresh(db_user)
     return db_user
 
@@ -71,17 +72,26 @@ def set_user_company(db: Session, email: str, company_id: int):
     return req
 
 
-def check_user_permission_id(db, user_id):
-    current_user = get_user_by_id(db, user_id)
-    user_permission_id = current_user.permission_id
-    return user_permission_id
-
-
-def check_permissions(db, auth: AuthJWT, permission_level=1):
+def get_current_user(db, auth: AuthJWT):
     auth.jwt_required()
-    permission_id = check_user_permission_id(db, auth.get_jwt_subject())
-    if not permission_id <= permission_level:
-        raise HTTPException(status_code=401, detail="You don't have permissions")
+    current_user = get_user_by_id(db, auth.get_jwt_subject())
+    return current_user
+
+
+def check_access(db, auth: AuthJWT, permission_level='root'):
+    user = get_current_user(db, auth)
+    if permission_level == 'root':
+        if not user.role == permission_level:
+            raise HTTPException(status_code=405, detail=f"You don't have permissions. You: {user.role}")
+    else:
+        if user.role == 'manager':
+            if user.role == permission_level:
+                raise HTTPException(status_code=405, detail=f"You don't have permissions. You: {user.role}")
+
+
+def check_email(db, email):
+    if get_user_by_email(db, email):
+        raise HTTPException(status_code=400, detail="Email already registered")
 
 
 @AuthJWT.load_config

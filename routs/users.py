@@ -4,27 +4,20 @@ from sqlalchemy.orm import Session
 
 from db.base import get_db
 from db import schemas
-from utils import utils
+from _utils import utils
+from _utils import handlers
 
 router = APIRouter(prefix='/user')
 
 
-@router.post('/register', response_model=schemas.users.User)
-def register_user(user: schemas.users.UserCreate, db: Session = Depends(get_db), authorization: AuthJWT = Depends()):
-    db_user = utils.get_user_by_email(db, email=user.email)
+@router.post('/create', response_model=schemas.users.User)
+def register_user(user: schemas.users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.create_user_handler(auth, user, db)
 
-    # if user.company_id or user.permission_id:
-    #     authorization.jwt_required()
-    #     current_user = authorization.get_jwt_subject()
-    #     current_user = utils.get_user_by_id(db, current_user)
-    #     if not current_user.permission_id < 2:
-    #         raise HTTPException(status_code=400, detail="You don't have permissions")
 
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    data = utils.create_user(db=db, user=user)
-    print(data)
-    return data
+@router.post('/create_superuser')
+def create_super_user(user: schemas.users.UserBase, db: Session = Depends(get_db)):
+    return utils.create_super_user(db, user.email, user.password)
 
 
 @router.post('/login', response_model=schemas.users.TokenBase)

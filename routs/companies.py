@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from db.base import get_db
 from db.schemas import companies as dto_companies
 
-from utils import handlers
+from _utils import handlers
 router = APIRouter(prefix='/company')
 
 

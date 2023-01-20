@@ -3,7 +3,7 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from db.base import get_db
-from utils import utils as base
+from _utils import utils as base
 from db.schemas import hashrates as dto_hashrates
 
 router = APIRouter(prefix='/hashrate')

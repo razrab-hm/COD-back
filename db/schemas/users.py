@@ -8,7 +8,8 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass
+    role: str = 'manager'
+    company_id: int = None
     # company_id: int
     # permission_id: int
 
@@ -22,11 +23,12 @@ class TokenBase(BaseModel):
 
 
 class User(BaseModel):
-    permission_id: Optional[int]
     company_id: Optional[int]
+    role: str
     id: int
     email: str
     hash_password: str
+    inactive: bool = False
 
     class Config:
         orm_mode = True
