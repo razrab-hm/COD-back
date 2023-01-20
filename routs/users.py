@@ -33,6 +33,11 @@ def login_user(user: schemas.users.UserBase, db: Session = Depends(get_db), auth
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
+@router.put('/update', response_model=schemas.users.User)
+def update_user(update_data: schemas.users.UserUpdate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.update_user_handler(update_data, db, auth)
+
+
 @router.post('/refresh')
 def refresh(authorize: AuthJWT = Depends()):
     """

@@ -89,9 +89,40 @@ def check_access(db, auth: AuthJWT, permission_level='root'):
                 raise HTTPException(status_code=405, detail=f"You don't have permissions. You: {user.role}")
 
 
-def check_email(db, email):
+def check_email_in_base(db, email):
     if get_user_by_email(db, email):
         raise HTTPException(status_code=400, detail="Email already registered")
+
+
+def check_email_valid(email):
+    email = email.split('@')
+    if len(email) != 2:
+        raise HTTPException(status_code=403, detail="Email is not valid")
+    _, host = email
+    host = host.split('.')
+    if len(host) != 2:
+        raise HTTPException(status_code=403, detail="Email is not valid")
+
+
+def update_user(update_data, db: Session, auth):
+    if update_data.company_id or update_data.role == 'root':
+        check_access(db, auth)
+    elif update_data.email or update_data.role:
+        check_access(db, auth, 'admin')
+    else:
+        if update_data.id != auth.get_jwt_subject() and get_current_user(db, auth).role == 'manager':
+            HTTPException(status_code=405, detail="You can't manage password to other user")
+
+    user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
+
+    if update_data.email:
+        user.email = update_data.email
+    if update_data.company_id:
+        user.company_id = update_data.company_id
+    if update_data.role:
+        user.role = update_data.role
+    db.commit()
+    return user
 
 
 @AuthJWT.load_config

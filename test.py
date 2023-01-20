@@ -12,12 +12,12 @@ headers = {'Authorization': f"Bearer {response['access_token']}"}
 # response = requests.post('http://localhost:8001/company/get', headers=headers).json()
 # print(response)
 data = {
+  "id": 6,
   "email": "test2",
-  "password": "test",
-  "role": "manager",
-  "company_id": 1
+  "password": "123456",
+  "role": "admin",
 }
 # response = requests.post('http://localhost:8001/company/create', data=json.dumps(data), headers=headers).json()
 # print(response)
-response = requests.post('http://localhost:8000/user/create', data=json.dumps(data), headers=headers).json()
+response = requests.put('http://localhost:8000/user/update', data=json.dumps(data), headers=headers).json()
 print(response)

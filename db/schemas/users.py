@@ -14,6 +14,14 @@ class UserCreate(UserBase):
     # permission_id: int
 
 
+class UserUpdate(UserBase):
+    id: int
+    email: str = None
+    password: str = None
+    role: str = None
+    company_id: int = None
+
+
 class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
 
