@@ -14,7 +14,7 @@ class CompanyUpdate(CompanyBase):
     id: int
 
 
-class CompanyGet(BaseModel):
+class CompanyRead(BaseModel):
     id: int
 
 

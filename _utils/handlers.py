@@ -29,8 +29,7 @@ def update_user_handler(update_data: dto_users.UserUpdate, db: Session, auth: Au
 
 
 def get_user_handler(db: Session, auth: AuthJWT):
-    auth.jwt_required()
-    return utils.get_user_by_id(db, auth.get_jwt_subject())
+    return utils.get_current_user(db, auth)
 
 
 def get_all_user_handler(db: Session, auth: AuthJWT):
@@ -41,7 +40,7 @@ def get_all_user_handler(db: Session, auth: AuthJWT):
 
 def block_user_handler(db: Session, auth: AuthJWT, user_id):
     utils.check_access(db, auth)
-    return utils.ban_user(db, user_id)
+    return utils.block_user(db, user_id)
 
 
 def create_hashrate_handler(auth: AuthJWT, hashrate: dto_hashrates.HashrateBase, db: Session):
@@ -54,3 +53,18 @@ def get_company_handler(company, db, auth):
     return utils.get_company_by_id(db, company.id)
 
 
+def login_user_handler(db, user, auth):
+    bd_user = utils.check_email_in_base(db, user.email, True)
+    utils.check_user_password(user.password, bd_user.hash_password)
+    return utils.create_tokens(auth, user)
+
+
+def refresh_handler(auth, db):
+    user = utils.get_current_user(db, auth)
+    utils.check_refresh_token_is_in_blacklist(db, auth)
+    return utils.create_tokens(auth, user)
+
+
+def block_company_handler(auth, db, company_id):
+    utils.check_access(db, auth)
+    return utils.block_company(db, company_id)

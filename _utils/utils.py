@@ -8,11 +8,12 @@ from db.schemas import (companies as dto_companies,
                         users as dto_users)
 from db.models import (companies as db_companies,
                        hashrates as db_hashrates,
-                       users as db_users)
+                       users as db_users,
+                       token as db_token)
 
 
 def create_super_user(db, username, password):
-    user = db_users.User(email=username, hash_password=password + 'notreallyhashed', role='root', inactive=False)
+    user = db_users.User(email=username, hash_password=hash(password), role='root', inactive=False)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -20,7 +21,7 @@ def create_super_user(db, username, password):
 
 
 def create_company(db: Session, company: dto_companies.CompanyBase):
-    db_company = db_companies.Company(name=company.name, contact_name=company.contact_name, contact_email=company.contact_email, inactive=False)
+    db_company = db_companies.Company(name=company.title, contact_name=company.contact_fio, contact_email=company.contact_email, inactive=False)
     db.add(db_company)
     db.commit()
     db.refresh(db_company)
@@ -49,8 +50,8 @@ def update_company(db: Session, update_data):
     return company
 
 
-def create_hash(db: Session, hash: dto_hashrates.HashrateBase):
-    db_hash = db_hashrates.Hashrate(date=hash.date, average=hash.average, hash=hash.hash, company_id=hash.company_id)
+def create_hash(db: Session, hashrate: dto_hashrates.HashrateBase):
+    db_hash = db_hashrates.Hashrate(date=hashrate.date, average=hashrate.average, hash=hashrate.hash, company_id=hashrate.company_id)
     db.add(db_hash)
     db.commit()
     db.refresh(db_hash)
@@ -107,9 +108,15 @@ def check_access(db, auth: AuthJWT, permission_level='root'):
                 raise HTTPException(status_code=405, detail=f"You don't have permissions. You: {user.role}")
 
 
-def check_email_in_base(db, email):
-    if get_user_by_email(db, email):
-        raise HTTPException(status_code=400, detail="Email already registered")
+def check_email_in_base(db, email, login=False):
+    user = get_user_by_email(db, email)
+    if not login:
+        if user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+    else:
+        if not user:
+            raise HTTPException(status_code=400, detail='Account does`t exists')
+        return user
 
 
 def check_email_valid(email):
@@ -143,13 +150,51 @@ def update_user(update_data, db: Session, auth):
     return user
 
 
-def ban_user(db: Session, user_id):
+def block_user(db: Session, user_id):
     user = db.query(db_users.User).filter(db_users.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=403, detail="User does not exist")
     user.inactive = True
     db.commit()
     return user
+
+
+def block_company(db: Session, company_id):
+    company = db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
+    if not company:
+        raise HTTPException(status_code=403, detail="Company does not exist")
+    company.inactive = True
+    db.commit()
+    return company
+
+
+def check_user_password(password, hash_password):
+    if not hash(password) == hash_password:
+        raise HTTPException(status_code=400, detail="Password incorrect")
+
+
+def create_tokens(auth, user):
+    access_token = auth.create_access_token(subject=str(user.id))
+    refresh_token = auth.create_refresh_token(subject=str(user.id))
+    return {
+        'access_token': access_token,
+        'refresh_token': refresh_token
+    }
+
+
+def add_token_to_blacklist(db: Session, jti: str):
+    token = db_token.Token(refresh_token=jti)
+    db.add(token)
+    db.commit()
+    db.refresh(token)
+    return db_token
+
+
+def check_refresh_token_is_in_blacklist(db: Session, Authorize: AuthJWT = Depends()):
+    jti = Authorize.get_raw_jwt()['jti']
+    token_in_blacklist = db.query(db_token.Token).filter(db_token.Token.refresh_token == jti).first()
+    if token_in_blacklist:
+        raise HTTPException(status_code=400, detail="Refresh token is inactive. Please login again")
 
 
 @AuthJWT.load_config

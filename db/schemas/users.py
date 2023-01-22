@@ -30,6 +30,11 @@ class TokenBase(BaseModel):
     access_token: str
 
 
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
 class User(BaseModel):
     company_id: Optional[int]
     role: str
