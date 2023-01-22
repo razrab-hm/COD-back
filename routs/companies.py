@@ -14,6 +14,19 @@ def create_company(company: dto_companies.CompanyBase, db: Session = Depends(get
     return handlers.create_company_handler(auth, company, db)
 
 
+@router.put('/update', response_model=dto_companies.Company)
+def update_company(company: dto_companies.CompanyUpdate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.update_company_handler(auth, company, db)
+
+
+@router.get('/get', response_model=dto_companies.Company)
+def get_company(company: dto_companies.CompanyGet, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.get_company_handler(company, db, auth)
+
+
+@router.delete('/inactive', dto_companies.CompanyGet)
+def set_inactive_company():
+
 # @router.post('/get', response_model=schemas.Company)
 # def get_company_by_id(authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
 #     current_user = authorize.get_jwt_subject()

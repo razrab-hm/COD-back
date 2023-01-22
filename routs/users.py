@@ -53,24 +53,19 @@ def refresh(authorize: AuthJWT = Depends()):
     return {"access_token": new_access_token}
 
 
-@router.get('/user')
-def user(authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    authorize.jwt_required()
-
-    current_user = authorize.get_jwt_subject()
-    return {"user": utils.get_user_by_id(db, current_user)}
+@router.get('/get')
+def user(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    return handlers.get_user_handler(db, auth)
 
 
-@router.post('/set_company')
-def set_user_company(email: str, company_id: int, authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    authorize.jwt_required()
-    print(email)
-    current_user = authorize.get_jwt_subject()
-    user_permission = utils.get_user_by_id(db, current_user).permission_id
+@router.get('/get_all')
+def user(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    return handlers.get_all_user_handler(db, auth)
 
-    if not user_permission < 3:
-        raise HTTPException(status_code=401, detail="You don't have permissions")
 
-    data = utils.set_user_company(db, email, company_id)
-    return data
+@router.delete('/ban')
+def user(user_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    return handlers.block_user_handler(db, auth, user_id)
+
+
 

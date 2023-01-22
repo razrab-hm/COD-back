@@ -2,16 +2,34 @@ from pydantic import BaseModel
 
 
 class CompanyBase(BaseModel):
-    name: str
-    contact_name: str
+    title: str
+    contact_fio: str
     contact_email: str
+    contact_phone: str
+    img_logo: str
+    description: str
+
+
+class CompanyUpdate(CompanyBase):
+    id: int
+
+
+class CompanyGet(BaseModel):
+    id: int
 
 
 class Company(BaseModel):
     id: int
-    name: str
-    contact_name: str
+    title: str
+    contact_fio: str
     contact_email: str
+    contact_phone: str
+    img_logo: str
+    description: str
+    inactive: bool
 
     class Config:
         orm_mode = True
+
+
+

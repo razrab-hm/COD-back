@@ -11,14 +11,6 @@ from db.models import (companies as db_companies,
                        users as db_users)
 
 
-def create_company(db: Session, company: dto_companies.CompanyBase):
-    db_company = db_companies.Company(name=company.name, contact_name=company.contact_name, contact_email=company.contact_email, inactive=False)
-    db.add(db_company)
-    db.commit()
-    db.refresh(db_company)
-    return db_company
-
-
 def create_super_user(db, username, password):
     user = db_users.User(email=username, hash_password=password + 'notreallyhashed', role='root', inactive=False)
     db.add(user)
@@ -27,8 +19,34 @@ def create_super_user(db, username, password):
     return user
 
 
+def create_company(db: Session, company: dto_companies.CompanyBase):
+    db_company = db_companies.Company(name=company.name, contact_name=company.contact_name, contact_email=company.contact_email, inactive=False)
+    db.add(db_company)
+    db.commit()
+    db.refresh(db_company)
+    return db_company
+
+
 def get_company_by_id(db: Session, company_id: int):
     return db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
+
+
+def update_company(db: Session, update_data):
+    company = db.query(db_companies.Company).filter(db_companies.Company.id == update_data.id).first()
+    if update_data.title:
+        company.name = update_data.name
+    if update_data.contact_fio:
+        company.contact_name = update_data.contact_name
+    if update_data.contact_email:
+        company.contact_email = update_data.contact_email
+    if update_data.img_logo:
+        company.img_logo = update_data.img_logo
+    if update_data.contact_phone:
+        company.contact_phone = update_data.contact_phone
+    if update_data.description:
+        company.description = update_data.description
+    db.commit()
+    return company
 
 
 def create_hash(db: Session, hash: dto_hashrates.HashrateBase):
@@ -121,6 +139,15 @@ def update_user(update_data, db: Session, auth):
         user.company_id = update_data.company_id
     if update_data.role:
         user.role = update_data.role
+    db.commit()
+    return user
+
+
+def ban_user(db: Session, user_id):
+    user = db.query(db_users.User).filter(db_users.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=403, detail="User does not exist")
+    user.inactive = True
     db.commit()
     return user
 
