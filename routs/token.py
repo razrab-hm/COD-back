@@ -3,7 +3,7 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from db.base import get_db
-from _utils import handlers
+from app import handlers
 
 router = APIRouter(prefix='/token')
 

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text
+from sqlalchemy.orm import relationship
 
 from db.core_db import Base
 
@@ -8,7 +9,16 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, unique=True)
     email = Column(String(50))
-    hash_password = Column(String(50))
+    hash_password = Column(Text)
     role = Column(String)
-    company_id = Column(Integer, ForeignKey('company.id'))
     inactive = Column(Boolean)
+    company = relationship('UserCompany')
+
+
+class UserCompany(Base):
+    __tablename__ = 'user_company'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    company_id = Column(Integer, ForeignKey('company.id'))
+

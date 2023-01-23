@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, Boolean
 from sqlalchemy.orm import relationship
 
 from db.core_db import Base
@@ -14,7 +14,6 @@ class Company(Base):
     contact_phone = Column(String(15))
     img_logo = Column(Text)
     description = Column(Text)
-
+    inactive = Column(Boolean)
     hash = relationship('Hashrate')
-    user = relationship('User')
-
+    user = relationship('UserCompany')

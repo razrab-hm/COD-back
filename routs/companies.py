@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from db.base import get_db
 from db.schemas import companies as dto_companies
 
-from _utils import handlers
-router = APIRouter(prefix='/company')
+from app import handlers
+
+router = APIRouter(prefix='/companies')
 
 
 @router.post('/create', response_model=dto_companies.Company)
@@ -27,6 +28,12 @@ def get_company(company: dto_companies.CompanyRead, db: Session = Depends(get_db
 @router.delete('/inactive', response_model=dto_companies.Company)
 def set_inactive_company(company_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.block_company_handler(auth, db, company_id)
+
+
+@router.get('/{user_id}/companies')
+def get_user_companies(user_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    # return handlers.get_user_companies_handler(user, auth, db)
+    pass
 
 # @router.post('/get', response_model=schemas.Company)
 # def get_company_by_id(authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):

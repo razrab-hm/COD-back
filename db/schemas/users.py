@@ -9,7 +9,6 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     role: str = 'manager'
-    company_id: int = None
     # company_id: int
     # permission_id: int
 
@@ -19,7 +18,10 @@ class UserUpdate(UserBase):
     email: str = None
     password: str = None
     role: str = None
-    company_id: int = None
+
+
+class UserRead(BaseModel):
+    id: int
 
 
 class Settings(BaseModel):
@@ -36,7 +38,6 @@ class Token(BaseModel):
 
 
 class User(BaseModel):
-    company_id: Optional[int]
     role: str
     id: int
     email: str

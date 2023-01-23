@@ -5,23 +5,29 @@ import requests
 
 s = requests.Session()
 data = {'email': 'Eugene', 'password': 'qwerty'}
-response = requests.post('http://localhost:8000/user/login', data=json.dumps(data)).json()
+response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
 print(response)
 headers = {'Authorization': f"Bearer {response['access_token']}"}
 
 # response = requests.post('http://localhost:8001/company/get', headers=headers).json()
 # print(response)
 data = {
-  "email": "Test@gmail.com",
-  "password": "qwerty",
-  "role": "manager",
-  "company_id": 0
+  "title": "TestCompany",
+  "contact_fio": "TestFIO",
+  "contact_email": "testmail",
+  "contact_phone": "test_phone",
+  "img_logo": "test_logo",
+  "description": "test description"
 }
-# response = requests.post('http://localhost:8001/company/create', data=json.dumps(data), headers=headers).json()
+data2 = {
+  "company_id": 1,
+  "user_id": 4
+}
+# response = requests.post('http://localhost:8000/companies/create', data=json.dumps(data), headers=headers).json()
 # print(response)
-# response = requests.post('http://localhost:8000/user/create', data=json.dumps(data), headers=headers).json()
+# response = requests.post('http://localhost:8000/users/add_company', data=json.dumps(data2), headers=headers).json()
 # print(response)
-response = requests.delete('http://localhost:8000/user/ban?user_id=2', headers=headers).json()
+response = requests.get('http://localhost:8000/users/companies/1', headers=headers).json()
 print(response)
 
 
