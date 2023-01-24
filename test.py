@@ -42,6 +42,6 @@ data3 = {
 
 file = {'file':  open('test_hr.xls', 'rb'), "company_id": 1}
 
-response = requests.post('http://localhost:8000/hashrates/year_by_quarters', headers=headers).text
+response = requests.post('http://localhost:8000/hashrates/get_report', headers=headers).text
 
 print(response)

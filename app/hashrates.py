@@ -69,7 +69,7 @@ def check_report_type(date_type: str):
         raise HTTPException(status_code=404, detail="Date_type format failed")
 
 
-def get_by_type(db: Session, report_type, year):
+def get_report(db: Session, report_type, year):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == 2022).statement
 
     dataset = pd.read_sql(statement, engine)
@@ -81,16 +81,6 @@ def get_by_type(db: Session, report_type, year):
 
     months_sum: Series = dataset.groupby('month').hash.sum()
     months_sum = months_sum.add_suffix('-month')
-    # print(months_sum)
-
-    test = {
-        'year': {'1-quarter': {
-            '1-month': {
-                '1-day': {'total': 0},
-                'total': 0
-            }, 'total': 0
-        }, 'total': 0}
-    }
 
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
     quarters_sum = quarters_sum.add_suffix('-quarter')
@@ -99,13 +89,14 @@ def get_by_type(db: Session, report_type, year):
     report = {'year': {}}
     # for name, val in quarters_sum.to_dict().items():
     #     report['year'].update({name: {'total': val}})
+    print(dataset.loc[dataset.month == 1][['day', 'hash']].values)
 
     for quarter in dataset.quarter.unique():
-        report['year'][f'{quarter}-quarter'] = {'total': 0}
+        report['year'][f'{quarter}-quarter'] = {'total': year_sum}
         for month in dataset.loc[dataset.quarter == quarter].month.unique():
-            report['year'][f'{quarter}-quarter'][f'{month}-month'] = {'total': 0}
-            for day in dataset.loc[dataset.month == month].day:
-                report['year'][f'{quarter}-quarter'][f'{month}-month'][f'{day}-day'] = {'total': 0}
+            report['year'][f'{quarter}-quarter'][f'{month}-month'] = {'total': months_sum.get(month-1)}
+            for day, day_value in zip(dataset.loc[dataset.month == month][['day', 'hash']].values):
+                report['year'][f'{quarter}-quarter'][f'{month}-month'][f'{day}-day'] = {'total': day_value}
 
     # for name, val in months_sum
 
