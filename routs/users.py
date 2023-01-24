@@ -11,17 +11,17 @@ router = APIRouter(prefix='/users')
 
 
 @router.post('/', response_model=dto_users.User)
-def create_user(user: dto_users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+def register_user(user: dto_users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.create_user_handler(auth, user, db)
 
 
 @router.post('/create_superuser')
-def create_super_user(user: dto_users.UserBase, db: Session = Depends(get_db)):
+def create_super_user(user: dto_users.UserCreate, db: Session = Depends(get_db)):
     return app.users.create_super_user(db, user.email, user.password)
 
 
 @router.post('/login', response_model=dto_users.Token)
-def login_user(user: dto_users.UserBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+def login_user(user: dto_users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.login_user_handler(db, user, auth)
 
 

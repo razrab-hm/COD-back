@@ -95,7 +95,7 @@ def get_report(db: Session, report_type, year):
         report['year'][f'{quarter}-quarter'] = {'total': year_sum}
         for month in dataset.loc[dataset.quarter == quarter].month.unique():
             report['year'][f'{quarter}-quarter'][f'{month}-month'] = {'total': months_sum.get(month-1)}
-            for day, day_value in zip(dataset.loc[dataset.month == month][['day', 'hash']].values):
+            for day, day_value in dataset.loc[dataset.month == month][['day', 'hash']].values:
                 report['year'][f'{quarter}-quarter'][f'{month}-month'][f'{day}-day'] = {'total': day_value}
 
     # for name, val in months_sum

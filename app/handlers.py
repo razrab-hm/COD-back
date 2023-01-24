@@ -22,7 +22,7 @@ def update_company_handler(auth: AuthJWT, company: dto_companies.CompanyUpdate, 
 
 
 def create_user_handler(auth: AuthJWT, user: dto_users.UserCreate, db: Session):
-    app_users.check_access(db, auth, 1)
+    # app_users.check_access(db, auth, 1)
     app_auth.check_email_valid(user.email)
     app_auth.check_email_in_base(db, user.email)
     return app_users.create_user(db, user)

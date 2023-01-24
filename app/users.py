@@ -107,7 +107,7 @@ def set_inactive_user(db: Session, user_id):
 
 def create_user(db: Session, user: dto_users.UserCreate):
     hashed_password = hashlib.md5(user.password.encode('utf-8')).hexdigest()
-    db_user = db_users.User(email=user.email, hash_password=hashed_password, role=user.role, inactive=False)
+    db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False)
     db.add(db_user)
     db.commit()
     return db_user

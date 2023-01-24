@@ -4,11 +4,11 @@ from pydantic.schema import Optional
 
 class UserBase(BaseModel):
     email: str
-    password: str
 
 
 class UserCreate(UserBase):
-    role: str = 'manager'
+    password: str
+    # role: str = 'manager'
     # company_id: int
     # permission_id: int
 
