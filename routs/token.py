@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from db.base import get_db
+from app.db import get_db
 from app import handlers
 
 router = APIRouter(prefix='/token')

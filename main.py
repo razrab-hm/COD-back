@@ -19,4 +19,6 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
         content={"detail": exc.message})
 
 
+
+
 # uvicorn.run(app)

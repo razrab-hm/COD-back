@@ -5,8 +5,8 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from db.models import users as db_users, companies as db_companies
-from db.schemas import users as dto_users
+from models.db import users as db_users, companies as db_companies
+from models.dto import users as dto_users
 
 
 def create_super_user(db, username, password):
@@ -43,7 +43,16 @@ def add_user_company(company_id, user_id, db):
     user_company = db_users.UserCompany(user_id=user_id, company_id=company_id)
     db.add(user_company)
     db.commit()
-    return {'status': 'ok'}
+    return {'status': '+ company'}
+
+
+def remove_user_company(company_id, user_id, db):
+    obj = db.query(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).filter(db_users.UserCompany.user_id == user_id).delete()
+    db.commit()
+    if obj:
+        return {'status': '- company'}
+    else:
+        return {'status': 'failed'}
 
 
 def get_current_user(db, auth: AuthJWT):
@@ -94,10 +103,6 @@ def set_inactive_user(db: Session, user_id):
     user.inactive = True
     db.commit()
     return user
-
-
-def get_user_companies(user_id, db):
-    db.query(db_users.UserCompany.company_id).filter(db_users.User)
 
 
 def create_user(db: Session, user: dto_users.UserCreate):

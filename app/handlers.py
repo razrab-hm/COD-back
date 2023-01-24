@@ -4,20 +4,20 @@ from sqlalchemy.orm import Session
 import app.auth as app_auth
 import app.companies as app_companies
 import app.users as app_users
-from app import utils
-from db.schemas import (companies as dto_companies,
+import app.hashrates as app_hashrates
+from models.dto import (companies as dto_companies,
                         users as dto_users,
                         hashrates as dto_hashrates)
-from db.models import users as db_users
+from models.db import users as db_users
 
 
 def create_company_handler(auth: AuthJWT, company: dto_companies.CompanyBase, db: Session):
-    app_users.check_access(db, auth)
+    app_users.check_access(db, auth, 1)
     return app_companies.create_company(db, company)
 
 
 def update_company_handler(auth: AuthJWT, company: dto_companies.CompanyUpdate, db: Session):
-    app_users.check_access(db, auth)
+    app_users.check_access(db, auth, 1)
     return app_companies.update_company(db, company)
 
 
@@ -47,13 +47,33 @@ def set_inactive_user(db: Session, auth: AuthJWT, user_id):
 
 
 def create_hashrate_handler(auth: AuthJWT, hashrate: dto_hashrates.HashrateBase, db: Session):
-    app_users.check_access(db, auth)
-    return utils.create_hash(db, hashrate)
+    app_users.check_access(db, auth, 1)
+    return app_hashrates.create_hashrate(db, hashrate)
 
 
-def get_company_handler(company, db, auth):
+def get_my_hashrates_handler(auth: AuthJWT, db):
     auth.jwt_required()
-    return app_companies.get_company_by_id(db, company.id)
+    return app_hashrates.get_hashrate_by_user_id(db, auth.get_jwt_subject())
+
+
+def get_company_hashrate_handler(company_id, db, auth):
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    # return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level)
+
+
+def get_all_hashrates_handler(db, auth):
+    app_users.check_access(db, auth, 1)
+    return app_hashrates.get_all_hashrates(db)
+
+
+def get_companies_handler(db, auth):
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    return app_companies.get_companies(db, auth.get_jwt_subject(), access_level)
+
+
+def get_company_by_id_handler(db, auth, company_id):
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    return app_companies.get_company_by_id(db, company_id, access_level, auth.get_jwt_subject())
 
 
 def login_user_handler(db, user, auth):
@@ -68,14 +88,18 @@ def refresh_handler(auth, db):
     return app_auth.create_tokens(auth, user)
 
 
-def block_company_handler(auth, db, company_id):
-    app_users.check_access(db, auth)
-    return app_companies.block_company(db, company_id)
+def set_inactive_company_handler(auth, db, company_id):
+    app_users.check_access(db, auth, 1)
+    return app_companies.set_inactive_company(db, company_id)
 
 
-def get_user_companies_handler(user, auth, db):
-    auth.jwt_required()
-    return app_users.get_user_companies(user.id, db)
+def get_user_companies_handler(user_id, auth, db):
+    app_users.check_access(db, auth, 1)
+    return app_companies.get_user_companies(user_id, db)
+
+
+def get_my_company_handler(auth, db):
+    return app_companies.get_user_companies(auth.get_jwt_subject(), db)
 
 
 def get_company_users_handler(db, company_id, auth):
@@ -91,3 +115,17 @@ def get_user_by_id_handler(db, user_id, auth):
 def add_company_handler(company_id, user_id, auth, db):
     app_users.check_access(db, auth, 1)
     return app_users.add_user_company(company_id, user_id, db)
+
+
+def remove_company_handler(company_id, user_id, auth, db):
+    app_users.check_access(db, auth, 1)
+    return app_users.remove_user_company(company_id, user_id, db)
+
+
+def get_xls_handler(file, db, company_id, auth):
+    app_users.check_access(db, auth, 1)
+    return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
+
+
+def get_all_format_hashrates_handler(report_type, company_id, from_date, to_date, auth, db):
+    return app_hashrates.get_by_type(db, report_type, 2022)

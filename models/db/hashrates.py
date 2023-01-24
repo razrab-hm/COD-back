@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, Date, Float
 
-from db.core_db import Base
+from app.db import Base
 
 
 class Hashrate(Base):
@@ -11,3 +11,4 @@ class Hashrate(Base):
     average = Column(Float)
     hash = Column(Float)
     company_id = Column(Integer, ForeignKey('company.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))

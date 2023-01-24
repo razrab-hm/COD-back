@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship
 
-from db.core_db import Base
+from app.db import Base
 
 
 class User(Base):
@@ -13,6 +13,7 @@ class User(Base):
     role = Column(String)
     inactive = Column(Boolean)
     company = relationship('UserCompany')
+    hashrate = relationship('Hashrate')
 
 
 class UserCompany(Base):

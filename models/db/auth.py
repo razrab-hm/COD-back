@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import Column, Integer, String
 
-from db.core_db import Base
+from app.db import Base
 
 
 class Token(Base):

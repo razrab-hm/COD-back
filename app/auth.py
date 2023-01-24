@@ -1,10 +1,12 @@
 import hashlib
 
 from fastapi import HTTPException
+from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from app.users import get_user_by_email
-from db.models import token as db_token
+from models.db import auth as db_token
+from models.dto import users as dto_users
 
 
 def check_email_in_base(db, email, login=False):
@@ -55,3 +57,8 @@ def check_refresh_token_is_in_blacklist(db, auth):
     token_in_blacklist = db.query(db_token.Token).filter(db_token.Token.refresh_token == jti).first()
     if token_in_blacklist:
         raise HTTPException(status_code=400, detail="Refresh token is inactive. Please login again")
+
+
+@AuthJWT.load_config
+def get_config():
+    return dto_users.Settings()

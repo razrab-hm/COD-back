@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from db.models import companies as db_companies
-from db.schemas import companies as dto_companies
+from models.db import companies as db_companies, users as db_users
+from models.dto import companies as dto_companies
 
 
 def create_company(db: Session, company: dto_companies.CompanyBase):
@@ -13,8 +13,16 @@ def create_company(db: Session, company: dto_companies.CompanyBase):
     return db_company
 
 
-def get_company_by_id(db: Session, company_id: int):
-    return db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
+def get_company_by_id(db: Session, company_id: int, access_level, user_id):
+    if access_level == 1:
+        return db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
+    elif access_level == 2:
+        if db.query(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).filter(db_users.UserCompany.company_id == company_id).first():
+            return db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
+        else:
+            return {'status': 'Deny'}
+    else:
+        return {'status': 'Deny'}
 
 
 def update_company(db: Session, update_data):
@@ -35,10 +43,24 @@ def update_company(db: Session, update_data):
     return company
 
 
-def block_company(db: Session, company_id):
+def get_companies(db, user_id, access_level):
+    if access_level == 1:
+        return db.query(db_companies.Company).all()
+    elif access_level == 2:
+        return db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
+    else:
+        return []
+
+
+def set_inactive_company(db: Session, company_id):
     company = db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
     if not company:
         raise HTTPException(status_code=403, detail="Company does not exist")
     company.inactive = True
     db.commit()
     return company
+
+
+def get_user_companies(user_id, db):
+    return db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
+
