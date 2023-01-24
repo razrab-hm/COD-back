@@ -52,8 +52,7 @@ def add_token_to_blacklist(db: Session, jti: str):
     return db_token
 
 
-def check_refresh_token_is_in_blacklist(db, auth):
-    jti = auth.get_raw_jwt()['jti']
+def check_refresh_token_is_in_blacklist(db, jti):
     token_in_blacklist = db.query(db_token.Token).filter(db_token.Token.refresh_token == jti).first()
     if token_in_blacklist:
         raise HTTPException(status_code=400, detail="Refresh token is inactive. Please login again")

@@ -69,8 +69,16 @@ def check_report_type(date_type: str):
         raise HTTPException(status_code=404, detail="Date_type format failed")
 
 
-def get_report(db: Session, report_type, year):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == 2022).statement
+def get_report(db: Session, company_id, from_date, to_date, auth, year):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year)
+    if company_id:
+        statement = statement.filter(db_hashrates.Hashrate.company_id == company_id)
+    if from_date:
+        statement = statement.filter(db_hashrates.Hashrate.date >= from_date)
+    if to_date:
+        statement = statement.filter(db_hashrates.Hashrate.date <= to_date)
+
+    statement = statement.statement
 
     dataset = pd.read_sql(statement, engine)
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
@@ -80,27 +88,16 @@ def get_report(db: Session, report_type, year):
     dataset['quarter'] = dataset.date.dt.quarter
 
     months_sum: Series = dataset.groupby('month').hash.sum()
-    months_sum = months_sum.add_suffix('-month')
-
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
-    quarters_sum = quarters_sum.add_suffix('-quarter')
-
     year_sum = quarters_sum.sum()
-    report = {'year': {}}
-    # for name, val in quarters_sum.to_dict().items():
-    #     report['year'].update({name: {'total': val}})
-    print(dataset.loc[dataset.month == 1][['day', 'hash']].values)
+
+    report = {'year': {'total': year_sum}}
 
     for quarter in dataset.quarter.unique():
-        report['year'][f'{quarter}-quarter'] = {'total': year_sum}
+        report['year'][f'{int(quarter)}-quarter'] = {'total': quarters_sum.get(quarter)}
         for month in dataset.loc[dataset.quarter == quarter].month.unique():
-            report['year'][f'{quarter}-quarter'][f'{month}-month'] = {'total': months_sum.get(month-1)}
+            report['year'][f'{int(quarter)}-quarter'][f'{int(month)}-month'] = {'total': months_sum.get(month)}
             for day, day_value in dataset.loc[dataset.month == month][['day', 'hash']].values:
-                report['year'][f'{quarter}-quarter'][f'{month}-month'][f'{day}-day'] = {'total': day_value}
-
-    # for name, val in months_sum
-
-    # print(type(quarters_sum))
-    # report = {f'quarter-{quarter_id}': quarter_value for quarter_id, quarter_value in quarters_sum}
+                report['year'][f'{int(quarter)}-quarter'][f'{int(month)}-month'][f'{int(day)}-day'] = {'total': day_value}
 
     return report

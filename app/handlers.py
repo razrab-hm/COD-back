@@ -83,8 +83,10 @@ def login_user_handler(db, user, auth):
 
 
 def refresh_handler(auth, db):
-    user = app_users.get_current_user(db, auth)
+    jti = auth.get_raw_jwt()['jti']
+    user = app_users.get_current_user(db, jti)
     app_auth.check_refresh_token_is_in_blacklist(db, auth)
+    app_auth.add_token_to_blacklist(db, jti)
     return app_auth.create_tokens(auth, user)
 
 
@@ -127,5 +129,5 @@ def get_xls_handler(file, db, company_id, auth):
     return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
 
 
-def get_report_handler(report_type, company_id, from_date, to_date, auth, db):
-    return app_hashrates.get_report(db, report_type, 2022)
+def get_report_handler(company_id, from_date, to_date, auth, year, db):
+    return app_hashrates.get_report(db, company_id, from_date, to_date, auth, year)
