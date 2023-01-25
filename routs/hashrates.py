@@ -49,8 +49,13 @@ def get_all_hashrates(year: int = Body(...),
 
 
 @router.post('/{report_type}')
-def get_report_by_type(report_type: str, year: int = Body(...), month: int = Body(...), db: Session = Depends(get_db)):
-    return handlers.get_report_by_type_handler(report_type, year, month, db)
+def get_report_by_type(report_type: str,
+                       output_type: str = Body(...),
+                       year: int = Body(...),
+                       month: int = Body(...),
+                       db: Session = Depends(get_db),
+                       auth: AuthJWT = Depends()):
+    return handlers.get_report_by_type_handler(report_type, year, month, db, auth)
 
 
 
