@@ -20,6 +20,10 @@ def check_username_in_base(db, username, login=False):
         return user
 
 
+def check_inactive_account(db, user_id):
+    inactive = db.query()
+
+
 def check_email_valid(email):
     email = email.split('@')
     if len(email) != 2:
