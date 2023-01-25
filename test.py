@@ -50,7 +50,12 @@ data3 = {
 
 sleep(1)
 
-response = requests.get('http://localhost:8000/token/', headers=headers).text
+data5 = {
+  'year': 2022,
+  'month': 1,
+}
+
+response = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data5), headers=headers).text
 
 print(response)
 

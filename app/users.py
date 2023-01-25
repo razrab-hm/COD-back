@@ -9,14 +9,6 @@ from models.db import users as db_users, companies as db_companies
 from models.dto import users as dto_users
 
 
-def create_super_user(db, username, password):
-    user = db_users.User(email=username, hash_password=hashlib.md5(password.encode('utf-8')).hexdigest(), role='root', inactive=False)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
 def get_user_by_username(db: Session, email: str):
     return db.query(db_users.User).filter(db_users.User.email == email).first()
 

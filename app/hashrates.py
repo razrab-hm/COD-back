@@ -132,3 +132,26 @@ def get_report(db: Session, file_format, company_id, from_date, to_date, auth, y
                         'total': day_value}
 
         return report
+
+
+def month_day_report(db, year, month):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(extract('month', db_hashrates.Hashrate.date) == month).statement
+    dataset = pd.read_sql(statement, engine)
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset['day']: Series = dataset.date.dt.day
+    dataset['month']: Series = dataset.date.dt.month_name()
+    month_sum = dataset.hash.sum()
+    report = {}
+    for month, day, hash, average in dataset[['month', 'day', 'hash', 'average']].values:
+        if not report.get(month):
+            report[month] = {'total': month_sum}
+        report[month][day] = {'total': hash, 'average': average}
+
+    return report
+
+
+get_func_by_report_type = {
+    'month_day': month_day_report
+}
+
+

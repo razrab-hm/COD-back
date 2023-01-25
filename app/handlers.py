@@ -136,3 +136,8 @@ def get_xls_handler(file, db, company_id, auth):
 
 def get_report_handler(file_format, company_id, from_date, to_date, auth, year, db):
     return app_hashrates.get_report(db, file_format, company_id, from_date, to_date, auth, year)
+
+
+def get_report_by_type_handler(report_type, year, month, db):
+    return app_hashrates.get_func_by_report_type[report_type](db, year, month)
+
