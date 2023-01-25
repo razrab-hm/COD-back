@@ -21,7 +21,7 @@ def create_super_user(user: dto_users.UserCreate, db: Session = Depends(get_db))
 
 
 @router.post('/login', response_model=dto_users.Token)
-def login_user(user: dto_users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+def login_user(user: dto_users.UserBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.login_user_handler(db, user, auth)
 
 

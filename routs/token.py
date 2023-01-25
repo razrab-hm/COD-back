@@ -12,3 +12,10 @@ router = APIRouter(prefix='/token')
 def refresh(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.refresh_handler(auth, db)
 
+
+@router.get('/')
+def check_token(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    return handlers.check_token_valid(db, auth)
+
+
+

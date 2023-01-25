@@ -4,13 +4,13 @@ from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from app.users import get_user_by_email
+from app.users import get_user_by_username
 from models.db import auth as db_token
 from models.dto import users as dto_users
 
 
-def check_email_in_base(db, email, login=False):
-    user = get_user_by_email(db, email)
+def check_username_in_base(db, username, login=False):
+    user = get_user_by_username(db, username)
     if not login:
         if user:
             raise HTTPException(status_code=400, detail="Email already registered")

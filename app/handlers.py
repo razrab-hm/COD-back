@@ -24,7 +24,7 @@ def update_company_handler(auth: AuthJWT, company: dto_companies.CompanyUpdate, 
 def create_user_handler(auth: AuthJWT, user: dto_users.UserCreate, db: Session):
     # app_users.check_access(db, auth, 1)
     app_auth.check_email_valid(user.email)
-    app_auth.check_email_in_base(db, user.email)
+    app_auth.check_username_in_base(db, user.username)
     return app_users.create_user(db, user)
 
 
@@ -33,7 +33,13 @@ def update_user_handler(update_data: dto_users.UserUpdate, db: Session, auth: Au
 
 
 def get_user_handler(db: Session, auth: AuthJWT):
-    return app_users.get_current_user(db, auth)
+    user = app_users.get_current_user(db, auth)
+    return {"username": user.username, "role": user.role}
+
+
+def check_token_valid(db: Session, auth: AuthJWT):
+    auth.jwt_required()
+    return {"message": 'success'}
 
 
 def get_all_users_handler(db: Session, auth: AuthJWT):
@@ -77,7 +83,7 @@ def get_company_by_id_handler(db, auth, company_id):
 
 
 def login_user_handler(db, user, auth):
-    bd_user = app_auth.check_email_in_base(db, user.email, True)
+    bd_user = app_auth.check_username_in_base(db, user.username, True)
     app_auth.check_user_password(user.password, bd_user.hash_password)
     return app_auth.create_tokens(auth, bd_user.id)
 
@@ -86,7 +92,6 @@ def refresh_handler(auth, db):
     jti = auth.get_raw_jwt()['jti']
     app_auth.check_refresh_token_is_in_blacklist(db, jti)
     app_auth.add_token_to_blacklist(db, jti)
-
     return app_auth.create_tokens(auth, auth.get_jwt_subject())
 
 

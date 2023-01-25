@@ -17,7 +17,7 @@ def create_super_user(db, username, password):
     return user
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_username(db: Session, email: str):
     return db.query(db_users.User).filter(db_users.User.email == email).first()
 
 
@@ -107,10 +107,10 @@ def set_inactive_user(db: Session, user_id):
 
 def create_user(db: Session, user: dto_users.UserCreate):
     hashed_password = hashlib.md5(user.password.encode('utf-8')).hexdigest()
-    db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False)
+    db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False, username=user.username)
     db.add(db_user)
     db.commit()
-    return db_user
+    return {'username': db_user.username, 'role': db_user.role}
 
 
 def get_company_users(db, company_id, access_level, from_user_id):

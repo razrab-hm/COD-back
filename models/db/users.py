@@ -8,6 +8,7 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, unique=True)
+    username = Column(String(50), unique=True)
     email = Column(String(50))
     hash_password = Column(Text)
     role = Column(String)

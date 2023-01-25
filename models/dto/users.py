@@ -3,11 +3,12 @@ from pydantic.schema import Optional
 
 
 class UserBase(BaseModel):
-    email: str
+    username: str
+    password: str
 
 
 class UserCreate(UserBase):
-    password: str
+    email: str
     # role: str = 'manager'
     # company_id: int
     # permission_id: int
@@ -39,10 +40,7 @@ class Token(BaseModel):
 
 class User(BaseModel):
     role: str
-    id: int
-    email: str
-    hash_password: str
-    inactive: bool = False
+    username: str
 
     class Config:
         orm_mode = True

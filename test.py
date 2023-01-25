@@ -1,10 +1,11 @@
 import json
+from time import sleep
 
 import requests
 
 
 s = requests.Session()
-data = {'email': 'Eugene', 'password': 'qwerty'}
+data = {'username': 'Eugene', 'password': 'qwerty'}
 response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
 print(response)
 headers = {'Authorization': f"Bearer {response['access_token']}"}
@@ -43,11 +44,17 @@ data3 = {
 # print(response)
 
 # file = {'file':  open('test_hr.xls', 'rb'), "company_id": 1}
-# data4 = {'file_format': 'excel', 'year': 2022}
+# data4 = {'file_format': 'json', 'year': 2022}
 # response = requests.post('http://localhost:8000/hashrates/get_report', data=json.dumps(data4), headers=headers).text
+#
 
+sleep(1)
 
-response = requests.post('http://localhost:8000/token/refresh', headers=headers_refresh)
-
+response = requests.get('http://localhost:8000/token/', headers=headers).text
 
 print(response)
+
+# response = requests.post('http://localhost:8000/token/refresh', headers=headers_refresh)
+
+
+# print(response)
