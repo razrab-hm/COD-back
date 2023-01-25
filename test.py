@@ -53,6 +53,7 @@ sleep(1)
 data5 = {
   'year': 2022,
   'month': 1,
+  'output_type': '1'
 }
 
 response = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data5), headers=headers).text
