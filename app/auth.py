@@ -35,9 +35,9 @@ def check_user_password(password, hash_password):
         raise HTTPException(status_code=400, detail="Password incorrect")
 
 
-def create_tokens(auth, user):
-    access_token = auth.create_access_token(subject=user.id, expires_time=60)
-    refresh_token = auth.create_refresh_token(subject=user.id)
+def create_tokens(auth, user_id):
+    access_token = auth.create_access_token(subject=user_id, expires_time=60)
+    refresh_token = auth.create_refresh_token(subject=user_id)
     return {
         'access_token': access_token,
         'refresh_token': refresh_token

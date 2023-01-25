@@ -79,15 +79,15 @@ def get_company_by_id_handler(db, auth, company_id):
 def login_user_handler(db, user, auth):
     bd_user = app_auth.check_email_in_base(db, user.email, True)
     app_auth.check_user_password(user.password, bd_user.hash_password)
-    return app_auth.create_tokens(auth, bd_user)
+    return app_auth.create_tokens(auth, bd_user.id)
 
 
 def refresh_handler(auth, db):
     jti = auth.get_raw_jwt()['jti']
-    user = app_users.get_current_user(db, jti)
-    app_auth.check_refresh_token_is_in_blacklist(db, auth)
+    app_auth.check_refresh_token_is_in_blacklist(db, jti)
     app_auth.add_token_to_blacklist(db, jti)
-    return app_auth.create_tokens(auth, user)
+
+    return app_auth.create_tokens(auth, auth.get_jwt_subject())
 
 
 def set_inactive_company_handler(auth, db, company_id):

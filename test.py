@@ -9,6 +9,8 @@ response = requests.post('http://localhost:8000/users/login', data=json.dumps(da
 print(response)
 headers = {'Authorization': f"Bearer {response['access_token']}"}
 
+headers_refresh = {'Authorization': f"Bearer {response['refresh_token']}"}
+
 # response = requests.post('http://localhost:8001/company/get', headers=headers).json()
 # print(response)
 data = {
@@ -40,8 +42,12 @@ data3 = {
 # response = requests.get('http://localhost:8000/hashrates/company/1', headers=headers).json()
 # print(response)
 
-file = {'file':  open('test_hr.xls', 'rb'), "company_id": 1}
-data4 = {'file_format': 'excel', 'year': 2022}
-response = requests.post('http://localhost:8000/hashrates/get_report', data=json.dumps(data4), headers=headers).text
+# file = {'file':  open('test_hr.xls', 'rb'), "company_id": 1}
+# data4 = {'file_format': 'excel', 'year': 2022}
+# response = requests.post('http://localhost:8000/hashrates/get_report', data=json.dumps(data4), headers=headers).text
+
+
+response = requests.post('http://localhost:8000/token/refresh', headers=headers_refresh)
+
 
 print(response)
