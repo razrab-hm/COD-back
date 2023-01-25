@@ -36,7 +36,7 @@ def check_user_password(password, hash_password):
 
 
 def create_tokens(auth, user):
-    access_token = auth.create_access_token(subject=user.id)
+    access_token = auth.create_access_token(subject=user.id, expires_time=60)
     refresh_token = auth.create_refresh_token(subject=user.id)
     return {
         'access_token': access_token,
@@ -55,7 +55,7 @@ def add_token_to_blacklist(db: Session, jti: str):
 def check_refresh_token_is_in_blacklist(db, jti):
     token_in_blacklist = db.query(db_token.Token).filter(db_token.Token.refresh_token == jti).first()
     if token_in_blacklist:
-        raise HTTPException(status_code=400, detail="Refresh token is inactive. Please login again")
+        raise HTTPException(status_code=401, detail="Refresh token is inactive. Please login again")
 
 
 @AuthJWT.load_config

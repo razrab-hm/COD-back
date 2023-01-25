@@ -129,5 +129,5 @@ def get_xls_handler(file, db, company_id, auth):
     return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
 
 
-def get_report_handler(company_id, from_date, to_date, auth, year, db):
-    return app_hashrates.get_report(db, company_id, from_date, to_date, auth, year)
+def get_report_handler(file_format, company_id, from_date, to_date, auth, year, db):
+    return app_hashrates.get_report(db, file_format, company_id, from_date, to_date, auth, year)

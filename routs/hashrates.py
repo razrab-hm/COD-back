@@ -39,9 +39,10 @@ def upload(company_id: int, file: UploadFile = File(...), db: Session = Depends(
 
 @router.post('/get_report')
 def get_all_hashrates(year: int = Body(...),
+                      file_format: str = Body('json'),
                       company_id: list[int] = Body(None),
                       from_date: date = Body(None),
                       to_date: date = Body(None),
                       auth: AuthJWT = Depends(),
                       db: Session = Depends(get_db)):
-    return handlers.get_report_handler(company_id, from_date, to_date, auth, year, db)
+    return handlers.get_report_handler(file_format, company_id, from_date, to_date, auth, year, db)
