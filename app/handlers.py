@@ -145,9 +145,34 @@ def get_report_handler(file_format, company_id, from_date, to_date, auth, year, 
     return app.reports.get_report(db, file_format, company_id, from_date, to_date, auth, year)
 
 
-def get_report_by_type_handler(report_type, year, month, db, auth):
+def month_day_report_handler(output_type, year, month, db, auth):
     auth.jwt_required()
-    return app_reports.get_func_by_report_type[report_type](db, year, month)
+    return app_reports.month_day_report(db, year, month)
+
+
+def year_quarter_month_report_handler(output_type, year, db, auth):
+    auth.jwt_required()
+    return app_reports.year_quarter_month_report(db, year)
+
+
+def year_quarter_report_handler(output_type, year, db, auth):
+    auth.jwt_required()
+    return app_reports.year_quarter_report(db, year)
+
+
+def year_quarter_month_day_report_handler(output_type, year, db ,auth):
+    auth.jwt_required()
+    return app_reports.year_quarter_month_day_report(db, year)
+
+
+def quarter_month_report_handler(output_type, year, quarter, db, auth):
+    auth.jwt_required()
+    return app_reports.quarter_month_report(db, year, quarter)
+
+
+def quarter_month_day_report_handler(output_type, year, quarter, db, auth):
+    auth.jwt_required()
+    return app_reports.quarter_month_day_report(db, year, quarter)
 
 
 def logout_handler(db, auth):

@@ -3,6 +3,7 @@ import pandas as pd
 from fastapi import HTTPException
 from openpyxl.worksheet.worksheet import Worksheet
 from pandas import Series
+from pandas.core.groupby import DataFrameGroupBy
 from sqlalchemy import extract
 from sqlalchemy.orm import Session
 
@@ -93,6 +94,116 @@ def month_day_report(db, year, month):
     return {'report': report, 'total': dataset.hash.sum()}
 
 
-get_func_by_report_type = {
-    'month_day': month_day_report
-}
+def year_quarter_month_report(db, year):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+    dataset = pd.read_sql(statement, engine)
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset['month_name']: Series = dataset.date.dt.month_name()
+    dataset['month']: Series = dataset.date.dt.month
+    dataset['quarter']: Series = dataset.date.dt.quarter
+
+    quarter_groups = dataset.groupby('quarter')
+
+    quarter_sum: Series = quarter_groups.hash.sum()
+
+    months_sum: Series = dataset.groupby('month').hash.sum()
+
+    report = []
+    for quarter in quarter_groups:
+        month_list = []
+        month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
+        for month, month_name in month_groups:
+            month_list.append({int(month): {'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)}})
+        report.append({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
+
+    return {'report': report, 'total': dataset.hash.sum()}
+
+
+def year_quarter_report(db, year):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+    dataset = pd.read_sql(statement, engine)
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset['quarter']: Series = dataset.date.dt.quarter
+    quarters_sum: Series = dataset.groupby('quarter').hash.sum()
+    report = []
+
+    for quarter_pk, quarter_sum in quarters_sum.items():
+        print(quarter_pk, quarter_sum)
+        report.append({'total': quarter_sum, 'quarter': quarter_pk})
+
+    return {'report': report, 'total': dataset.hash.sum()}
+
+
+def year_quarter_month_day_report(db, year):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+    dataset = pd.read_sql(statement, engine)
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset['day']: Series = dataset.date.dt.day
+    dataset['month_name']: Series = dataset.date.dt.month_name()
+    dataset['month']: Series = dataset.date.dt.month
+    dataset['quarter']: Series = dataset.date.dt.quarter
+
+    quarter_groups = dataset.groupby('quarter')
+
+    quarter_sum: Series = quarter_groups.hash.sum()
+
+    months_sum: Series = dataset.groupby('month').hash.sum()
+
+    report = []
+    for quarter in quarter_groups:
+        month_list = []
+        month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
+        for month, month_name in month_groups:
+            day_list = []
+            for day, hash, average in dataset.loc[dataset.month == month][['day', 'hash', 'average']].values:
+                day_list.append({int(day): {'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
+            month_list.append({int(month): day_list, 'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)})
+        report.append({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
+
+    return {'report': report, 'total': dataset.hash.sum()}
+
+
+def quarter_month_report(db, year, quarter):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+    dataset = pd.read_sql(statement, engine)
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset['quarter']: Series = dataset.date.dt.quarter
+    dataset = dataset.loc[dataset.quarter == quarter]
+
+    dataset['month']: Series = dataset.date.dt.month
+    dataset['month_name']: Series = dataset.date.dt.month_name()
+
+    month_names = dataset.month_name.unique()
+    month_sums = dataset.groupby('month').hash.sum()
+
+    report = []
+    for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
+        report.append({int(month_pk): {'date': month_name, 'total': month_sum}})
+
+    return {'report': report, 'total': dataset.hash.sum()}
+
+
+def quarter_month_day_report(db, year, quarter):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+    dataset = pd.read_sql(statement, engine)
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset['quarter']: Series = dataset.date.dt.quarter
+    dataset['day']: Series = dataset.date.dt.day
+    dataset = dataset.loc[dataset.quarter == quarter]
+
+    dataset['month']: Series = dataset.date.dt.month
+    dataset['month_name']: Series = dataset.date.dt.month_name()
+
+    month_names = dataset.month_name.unique()
+    month_sums = dataset.groupby('month').hash.sum()
+
+    report = []
+    for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
+        day_list = []
+        for day, hash in dataset.loc[dataset.month == month_pk][['day', 'hash']].values:
+            day_list.append({day: {'total': hash, 'date': f'{month_name[0:3]}. {day}, {year}'}})
+
+        report.append({int(month_pk): day_list, 'date': month_name, 'total': month_sum})
+
+    return {'report': report, 'total': dataset.hash.sum()}

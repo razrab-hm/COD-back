@@ -48,14 +48,54 @@ def get_all_hashrates(year: int = Body(...),
     return handlers.get_report_handler(file_format, company_id, from_date, to_date, auth, year, db)
 
 
-@router.post('/{report_type}')
-def get_report_by_type(report_type: str,
-                       output_type: str = Body(...),
+@router.post('/month_day')
+def month_day(output_type: str = Body(...),
                        year: int = Body(...),
                        month: int = Body(...),
                        db: Session = Depends(get_db),
                        auth: AuthJWT = Depends()):
-    return handlers.get_report_by_type_handler(report_type, year, month, db, auth)
+    return handlers.month_day_report_handler(output_type, year, month, db, auth)
 
+
+@router.post('/year_quarter_month')
+def year_quarter_month(output_type: str = Body(...),
+                       year: int = Body(...),
+                       db: Session = Depends(get_db),
+                       auth: AuthJWT = Depends()):
+    return handlers.year_quarter_month_report_handler(output_type, year, db, auth)
+
+
+@router.post('/year_quarter')
+def year_quarter(output_type: str = Body(...),
+                 year: int = Body(...),
+                 db: Session = Depends(get_db),
+                 auth: AuthJWT = Depends()):
+    return handlers.year_quarter_report_handler(output_type, year, db, auth)
+
+
+@router.post('/year_quarter_month_day')
+def year_quarter_month_day(output_type: str = Body(...),
+                           year: int = Body(...),
+                           db: Session = Depends(get_db),
+                           auth: AuthJWT = Depends()):
+    return handlers.year_quarter_month_day_report_handler(output_type, year, db, auth)
+
+
+@router.post('/quarter_month')
+def quarter_month(output_type: str = Body(...),
+                  year: int = Body(...),
+                  quarter: int = Body(...),
+                  db: Session = Depends(get_db),
+                  auth: AuthJWT = Depends()):
+    return handlers.quarter_month_report_handler(output_type, year, quarter, db, auth)
+
+
+@router.post('/quarter_month_day')
+def quarter_month_day(output_type: str = Body(...),
+                  year: int = Body(...),
+                  quarter: int = Body(...),
+                  db: Session = Depends(get_db),
+                  auth: AuthJWT = Depends()):
+    return handlers.quarter_month_day_report_handler(output_type, year, quarter, db, auth)
 
 
