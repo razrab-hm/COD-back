@@ -133,13 +133,13 @@ def year_quarter_month_report(db, year):
 
     months_sum: Series = dataset.groupby('month').hash.sum()
 
-    report = []
+    report = {}
     for quarter in quarter_groups:
         month_list = []
         month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
         for month, month_name in month_groups:
             month_list.append({month_name: {'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)}})
-        report.append({f'quarter_{quarter[0]}': month_list, 'total': quarter_sum.get(quarter[0])})
+        report.update({f'quarter_{quarter[0]}': month_list, 'total': quarter_sum.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum()}
 
