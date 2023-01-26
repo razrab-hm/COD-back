@@ -11,7 +11,7 @@ def create():
     username = input('username: ')
     password = input('password: ')
     db = core_db.get_core_db()
-    user = users.User(email=username, hash_password=hashlib.md5(password.encode('utf-8')).hexdigest(), role='root', inactive=False)
+    user = users.User(username=username, hash_password=hashlib.md5(password.encode('utf-8')).hexdigest(), role='root', inactive=False)
     db.add(user)
     db.commit()
     db.refresh(user)

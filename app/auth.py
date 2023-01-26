@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from app.users import get_user_by_username
+from app.users import get_user_by_username, get_user_by_email
 from models.db import auth as db_token, users as db_users
 from models.dto import users as dto_users
 
@@ -13,10 +13,21 @@ def check_username_in_base(db, username, login=False):
     user = get_user_by_username(db, username)
     if not login:
         if user:
+            raise HTTPException(status_code=400, detail="Username already registered")
+    else:
+        if not user:
+            raise HTTPException(status_code=401, detail='Username or password incorrect')
+        return user
+
+
+def check_email_in_base(db, email, login=False):
+    user = get_user_by_email(db, email)
+    if not login:
+        if user:
             raise HTTPException(status_code=400, detail="Email already registered")
     else:
         if not user:
-            raise HTTPException(status_code=400, detail='Account does`t exists')
+            raise HTTPException(status_code=401, detail='Username or password incorrect')
         return user
 
 
@@ -29,16 +40,16 @@ def check_inactive_account(db, user_id):
 def check_email_valid(email):
     email = email.split('@')
     if len(email) != 2:
-        raise HTTPException(status_code=403, detail="Email is not valid")
+        raise HTTPException(status_code=401, detail="Email is not valid")
     _, host = email
     host = host.split('.')
     if len(host) != 2:
-        raise HTTPException(status_code=403, detail="Email is not valid")
+        raise HTTPException(status_code=401, detail="Email is not valid")
 
 
 def check_user_password(password, hash_password):
     if not hashlib.md5(password.encode('utf-8')).hexdigest() == hash_password:
-        raise HTTPException(status_code=400, detail="Password incorrect")
+        raise HTTPException(status_code=401, detail="Username or password incorrect")
 
 
 def create_tokens(auth, user_id):

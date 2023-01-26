@@ -84,9 +84,11 @@ def month_day_report(db, year, month):
     dataset = pd.read_sql(statement, engine)
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset['day']: Series = dataset.date.dt.day
+    dataset['month_name']: Series = dataset.date.dt.month_name()
     report = []
-    for day, hash, average in dataset[['day', 'hash', 'average']].values:
-        report.append({'total': hash, 'average': average, 'day_numb': int(day)})
+
+    for day, hash, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
+        report.append({'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {day}, {year}'})
 
     return {'report': report, 'total': dataset.hash.sum()}
 

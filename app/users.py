@@ -9,7 +9,11 @@ from models.db import users as db_users, companies as db_companies
 from models.dto import users as dto_users
 
 
-def get_user_by_username(db: Session, email: str):
+def get_user_by_username(db: Session, username: str):
+    return db.query(db_users.User).filter(db_users.User.username == username).first()
+
+
+def get_user_by_email(db: Session, email: str):
     return db.query(db_users.User).filter(db_users.User.email == email).first()
 
 
