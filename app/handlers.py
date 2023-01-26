@@ -180,3 +180,6 @@ def logout_handler(db, auth):
     jti = auth.get_raw_jwt()['jti']
     app_auth.add_token_to_blacklist(db, jti)
     return {'status': 'ok'}
+
+
+

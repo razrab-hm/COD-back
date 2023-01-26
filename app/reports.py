@@ -1,3 +1,5 @@
+import datetime
+
 import openpyxl
 import pandas as pd
 from fastapi import HTTPException
@@ -81,11 +83,25 @@ def get_report(db: Session, file_format, company_id, from_date, to_date, auth, y
 
 
 def month_day_report(db, year, month):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(extract('month', db_hashrates.Hashrate.date) == month).statement
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
+
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+
+        for date in date_list:
+            if date not in dataset.date.values:
+                dataset = dataset.append({'date': date}, ignore_index=True)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset['month'] = dataset.date.dt.month
+
+    dataset = dataset.loc[dataset.month == month]
+
     dataset['day']: Series = dataset.date.dt.day
     dataset['month_name']: Series = dataset.date.dt.month_name()
+
     report = []
 
     for day, hash, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
@@ -97,6 +113,15 @@ def month_day_report(db, year, month):
 def year_quarter_month_report(db, year):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
+
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+
+        for date in date_list:
+            if date not in dataset.date.values:
+                dataset = dataset.append({'date': date}, ignore_index=True)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset['month_name']: Series = dataset.date.dt.month_name()
     dataset['month']: Series = dataset.date.dt.month
@@ -116,12 +141,23 @@ def year_quarter_month_report(db, year):
             month_list.append({int(month): {'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)}})
         report.append({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
 
+                # report.append({i})
+
     return {'report': report, 'total': dataset.hash.sum()}
 
 
 def year_quarter_report(db, year):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
+
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+
+        for date in date_list:
+            if date not in dataset.date.values:
+                dataset = dataset.append({'date': date}, ignore_index=True)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset['quarter']: Series = dataset.date.dt.quarter
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
@@ -137,6 +173,15 @@ def year_quarter_report(db, year):
 def year_quarter_month_day_report(db, year):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
+
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+
+        for date in date_list:
+            if date not in dataset.date.values:
+                dataset = dataset.append({'date': date}, ignore_index=True)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
 
     dataset['day']: Series = dataset.date.dt.day
@@ -167,6 +212,15 @@ def year_quarter_month_day_report(db, year):
 def quarter_month_report(db, year, quarter):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
+
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+
+        for date in date_list:
+            if date not in dataset.date.values:
+                dataset = dataset.append({'date': date}, ignore_index=True)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset['quarter']: Series = dataset.date.dt.quarter
     dataset = dataset.loc[dataset.quarter == quarter]
@@ -187,6 +241,15 @@ def quarter_month_report(db, year, quarter):
 def quarter_month_day_report(db, year, quarter):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
+
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+
+        for date in date_list:
+            if date not in dataset.date.values:
+                dataset = dataset.append({'date': date}, ignore_index=True)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset['quarter']: Series = dataset.date.dt.quarter
     dataset['day']: Series = dataset.date.dt.day
@@ -202,7 +265,7 @@ def quarter_month_day_report(db, year, quarter):
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
         day_list = []
         for day, hash in dataset.loc[dataset.month == month_pk][['day', 'hash']].values:
-            day_list.append({day: {'total': hash, 'date': f'{month_name[0:3]}. {day}, {year}'}})
+            day_list.append({int(day): {'total': hash, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
 
         report.append({int(month_pk): day_list, 'date': month_name, 'total': month_sum})
 
