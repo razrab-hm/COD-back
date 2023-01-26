@@ -9,7 +9,7 @@ from app import handlers
 from app.db import get_db
 from models.dto import hashrates as dto_hashrates
 
-router = APIRouter(prefix='/hashrates')
+router = APIRouter(prefix='/hashrates', tags=["hashrates"])
 
 
 @router.post('/', response_model=dto_hashrates.Hashrate)

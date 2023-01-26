@@ -56,7 +56,9 @@ data5 = {
   'output_type': '1'
 }
 
-response = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data5), headers=headers).text
+# response = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data5), headers=headers).text
+
+response = requests.get('http://localhost:8000/users/inactive', headers=headers).text
 
 print(response)
 

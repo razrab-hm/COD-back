@@ -7,7 +7,7 @@ from models.dto import companies as dto_companies
 
 from app import handlers
 
-router = APIRouter(prefix='/companies')
+router = APIRouter(prefix='/companies', tags=["companies"])
 
 
 @router.post('/', response_model=dto_companies.Company)

@@ -2,6 +2,7 @@
  
 <h3>Запуск проекта:</h3>
 - pip install -r requirements.txt
+- docker compose up -d
 - alembic revision --autogenerate
 - alembic upgrade head
 - uvicorn main:app

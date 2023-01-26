@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app import handlers
 
-router = APIRouter(prefix='/token')
+router = APIRouter(prefix='/tokens', tags=["tokens"])
 
 
 @router.post('/refresh')

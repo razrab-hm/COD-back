@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 
 import app.auth as app_auth
 import app.companies as app_companies
+import app.reports
 import app.users as app_users
 import app.hashrates as app_hashrates
+import app.reports as app_reports
 from models.dto import (companies as dto_companies,
                         users as dto_users,
                         hashrates as dto_hashrates)
-from models.db import users as db_users
 
 
 def create_company_handler(auth: AuthJWT, company: dto_companies.CompanyBase, db: Session):
@@ -64,7 +65,7 @@ def get_my_hashrates_handler(auth: AuthJWT, db):
 
 def get_company_hashrate_handler(company_id, db, auth):
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
-    # return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level)
+    return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level, auth.get_jwt_subject())
 
 
 def get_all_hashrates_handler(db, auth):
@@ -90,6 +91,7 @@ def login_user_handler(db, user, auth):
 
 def refresh_handler(auth, db):
     jti = auth.get_raw_jwt()['jti']
+    app_auth.check_inactive_account(db, auth.get_jwt_subject())
     app_auth.check_refresh_token_is_in_blacklist(db, jti)
     app_auth.add_token_to_blacklist(db, jti)
     return app_auth.create_tokens(auth, auth.get_jwt_subject())
@@ -119,6 +121,10 @@ def get_user_by_id_handler(db, user_id, auth):
     return app_users.get_user_by_id(db, user_id, access_level, auth.get_jwt_subject())
 
 
+def get_inactive(db, auth: AuthJWT):
+    return app_auth.check_inactive_account(db, auth.get_jwt_subject())
+
+
 def add_company_handler(company_id, user_id, auth, db):
     app_users.check_access(db, auth, 1)
     return app_users.add_user_company(company_id, user_id, db)
@@ -135,10 +141,16 @@ def get_xls_handler(file, db, company_id, auth):
 
 
 def get_report_handler(file_format, company_id, from_date, to_date, auth, year, db):
-    return app_hashrates.get_report(db, file_format, company_id, from_date, to_date, auth, year)
+    return app.reports.get_report(db, file_format, company_id, from_date, to_date, auth, year)
 
 
 def get_report_by_type_handler(report_type, year, month, db, auth):
     auth.jwt_required()
-    return app_hashrates.get_func_by_report_type[report_type](db, year, month)
+    return app_reports.get_func_by_report_type[report_type](db, year, month)
 
+
+def logout_handler(db, auth):
+    auth.jwt_required()
+    jti = auth.get_raw_jwt()['jti']
+    app_auth.add_token_to_blacklist(db, jti)
+    return {'status': 'ok'}

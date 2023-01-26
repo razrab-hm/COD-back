@@ -7,7 +7,7 @@ from app.db import get_db
 from models.dto import users as dto_users
 from app import handlers
 
-router = APIRouter(prefix='/users')
+router = APIRouter(prefix='/users', tags=["users"])
 
 
 @router.post('/', response_model=dto_users.User)
@@ -18,6 +18,16 @@ def register_user(user: dto_users.UserCreate, db: Session = Depends(get_db), aut
 @router.post('/login', response_model=dto_users.Token)
 def login_user(user: dto_users.UserBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.login_user_handler(db, user, auth)
+
+
+@router.post('/logout', status_code=205)
+def logout_user(db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.logout_handler(db, auth)
+
+
+@router.get('/inactive')
+def get_inactive(db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.get_inactive(db, auth)
 
 
 @router.put('/', response_model=dto_users.User)

@@ -5,7 +5,7 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from app.users import get_user_by_username
-from models.db import auth as db_token
+from models.db import auth as db_token, users as db_users
 from models.dto import users as dto_users
 
 
@@ -21,7 +21,9 @@ def check_username_in_base(db, username, login=False):
 
 
 def check_inactive_account(db, user_id):
-    inactive = db.query()
+    inactive = db.query(db_users.User.inactive).filter(db_users.User.id == user_id).first()
+    if inactive.inactive:
+        raise HTTPException(status_code=409, detail="Inactive account!")
 
 
 def check_email_valid(email):
