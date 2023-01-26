@@ -138,7 +138,7 @@ def year_quarter_month_report(db, year):
         month_list = []
         month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
         for month, month_name in month_groups:
-            month_list.append({month_name: {'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)}})
+            month_list.append({month_name: {'date': year, 'name': month_name, 'total': months_sum.get(month)}})
         report.update({f'quarter_{quarter[0]}': month_list, 'total': quarter_sum.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum()}
@@ -193,7 +193,7 @@ def year_quarter_month_day_report(db, year):
 
     months_sum: Series = dataset.groupby('month').hash.sum()
 
-    report = []
+    report = {}
     for quarter in quarter_groups:
         month_list = []
         month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
@@ -202,7 +202,7 @@ def year_quarter_month_day_report(db, year):
             for day, hash, average in dataset.loc[dataset.month == month][['day', 'hash', 'average']].values:
                 day_list.append({int(day): {'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
             month_list.append({int(month): day_list, 'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)})
-        report.append({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
+        report.update({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum()}
 
@@ -259,12 +259,12 @@ def quarter_month_day_report(db, year, quarter):
     month_names = dataset.month_name.unique()
     month_sums = dataset.groupby('month').hash.sum()
 
-    report = []
+    report = {}
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
         day_list = []
         for day, hash in dataset.loc[dataset.month == month_pk][['day', 'hash']].values:
             day_list.append({int(day): {'total': hash, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
 
-        report.append({int(month_pk): day_list, 'date': month_name, 'total': month_sum})
+        report.update({int(month_pk): day_list, 'date': month_name, 'total': month_sum})
 
     return {'report': report, 'total': dataset.hash.sum()}
