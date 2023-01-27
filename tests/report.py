@@ -18,7 +18,7 @@ def test(username, password, year, month):
 
     response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
     headers = {'Authorization': f"Bearer {response['access_token']}"}
-    answer = requests.get('http://localhost:8000/hashrates/dates', data=json.dumps(data2), headers=headers).text
+    answer = requests.get('http://localhost:8000/reports/dates', data=json.dumps(data2), headers=headers).text
     print('dates =', answer)
 
     # answer = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data2), headers=headers).text

@@ -62,3 +62,4 @@ def quarter_month_day(output_type: str = Body(...),
 @router.get('/dates')
 def get_dates(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_dates_handler(auth, db)
+
