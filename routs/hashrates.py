@@ -99,3 +99,7 @@ def quarter_month_day(output_type: str = Body(...),
     return handlers.quarter_month_day_report_handler(output_type, year, quarter, db, auth)
 
 
+@router.get('/dates')
+def get_dates(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    return handlers.get_dates_handler(auth, db)
+

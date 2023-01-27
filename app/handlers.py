@@ -182,4 +182,6 @@ def logout_handler(db, auth):
     return {'status': 'ok'}
 
 
-
+def get_dates_handler(auth, db):
+    auth.jwt_required()
+    return app_hashrates.get_dates(db)

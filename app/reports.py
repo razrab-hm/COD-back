@@ -206,12 +206,14 @@ def year_quarter_month_day_report(db, year):
     #             day_list.append({int(day): {'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
     #         month_list.append({int(month): day_list, 'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)})
     #     report.update({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
-    for quarter in quarter_groups:
-        for month_ds in dataset.loc[dataset.quarter == quarter[0]][['month', 'month_name']].values:
-            for day_ds in dataset.loc[dataset.month == month_ds[0]][['day', 'hash', 'month_name']].values:
-                report.append({'type': 'day', 'date': f'{day_ds[2][0:3]}. {day_ds[0]}', 'hash': day_ds[1]})
+    # print(len(dataset.loc[dataset.month == 1][['day', 'hash', 'month_name']].values))
 
-            report.append({'type': 'month', 'date': f'{month_ds[1]}'})
+    for quarter in quarter_groups:
+        for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
+            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name']].values:
+                report.append({'type': 'day', 'date': f'{day_ds[2]}, {day_ds[0]}', 'hash': day_ds[1]})
+                pass
+            report.append({'type': 'month', 'date': f'{month_name}'})
 
         report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter'})
 

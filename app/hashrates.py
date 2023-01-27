@@ -1,5 +1,7 @@
+import pandas as pd
 from sqlalchemy.orm import Session
 
+from app.db import engine
 from app.reports import month_day_report
 from models.db import hashrates as db_hashrates, users as db_users
 from models.dto import hashrates as dto_hashrates
@@ -57,4 +59,21 @@ def get_all_hashrates(db):
     return db.query(db_hashrates.Hashrate).all()
 
 
+def get_dates(db: Session):
+    statement = db.query(db_hashrates.Hashrate.date).statement
+    dataset = pd.read_sql(statement, engine)
+
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
+
+    dataset['year'] = dataset.date.dt.year
+    dataset['quarter'] = dataset.date.dt.quarter
+    dataset['month_name'] = dataset.date.dt.month_name()
+
+    years = [int(year) for year in dataset.year.unique()]
+    quarters = [int(quarter) for quarter in dataset.quarter.unique()]
+    months = [month_name for month_name in dataset.month_name.unique()]
+
+    return {'years': years, 'quarters': quarters, 'months': months}
 

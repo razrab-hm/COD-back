@@ -18,6 +18,9 @@ def test(username, password, year, month):
 
     response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
     headers = {'Authorization': f"Bearer {response['access_token']}"}
+    answer = requests.get('http://localhost:8000/hashrates/dates', data=json.dumps(data2), headers=headers).text
+    print('dates =', answer)
+
     # answer = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data2), headers=headers).text
     # print('month_day =', answer)
     # answer = requests.post('http://localhost:8000/hashrates/year_quarter_month', data=json.dumps(data2), headers=headers).text
@@ -25,9 +28,9 @@ def test(username, password, year, month):
     # answer = requests.post('http://localhost:8000/hashrates/year_quarter', data=json.dumps(data2),
     #                        headers=headers).text
     # print('year_quarter =', answer)
-    answer = requests.post('http://localhost:8000/hashrates/year_quarter_month_day', data=json.dumps(data2),
-                           headers=headers).text
-    print('year_quarter_month_day =', answer)
+    # answer = requests.post('http://localhost:8000/hashrates/year_quarter_month_day', data=json.dumps(data2),
+    #                        headers=headers).text
+    # print('year_quarter_month_day =', answer)
     # answer = requests.post('http://localhost:8000/hashrates/quarter_month', data=json.dumps(data2),
     #                        headers=headers).text
     # print('quarter_month =', answer)
