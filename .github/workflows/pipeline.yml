@@ -28,3 +28,6 @@ jobs:
 
       - name: Check files
         run: ls -la
+
+      - name: Python Test
+        run: python tests/registration.py
