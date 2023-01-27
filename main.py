@@ -7,12 +7,14 @@ from routs.users import router as user_router
 from routs.companies import router as company_router
 from routs.hashrates import router as hash_router
 from routs.token import router as token_router
+from routs.reports import router as report_router
 
 app = FastAPI()
 app.include_router(user_router)
 app.include_router(company_router)
 app.include_router(hash_router)
 app.include_router(token_router)
+app.include_router(report_router)
 
 
 origins = [
