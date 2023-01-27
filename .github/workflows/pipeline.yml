@@ -29,5 +29,11 @@ jobs:
       - name: Check files
         run: ls -la
 
+      - name: Start postgresql
+        run: docker-compose up -d
+
+      - name: Start server
+        run: uvicorn main:app
+
       - name: Python Test
         run: python tests/registration.py
