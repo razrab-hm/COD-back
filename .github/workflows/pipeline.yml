@@ -32,6 +32,8 @@ jobs:
       - name: Start postgresql
         run: docker-compose up -d
 
+      - name: pip install -r requirements.txt
+
       - name: Start server
         run: uvicorn main:app
 
