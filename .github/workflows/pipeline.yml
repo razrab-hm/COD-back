@@ -40,3 +40,4 @@ jobs:
 
       - name: Python Test
         run: python tests/registration.py
+
