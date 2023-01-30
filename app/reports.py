@@ -10,6 +10,7 @@ from sqlalchemy import extract
 from sqlalchemy.orm import Session
 from roman import toRoman
 
+from app import json_worker, xls_worker, pdf_worker
 from app.db import engine
 from models.db import hashrates as db_hashrates
 
@@ -86,7 +87,7 @@ def get_report(db: Session, file_format, company_id, from_date, to_date, auth, y
         return report
 
 
-def month_day_report(db, year, month):
+def month_day_report(db, year, month, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -111,12 +112,12 @@ def month_day_report(db, year, month):
     dataset['day']: Series = dataset.date.dt.day
     dataset['month_name']: Series = dataset.date.dt.month_name()
 
-    report = []
-
-    for day, hash, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
-        report.append({'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {day}, {year}'})
-
-    return {'report': report, 'total': dataset.hash.sum()}
+    if output == 'xlsx':
+        return xls_worker.month_day_report(dataset, year)
+    elif output == 'pdf':
+        return pdf_worker.month_day_report(dataset, year)
+    else:
+        return json_worker.month_day_report(dataset, year)
 
 
 def year_quarter_month_report(db, year):

@@ -147,7 +147,7 @@ def get_report_handler(file_format, company_id, from_date, to_date, auth, year, 
 
 def month_day_report_handler(output_type, year, month, db, auth):
     auth.jwt_required()
-    return app_reports.month_day_report(db, year, month)
+    return app_reports.month_day_report(db, year, month, output_type)
 
 
 def year_quarter_month_report_handler(output_type, year, db, auth):

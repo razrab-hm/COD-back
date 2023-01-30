@@ -44,9 +44,10 @@ data3 = {
 # print(response)
 
 file = {'file':  open('test_hr.xls', 'rb'), "company_id": 1}
-data4 = {'file_format': 'json', 'year': 2022}
-response = requests.post('http://localhost:8000/hashrates/get_report', data=json.dumps(data4), headers=headers).text
+# data4 = {'file_format': 'json', 'year': 2022}
+response = requests.post('http://localhost:8000/hashrates/import/1', files=file, headers=headers).text
 
+print(response)
 
 # sleep(1)
 #
