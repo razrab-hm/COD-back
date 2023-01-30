@@ -41,6 +41,9 @@ jobs:
       - name: Python Test
         run: docker run -d --name mycontainer -p 8000:8000 pydock
 
+      - name: Python Test
+        run: python tests/registration.py
+
   start_test:
     needs: [deploy]
     runs-on: ubuntu-latest
