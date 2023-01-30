@@ -48,15 +48,15 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
     return {'report': report, 'total': dataset.hash.sum()}
 
 
-def quarter_month_report(dataset, month_sums, month_names):
+def quarter_month_report(dataset, month_sums, month_names, year, quarter):
     report = []
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
         report.append({int(month_pk): {'date': month_name, 'total': month_sum}})
 
-    return {'report': report, 'total': dataset.hash.sum()}
+    return {'report': report, 'total': dataset.hash.sum(), 'year': year, 'quarter': quarter}
 
 
-def quarter_month_day_report(dataset, months_sum):
+def quarter_month_day_report(dataset, months_sum, year, quarter):
     report = []
 
     for month_name in dataset.month_name.unique():
@@ -65,7 +65,7 @@ def quarter_month_day_report(dataset, months_sum):
 
         report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
 
-    return {'report': report, 'total': dataset.hash.sum()}
+    return {'report': report, 'total': dataset.hash.sum(), 'year': year, 'quarter': quarter}
 
 
 

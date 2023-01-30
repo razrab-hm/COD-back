@@ -100,12 +100,58 @@ def year_quarter_report(dataset, quarters_sum, year):
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
-    pass
+    wb, ws = initialize_workbook(['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)'])
+    row_counter = 2
+
+    for quarter in quarter_groups:
+        for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
+            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average']].values:
+                insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', day_ds[3], day_ds[1]], row_counter)
+                row_counter += 1
+
+            insert_data(ws, [f'{month_name} Total', months_sum_average.get(month_name), months_sum.get(month_name)], row_counter, True)
+            row_counter += 1
+
+        insert_data(ws, [f'{toRoman(quarter[0])} Quarter', quarter_sum_average.get(quarter[0]), quarter_sum.get(quarter[0])], row_counter, True)
+        row_counter += 1
+
+    insert_data(ws, ['Totals:', dataset.average.sum(), dataset.hash.sum()], row_counter, True)
+
+    wb.save("sample.xlsx")
+
+    return {'total': dataset.hash.sum()}
 
 
-def quarter_month_report(dataset, month_sums, month_names):
-    pass
+def quarter_month_report(dataset, month_sums, month_names, year, quarter):
+    wb, ws = initialize_workbook(['Month', 'Year', 'Months/Quarterly Hashrate (EH)'])
+    row_counter = 2
+
+    for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
+        insert_data(ws, [month_name, year, month_sum], row_counter)
+        row_counter += 1
+
+    insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()], row_counter, True)
+
+    wb.save("sample.xlsx")
+
+    return {'total': dataset.hash.sum()}
 
 
-def quarter_month_day_report(dataset, months_sum):
-    pass
+def quarter_month_day_report(dataset, months_sum, year, quarter):
+    wb, ws = initialize_workbook(['Date', 'Year', 'Days/Months Hashrate (EH)'])
+    row_counter = 2
+
+    for month_name in dataset.month_name.unique():
+        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name']].values:
+            insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, day_ds[1]], row_counter)
+            row_counter += 1
+
+        insert_data(ws, [f'{month_name} Total', year, months_sum.get(month_name)], row_counter, True)
+        row_counter += 1
+
+    insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()], row_counter, True)
+
+    wb.save("sample.xlsx")
+
+    return {'total': dataset.hash.sum()}
+

@@ -135,11 +135,11 @@ def quarter_month_report(db, year, quarter, output):
     month_sums = dataset.groupby('month').hash.sum()
 
     if output == 'xlsx':
-        return xls_worker.quarter_month_report(dataset, month_sums, month_names)
+        return xls_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
     elif output == 'pdf':
-        return pdf_worker.quarter_month_report(dataset, month_sums, month_names)
+        return pdf_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
     else:
-        return json_worker.quarter_month_report(dataset, month_sums, month_names)
+        return json_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
 
 
 def quarter_month_day_report(db, year, quarter, output):
@@ -158,8 +158,8 @@ def quarter_month_day_report(db, year, quarter, output):
     months_sum = dataset.groupby('month_name').hash.sum()
 
     if output == 'xlsx':
-        return xls_worker.quarter_month_day_report(dataset, months_sum)
+        return xls_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
     elif output == 'pdf':
-        return pdf_worker.quarter_month_day_report(dataset, months_sum)
+        return pdf_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
     else:
-        return json_worker.quarter_month_day_report(dataset, months_sum)
+        return json_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
