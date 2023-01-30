@@ -39,10 +39,15 @@ jobs:
       - name: pip install -r requirements.txt
         run: pip install -r requirements.txt
 
-      - name: Start server
+      - name: alembic
+        run: |
+          alembic revision --autogenerate
+          alembic upgrade head
+
+      - name: Docker Build
         run: docker build -t pydock .
 
-      - name: Python Test
+      - name: Start Docker Server
         run: docker run -d --name mycontainer -p 8000:8000 pydock
 
       - name: Python Test
