@@ -48,7 +48,7 @@ jobs:
         run: docker build -t pydock .
 
       - name: Start Docker Server
-        run: docker run -d --name mycontainer -p localhost:8000:8000 pydock
+        run: docker run -d --name mycontainer -p 127.0.0.1:8000:8000 pydock
 
       - name: Info
         run: |
