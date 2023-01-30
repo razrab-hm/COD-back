@@ -141,10 +141,6 @@ def get_xls_handler(file, db, company_id, auth):
     return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
 
 
-def get_report_handler(file_format, company_id, from_date, to_date, auth, year, db):
-    return app.reports.get_report(db, file_format, company_id, from_date, to_date, auth, year)
-
-
 def month_day_report_handler(output_type, year, month, db, auth):
     auth.jwt_required()
     return app_reports.month_day_report(db, year, month, output_type)
@@ -152,27 +148,27 @@ def month_day_report_handler(output_type, year, month, db, auth):
 
 def year_quarter_month_report_handler(output_type, year, db, auth):
     auth.jwt_required()
-    return app_reports.year_quarter_month_report(db, year)
+    return app_reports.year_quarter_month_report(db, year, output_type)
 
 
 def year_quarter_report_handler(output_type, year, db, auth):
     auth.jwt_required()
-    return app_reports.year_quarter_report(db, year)
+    return app_reports.year_quarter_report(db, year, output_type)
 
 
-def year_quarter_month_day_report_handler(output_type, year, db ,auth):
+def year_quarter_month_day_report_handler(output_type, year, db, auth):
     auth.jwt_required()
-    return app_reports.year_quarter_month_day_report(db, year)
+    return app_reports.year_quarter_month_day_report(db, year, output_type)
 
 
 def quarter_month_report_handler(output_type, year, quarter, db, auth):
     auth.jwt_required()
-    return app_reports.quarter_month_report(db, year, quarter)
+    return app_reports.quarter_month_report(db, year, quarter, output_type)
 
 
 def quarter_month_day_report_handler(output_type, year, quarter, db, auth):
     auth.jwt_required()
-    return app_reports.quarter_month_day_report(db, year, quarter)
+    return app_reports.quarter_month_day_report(db, year, quarter, output_type)
 
 
 def logout_handler(db, auth):

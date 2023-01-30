@@ -41,7 +41,7 @@ def insert_data(ws, data, row_counter, is_header=False):
     if not is_header:
         for column, value in enumerate(data):
             cell = ws.cell(row=row_counter, column=column + 1, value=value)
-            if row_counter % 2 == 0:
+            if row_counter % 2 == 1:
                 cell.fill = Style.DATA_FILL.value
     else:
         for column, value in enumerate(data):
@@ -72,18 +72,34 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
             insert_data(ws, [month_name, year, months_sum.get(month_name)], row_counter)
+            row_counter += 1
 
-        report.append(
-            {'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0])})
+        insert_data(ws, [f'{toRoman(quarter[0])} Quarter', year, quarter_sum.get(quarter[0])], row_counter, True)
+        row_counter += 1
 
-    return {'report': report, 'total': dataset.hash.sum()}
+    insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
+
+    wb.save("sample.xlsx")
+
+    return {'total': dataset.hash.sum()}
 
 
-def year_quarter_report(dataset, quarters_sum):
-    pass
+def year_quarter_report(dataset, quarters_sum, year):
+    wb, ws = initialize_workbook(['Quarter', 'Year', 'Quarter hashrate (EH)'])
+    row_counter = 2
+
+    for quarter_pk, quarter_sum in quarters_sum.items():
+        insert_data(ws, [f'{toRoman(quarter_pk)} Quarter', year, quarter_sum], row_counter)
+        row_counter += 1
+
+    insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
+
+    wb.save("sample.xlsx")
+
+    return {'total': dataset.hash.sum()}
 
 
-def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum):
+def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
     pass
 
 

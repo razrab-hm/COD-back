@@ -17,23 +17,21 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
             report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
 
-        report.append(
-            {'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0])})
+        report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} Quarter', 'total': quarter_sum.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum(), 'year': year}
 
 
-def year_quarter_report(dataset, quarters_sum):
+def year_quarter_report(dataset, quarters_sum, year):
     report = []
 
     for quarter_pk, quarter_sum in quarters_sum.items():
-        print(quarter_pk, quarter_sum)
-        report.append({'total': quarter_sum, 'quarter': quarter_pk})
+        report.append({'total': quarter_sum, 'Quarter': quarter_pk})
 
-    return {'report': report, 'total': dataset.hash.sum()}
+    return {'report': report, 'total': dataset.hash.sum(), 'year': year}
 
 
-def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum):
+def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
     report = []
 
     for quarter in quarter_groups:
@@ -42,10 +40,10 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
                 report.append({'type': 'day', 'date': f'{day_ds[2][0:3]}. {day_ds[0]}, {year}', 'average': day_ds[3],
                                'hash': day_ds[1]})
 
-            report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
+            report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name),
+                           'average': months_sum_average.get(month_name)})
 
-        report.append(
-            {'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0])})
+        report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0]), 'average': quarter_sum_average.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum()}
 

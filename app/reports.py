@@ -85,11 +85,11 @@ def year_quarter_report(db, year, output):
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
 
     if output == 'xlsx':
-        return xls_worker.year_quarter_report(dataset, quarters_sum)
+        return xls_worker.year_quarter_report(dataset, quarters_sum, year)
     elif output == 'pdf':
-        return pdf_worker.year_quarter_report(dataset, quarters_sum)
+        return pdf_worker.year_quarter_report(dataset, quarters_sum, year)
     else:
-        return json_worker.year_quarter_report(dataset, quarters_sum)
+        return json_worker.year_quarter_report(dataset, quarters_sum, year)
 
 
 def year_quarter_month_day_report(db, year, output):
@@ -104,17 +104,19 @@ def year_quarter_month_day_report(db, year, output):
     dataset['quarter']: Series = dataset.date.dt.quarter
 
     quarter_groups = dataset.groupby('quarter')
-
     quarter_sum: Series = quarter_groups.hash.sum()
+    quarter_sum_average = quarter_groups.average.sum()
 
-    months_sum: Series = dataset.groupby('month_name').hash.sum()
+    month_group = dataset.groupby('month_name')
+    months_sum: Series = month_group.hash.sum()
+    months_sum_average = month_group.average.sum()
 
     if output == 'xlsx':
-        return xls_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum)
+        return xls_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
     elif output == 'pdf':
-        return pdf_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum)
+        return pdf_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
     else:
-        return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum)
+        return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
 
 
 def quarter_month_report(db, year, quarter, output):

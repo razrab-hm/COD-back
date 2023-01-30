@@ -11,11 +11,11 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
     pass
 
 
-def year_quarter_report(dataset, quarters_sum):
+def year_quarter_report(dataset, quarters_sum, year):
     pass
 
 
-def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum):
+def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
     pass
 
 
