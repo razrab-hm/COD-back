@@ -45,6 +45,10 @@ jobs:
     needs: [deploy]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+
+      - name: Check files
+        run: ls -la
 
       - name: Python Test
         run: python tests/registration.py
