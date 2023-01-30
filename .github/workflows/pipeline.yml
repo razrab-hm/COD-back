@@ -50,6 +50,11 @@ jobs:
       - name: Start Docker Server
         run: docker run -d --name mycontainer -p 8000:8000 pydock
 
+      - name: Info
+        run: |
+          docker images
+          docker container ls
+
       - name: Python Test
         run: python tests/registration.py
 
