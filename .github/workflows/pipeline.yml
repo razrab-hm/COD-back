@@ -42,6 +42,7 @@ jobs:
         run: docker run -d --name mycontainer -p 8000:8000 pydock
 
   start_test:
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
 
