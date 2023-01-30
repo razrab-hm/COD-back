@@ -1,8 +1,17 @@
+from enum import Enum
+
 import openpyxl
 import pandas as pd
 from fastapi import UploadFile
+from openpyxl.styles import Font, PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 from pandas import DataFrame
+
+
+class Style(Enum):
+    FONT = Font(bold=True)
+    FILL = PatternFill("solid", fgColor="00C0C0C0")
+    DATA_FILL = PatternFill("solid", fgColor="00CCFFCC")
 
 
 def get_xls_data(file: UploadFile):
@@ -14,38 +23,48 @@ def get_xls_data(file: UploadFile):
         return zip(sheet[sheet.keys()[1]], sheet[sheet.keys()[0]])
 
 
-def month_day_report(dataset, year):
-    report = []
-
+def initialize_workbook(titles):
     wb = openpyxl.Workbook()
     ws: Worksheet = wb.active
-    row_counter = 1
 
     ws.column_dimensions['A'].width = 30
     ws.column_dimensions['B'].width = 15
     ws.column_dimensions['C'].width = 40
 
-    ws.cell(row=row_counter, column=1, value='Date')
-    ws.cell(row=row_counter, column=2, value='Year')
-    ws.cell(row=row_counter, column=3, value='Days Hashrate (EH)')
-    row_counter += 1
+    insert_data(ws, titles, 1, True)
 
-    for day, hash, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
-        ws.cell(row=row_counter, column=1, value=f'{month_name} {day}, {year}')
-        ws.cell(row=row_counter, column=2, value=year)
-        ws.cell(row=row_counter, column=3, value=hash)
+    return wb, ws
+
+
+def insert_data(ws, data, row_counter, is_header=False):
+    if not is_header:
+        for column, value in enumerate(data):
+            cell = ws.cell(row=row_counter, column=column + 1, value=value)
+            if row_counter % 2 == 0:
+                cell.fill = Style.DATA_FILL.value
+    else:
+        for column, value in enumerate(data):
+            cell = ws.cell(row=row_counter, column=column + 1, value=value)
+            cell.font = Style.FONT.value
+            cell.fill = Style.FILL.value
+
+
+def month_day_report(dataset, year):
+    wb, ws = initialize_workbook(['Date', 'Year', 'Days Hashrate (EH)'])
+    row_counter = 2
+
+    for day, hash_rate, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
+        insert_data(ws, [f'{month_name} {day}, {year}', year, hash_rate], row_counter)
         row_counter += 1
 
-    ws.cell(row=row_counter, column=1, value=f'Totals:')
-    ws.cell(row=row_counter, column=2, value=year)
-    ws.cell(row=row_counter, column=3, value=dataset.hash.sum())
+    insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
     wb.save("sample.xlsx")
 
-    return {'report': report, 'total': dataset.hash.sum()}
+    return {'total': dataset.hash.sum()}
 
 
-def year_quarter_month_report():
+def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum):
     pass
 
 

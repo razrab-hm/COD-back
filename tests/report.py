@@ -13,7 +13,7 @@ def test(username, password, year, month):
         'year': year,
         'quarter': month,
         'month': month,
-        'output_type': 'json'
+        'output_type': 'xlsx'
     }
 
     response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
@@ -21,8 +21,8 @@ def test(username, password, year, month):
     # answer = requests.get('http://localhost:8000/reports/dates', data=json.dumps(data2), headers=headers).text
     # print('dates =', answer)
 
-    # answer = requests.post('http://localhost:8000/hashrates/month_day', data=json.dumps(data2), headers=headers).text
-    # print('month_day =', answer)
+    answer = requests.post('http://localhost:8000/reports/month_day', data=json.dumps(data2), headers=headers).text
+    print('month_day =', answer)
 
     # answer = requests.post('http://localhost:8000/reports/year_quarter_month', data=json.dumps(data2), headers=headers).text
     # print('year_quarter_month =', answer)
@@ -31,9 +31,9 @@ def test(username, password, year, month):
     #                        headers=headers).text
     # print('year_quarter =', answer)
 
-    answer = requests.post('http://localhost:8000/reports/year_quarter_month_day', data=json.dumps(data2),
-                           headers=headers).text
-    print('year_quarter_month_day =', answer)
+    # answer = requests.post('http://localhost:8000/reports/year_quarter_month_day', data=json.dumps(data2),
+    #                        headers=headers).text
+    # print('year_quarter_month_day =', answer)
 
     # answer = requests.post('http://localhost:8000/hashrates/quarter_month', data=json.dumps(data2),
     #                        headers=headers).text

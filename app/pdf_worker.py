@@ -7,7 +7,7 @@ def month_day_report(dataset, year):
     return {'report': report, 'total': dataset.hash.sum()}
 
 
-def year_quarter_month_report():
+def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum):
     pass
 
 
