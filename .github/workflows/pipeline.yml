@@ -1,7 +1,11 @@
 # This is a basic workflow to help you get started with Actions
 
 name: pipeline
-
+env:
+  POSTGRES_PASSWORD: 123123
+  POSTGRES_USER: root
+  POSTGRES_DB: db01
+  POSTGRES_HOST: 127.0.0.1
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
