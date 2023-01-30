@@ -7,7 +7,7 @@ def month_day_report(dataset, year):
     for day, hash, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
         report.append({'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {day}, {year}'})
 
-    return {'report': report, 'total': dataset.hash.sum(), 'year': year}
+    return {'report': report, 'total': float(dataset.hash.sum()), 'year': year}
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
@@ -19,7 +19,7 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
         report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} Quarter', 'total': quarter_sum.get(quarter[0])})
 
-    return {'report': report, 'total': dataset.hash.sum(), 'year': year}
+    return {'report': report, 'total': float(dataset.hash.sum()), 'year': year}
 
 
 def year_quarter_report(dataset, quarters_sum, year):
@@ -28,7 +28,7 @@ def year_quarter_report(dataset, quarters_sum, year):
     for quarter_pk, quarter_sum in quarters_sum.items():
         report.append({'total': quarter_sum, 'Quarter': quarter_pk})
 
-    return {'report': report, 'total': dataset.hash.sum(), 'year': year}
+    return {'report': report, 'total': float(dataset.hash.sum()), 'year': year}
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
@@ -45,7 +45,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
         report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0]), 'average': quarter_sum_average.get(quarter[0])})
 
-    return {'report': report, 'total': dataset.hash.sum()}
+    return {'report': report, 'total': float(dataset.hash.sum())}
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
@@ -53,7 +53,7 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
         report.append({int(month_pk): {'date': month_name, 'total': month_sum}})
 
-    return {'report': report, 'total': dataset.hash.sum(), 'year': year, 'quarter': quarter}
+    return {'report': report, 'total': float(dataset.hash.sum()), 'year': year, 'quarter': quarter}
 
 
 def quarter_month_day_report(dataset, months_sum, year, quarter):
@@ -65,7 +65,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
 
         report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
 
-    return {'report': report, 'total': dataset.hash.sum(), 'year': year, 'quarter': quarter}
+    return {'report': report, 'total': float(dataset.hash.sum()), 'year': year, 'quarter': quarter}
 
 
 
