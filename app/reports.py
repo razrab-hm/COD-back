@@ -32,7 +32,10 @@ def get_report(db: Session, file_format, company_id, from_date, to_date, auth, y
     statement = statement.statement
 
     dataset = pd.read_sql(statement, engine)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
 
     dataset['day'] = dataset.date.dt.day
     dataset['month']: Series = dataset.date.dt.month
@@ -95,7 +98,12 @@ def month_day_report(db, year, month):
             if date not in dataset.date.values:
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
+    dataset = dataset.fillna(0)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
+
     dataset['month'] = dataset.date.dt.month
 
     dataset = dataset.loc[dataset.month == month]
@@ -123,22 +131,30 @@ def year_quarter_month_report(db, year):
             if date not in dataset.date.values:
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
+    dataset = dataset.fillna(0)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
+
     dataset['month_name']: Series = dataset.date.dt.month_name()
     dataset['month']: Series = dataset.date.dt.month
     dataset['quarter']: Series = dataset.date.dt.quarter
 
     quarter_groups = dataset.groupby('quarter')
 
-    months_sum: Series = dataset.groupby('month').hash.sum()
+    quarter_sum = quarter_groups.hash.sum()
 
-    report = {}
+    months_sum: Series = dataset.groupby('month_name').hash.sum()
+
+    report = []
+
     for quarter in quarter_groups:
-        month_list = []
-        month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
-        for month, month_name in month_groups:
-            month_list.append({'date': year, 'name': month_name, 'total': months_sum.get(month)})
-        report.update({f'quarter_{quarter[0]}': month_list})
+        for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
+
+            report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
+
+        report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum()}
 
@@ -155,7 +171,12 @@ def year_quarter_report(db, year):
             if date not in dataset.date.values:
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
+    dataset = dataset.fillna(0)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
+
     dataset['quarter']: Series = dataset.date.dt.quarter
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
     report = []
@@ -192,30 +213,20 @@ def year_quarter_month_day_report(db, year):
 
     quarter_groups = dataset.groupby('quarter')
 
-    # quarter_sum: Series = quarter_groups.hash.sum()
+    quarter_sum: Series = quarter_groups.hash.sum()
     #
-    # months_sum: Series = dataset.groupby('month').hash.sum()
+    months_sum: Series = dataset.groupby('month_name').hash.sum()
 
     report = []
-    # for quarter in quarter_groups:
-    #     month_list = []
-    #     month_groups = zip(quarter[1]['month'].unique(), quarter[1]['month_name'].unique())
-    #     for month, month_name in month_groups:
-    #         day_list = []
-    #         for day, hash, average in dataset.loc[dataset.month == month][['day', 'hash', 'average']].values:
-    #             day_list.append({int(day): {'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
-    #         month_list.append({int(month): day_list, 'date': f'{month_name[0:3]}. {year}', 'total': months_sum.get(month)})
-    #     report.update({quarter[0]: month_list, 'total': quarter_sum.get(quarter[0])})
-    # print(len(dataset.loc[dataset.month == 1][['day', 'hash', 'month_name']].values))
 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name']].values:
-                report.append({'type': 'day', 'date': f'{day_ds[2]}, {day_ds[0]}', 'hash': day_ds[1]})
-                pass
-            report.append({'type': 'month', 'date': f'{month_name}'})
+            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average']].values:
+                report.append({'type': 'day', 'date': f'{day_ds[2][0:3]}. {day_ds[0]}, {year}', 'average': day_ds[3], 'hash': day_ds[1]})
 
-        report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter'})
+            report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
+
+        report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0])})
 
     return {'report': report, 'total': dataset.hash.sum()}
 
@@ -232,7 +243,12 @@ def quarter_month_report(db, year, quarter):
             if date not in dataset.date.values:
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
+    dataset = dataset.fillna(0)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
+
     dataset['quarter']: Series = dataset.date.dt.quarter
     dataset = dataset.loc[dataset.quarter == quarter]
 
@@ -261,7 +277,12 @@ def quarter_month_day_report(db, year, quarter):
             if date not in dataset.date.values:
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
+    dataset = dataset.fillna(0)
+
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+
+    dataset = dataset.sort_values(by='date')
+
     dataset['quarter']: Series = dataset.date.dt.quarter
     dataset['day']: Series = dataset.date.dt.day
     dataset = dataset.loc[dataset.quarter == quarter]
@@ -269,15 +290,15 @@ def quarter_month_day_report(db, year, quarter):
     dataset['month']: Series = dataset.date.dt.month
     dataset['month_name']: Series = dataset.date.dt.month_name()
 
-    month_names = dataset.month_name.unique()
-    month_sums = dataset.groupby('month').hash.sum()
+    months_sum = dataset.groupby('month_name').hash.sum()
 
-    report = {}
-    for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
-        day_list = []
-        for day, hash in dataset.loc[dataset.month == month_pk][['day', 'hash']].values:
-            day_list.append({int(day): {'total': hash, 'date': f'{month_name[0:3]}. {int(day)}, {year}'}})
+    report = []
 
-        report.update({int(month_pk): day_list, 'date': month_name, 'total': month_sum})
+    for month_name in dataset.month_name.unique():
+        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name']].values:
+            report.append({'type': 'day', 'date': f'{day_ds[2]}, {day_ds[0]}', 'hash': day_ds[1]})
+
+        report.append({'type': 'month', 'date': f'{month_name}', 'total': months_sum.get(month_name)})
 
     return {'report': report, 'total': dataset.hash.sum()}
+

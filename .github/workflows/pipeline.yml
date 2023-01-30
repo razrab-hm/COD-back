@@ -41,3 +41,16 @@ jobs:
       - name: Python Test
         run: python tests/registration.py
 
+  start_test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Python Test
+        run: python tests/registration.py
+
+
+
+
+
+
+    
