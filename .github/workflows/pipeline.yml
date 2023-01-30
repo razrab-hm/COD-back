@@ -36,10 +36,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Start server
-        run: uvicorn main:app
+        run: docker build -t pydock .
 
       - name: Python Test
-        run: python tests/registration.py
+        run: docker run -d --name mycontainer -p 8000:8000 pydock
 
   start_test:
     runs-on: ubuntu-latest
