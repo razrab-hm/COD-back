@@ -12,7 +12,8 @@ def test(username, password, email):
     return requests.post('http://localhost:8000/users/', data=json.dumps(data)).text
 
 
-requests.get('https://google.com')
+print(requests.get('https://google.com').text)
+print(requests.post('https://google.com').text)
 
 answer = test('test', 'test', 'test@mail.ru')
 print(answer)

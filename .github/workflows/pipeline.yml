@@ -50,9 +50,6 @@ jobs:
       - name: Start Docker Server
         run: docker run -d --name mycontainer -p 127.0.0.1:8000:8000 pydock
 
-      - name: Test
-        run: uvicorn main:app
-
       - name: Info
         run: |
           docker images
