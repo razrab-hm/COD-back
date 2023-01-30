@@ -6,6 +6,7 @@ from fastapi import UploadFile
 from openpyxl.styles import Font, PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 from pandas import DataFrame
+from roman import toRoman
 
 
 class Style(Enum):
@@ -64,21 +65,31 @@ def month_day_report(dataset, year):
     return {'total': dataset.hash.sum()}
 
 
-def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum):
+def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
+    wb, ws = initialize_workbook(['Month', 'Year', 'Month hashrate (EH)'])
+    row_counter = 2
+
+    for quarter in quarter_groups:
+        for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
+            insert_data(ws, [month_name, year, months_sum.get(month_name)], row_counter)
+
+        report.append(
+            {'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0])})
+
+    return {'report': report, 'total': dataset.hash.sum()}
+
+
+def year_quarter_report(dataset, quarters_sum):
     pass
 
 
-def year_quarter_report():
+def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum):
     pass
 
 
-def year_quarter_month_day_report():
+def quarter_month_report(dataset, month_sums, month_names):
     pass
 
 
-def quarter_month_report():
-    pass
-
-
-def quarter_month_day_report():
+def quarter_month_day_report(dataset, months_sum):
     pass

@@ -1,13 +1,9 @@
 import datetime
 
-import openpyxl
 import pandas as pd
 from fastapi import HTTPException
-from openpyxl.worksheet.worksheet import Worksheet
 from pandas import Series
 from sqlalchemy import extract
-from sqlalchemy.orm import Session
-from roman import toRoman
 
 from app import json_worker, xls_worker, pdf_worker
 from app.db import engine
@@ -20,10 +16,7 @@ def check_report_type(date_type: str):
         raise HTTPException(status_code=404, detail="Date_type format failed")
 
 
-def month_day_report(db, year, month, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
-    dataset = pd.read_sql(statement, engine)
-
+def auto_insert(dataset, year):
     if len(dataset) < 365:
         base = datetime.datetime(year=year, day=1, month=1)
         date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
@@ -33,15 +26,20 @@ def month_day_report(db, year, month, output):
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
     dataset = dataset.fillna(0)
-
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
-
     dataset = dataset.sort_values(by='date')
 
+    return dataset
+
+
+def month_day_report(db, year, month, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+    dataset = pd.read_sql(statement, engine)
+
+    dataset = auto_insert(dataset, year)
+
     dataset['month'] = dataset.date.dt.month
-
     dataset = dataset.loc[dataset.month == month]
-
     dataset['day']: Series = dataset.date.dt.day
     dataset['month_name']: Series = dataset.date.dt.month_name()
 
@@ -57,19 +55,7 @@ def year_quarter_month_report(db, year, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
-    if len(dataset) < 365:
-        base = datetime.datetime(year=year, day=1, month=1)
-        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-
-        for date in date_list:
-            if date not in dataset.date.values:
-                dataset = dataset.append({'date': date}, ignore_index=True)
-
-    dataset = dataset.fillna(0)
-
-    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
-
-    dataset = dataset.sort_values(by='date')
+    dataset = auto_insert(dataset, year)
 
     dataset['month_name']: Series = dataset.date.dt.month_name()
     dataset['month']: Series = dataset.date.dt.month
@@ -82,52 +68,35 @@ def year_quarter_month_report(db, year, output):
     months_sum: Series = dataset.groupby('month_name').hash.sum()
 
     if output == 'xlsx':
-        return xls_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum)
+        return xls_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
     elif output == 'pdf':
-        return pdf_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum)
+        return pdf_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
     else:
-        return json_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum)
+        return json_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
 
 
-def year_quarter_report(db, year):
+def year_quarter_report(db, year, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
-    if len(dataset) < 365:
-        base = datetime.datetime(year=year, day=1, month=1)
-        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-
-        for date in date_list:
-            if date not in dataset.date.values:
-                dataset = dataset.append({'date': date}, ignore_index=True)
-
-    dataset = dataset.fillna(0)
-
-    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
-
-    dataset = dataset.sort_values(by='date')
+    dataset = auto_insert(dataset, year)
 
     dataset['quarter']: Series = dataset.date.dt.quarter
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
 
+    if output == 'xlsx':
+        return xls_worker.year_quarter_report(dataset, quarters_sum)
+    elif output == 'pdf':
+        return pdf_worker.year_quarter_report(dataset, quarters_sum)
+    else:
+        return json_worker.year_quarter_report(dataset, quarters_sum)
 
-def year_quarter_month_day_report(db, year):
+
+def year_quarter_month_day_report(db, year, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
-    if len(dataset) < 365:
-        base = datetime.datetime(year=year, day=1, month=1)
-        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-
-        for date in date_list:
-            if date not in dataset.date.values:
-                dataset = dataset.append({'date': date}, ignore_index=True)
-
-    dataset = dataset.fillna(0)
-
-    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
-
-    dataset = dataset.sort_values(by='date')
+    dataset = auto_insert(dataset, year)
 
     dataset['day']: Series = dataset.date.dt.day
     dataset['month_name']: Series = dataset.date.dt.month_name()
@@ -137,27 +106,22 @@ def year_quarter_month_day_report(db, year):
     quarter_groups = dataset.groupby('quarter')
 
     quarter_sum: Series = quarter_groups.hash.sum()
-    #
+
     months_sum: Series = dataset.groupby('month_name').hash.sum()
 
+    if output == 'xlsx':
+        return xls_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum)
+    elif output == 'pdf':
+        return pdf_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum)
+    else:
+        return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum)
 
-def quarter_month_report(db, year, quarter):
+
+def quarter_month_report(db, year, quarter, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
-    if len(dataset) < 365:
-        base = datetime.datetime(year=year, day=1, month=1)
-        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-
-        for date in date_list:
-            if date not in dataset.date.values:
-                dataset = dataset.append({'date': date}, ignore_index=True)
-
-    dataset = dataset.fillna(0)
-
-    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
-
-    dataset = dataset.sort_values(by='date')
+    dataset = auto_insert(dataset, year)
 
     dataset['quarter']: Series = dataset.date.dt.quarter
     dataset = dataset.loc[dataset.quarter == quarter]
@@ -168,24 +132,19 @@ def quarter_month_report(db, year, quarter):
     month_names = dataset.month_name.unique()
     month_sums = dataset.groupby('month').hash.sum()
 
+    if output == 'xlsx':
+        return xls_worker.quarter_month_report(dataset, month_sums, month_names)
+    elif output == 'pdf':
+        return pdf_worker.quarter_month_report(dataset, month_sums, month_names)
+    else:
+        return json_worker.quarter_month_report(dataset, month_sums, month_names)
 
-def quarter_month_day_report(db, year, quarter):
+
+def quarter_month_day_report(db, year, quarter, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
-    if len(dataset) < 365:
-        base = datetime.datetime(year=year, day=1, month=1)
-        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-
-        for date in date_list:
-            if date not in dataset.date.values:
-                dataset = dataset.append({'date': date}, ignore_index=True)
-
-    dataset = dataset.fillna(0)
-
-    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
-
-    dataset = dataset.sort_values(by='date')
+    dataset = auto_insert(dataset, year)
 
     dataset['quarter']: Series = dataset.date.dt.quarter
     dataset['day']: Series = dataset.date.dt.day
@@ -196,3 +155,9 @@ def quarter_month_day_report(db, year, quarter):
 
     months_sum = dataset.groupby('month_name').hash.sum()
 
+    if output == 'xlsx':
+        return xls_worker.quarter_month_day_report(dataset, months_sum)
+    elif output == 'pdf':
+        return pdf_worker.quarter_month_day_report(dataset, months_sum)
+    else:
+        return json_worker.quarter_month_day_report(dataset, months_sum)
