@@ -8,7 +8,7 @@ def test(username, password):
           "username": username,
           "password": password,
             }
-    return requests.post('http://localhost:8000/users/login', data=json.dumps(data)).text
+    return requests.post('http://localhost:8008/users/login', data=json.dumps(data)).text
 
 
 answer = test('test', 'test')
