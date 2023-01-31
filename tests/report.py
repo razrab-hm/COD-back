@@ -24,16 +24,16 @@ def test(username, password, year, month):
     # answer = requests.post('http://localhost:8000/reports/month_day', data=json.dumps(data2), headers=headers).text
     # print('month_day =', answer)
 
-    answer = requests.post('http://localhost:8000/reports/year_quarter_month', data=json.dumps(data2), headers=headers).text
-    print('year_quarter_month =', answer)
+    # answer = requests.post('http://localhost:8000/reports/year_quarter_month', data=json.dumps(data2), headers=headers).text
+    # print('year_quarter_month =', answer)
 
     # answer = requests.post('http://localhost:8000/reports/year_quarter', data=json.dumps(data2),
     #                        headers=headers).text
     # print('year_quarter =', answer)
 
-    # answer = requests.post('http://localhost:8000/reports/year_quarter_month_day', data=json.dumps(data2),
-    #                        headers=headers).text
-    # print('year_quarter_month_day =', answer)
+    answer = requests.post('http://localhost:8000/reports/year_quarter_month_day', data=json.dumps(data2),
+                           headers=headers).text
+    print('year_quarter_month_day =', answer)
 
     # answer = requests.post('http://localhost:8000/reports/quarter_month', data=json.dumps(data2),
     #                        headers=headers).text
