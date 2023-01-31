@@ -141,7 +141,7 @@ def get_xls_handler(file, db, company_id, auth):
 
 
 def month_day_report_handler(output_type, year, month, db, auth):
-    auth.jwt_required()
+    # auth.jwt_required()
     return app_reports.month_day_report(db, year, month, output_type)
 
 

@@ -3,6 +3,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from roman import toRoman
+from fastapi.responses import FileResponse
 
 
 def initialize_document(title, data, header_rows=[]):
@@ -84,6 +85,8 @@ def initialize_document(title, data, header_rows=[]):
 
     doc.build(elements)
 
+    return FileResponse('mypdf.pdf')
+
 
 def month_day_report(dataset, year):
     month_name = dataset.month_name.unique()[0]
@@ -97,9 +100,7 @@ def month_day_report(dataset, year):
 
     title = f'Month by Day Report - {month_name} {year}'
 
-    initialize_document(title, table_data)
-
-    return {'total': float(dataset.hash.sum())}
+    return initialize_document(title, table_data)
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):

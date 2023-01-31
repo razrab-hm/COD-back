@@ -5,7 +5,7 @@ env:
   POSTGRES_PASSWORD: 123123
   POSTGRES_USER: root
   POSTGRES_DB: db01
-  POSTGRES_HOST: 127.0.0.1
+  POSTGRES_HOST: db
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -45,15 +45,7 @@ jobs:
           alembic upgrade head
 
       - name: Docker Build
-        run: docker build -t pydock .
-
-      - name: Start Docker Server
-        run: docker run -d --name mycontainer -p 127.0.0.1:8000:8000 pydock
-
-      - name: Info
-        run: |
-          docker images
-          docker container ls
+        run: docker-compose up -d --build
 
       - name: Python Test
         run: python tests/registration.py
