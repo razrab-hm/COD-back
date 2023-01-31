@@ -37,7 +37,7 @@ jobs:
         run: docker-compose up -d --build
 
       - name: Python Test
-        run: python tests/registration.py
+        run: python app/tests/registration.py
 
   start_test:
     needs: [deploy]
