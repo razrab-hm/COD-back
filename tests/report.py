@@ -13,7 +13,7 @@ def test(username, password, year, month):
         'year': year,
         'quarter': month,
         'month': month,
-        'output_type': '1'
+        'output_type': 'pdf'
     }
 
     response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
@@ -44,5 +44,5 @@ def test(username, password, year, month):
     # print('quarter_month_day =', answer)
 
 
-test('Eugene', 'qwerty', 2023, 1)
+test('eugene', 'qwerty', 2022, 1)
 

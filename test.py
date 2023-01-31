@@ -5,7 +5,7 @@ import requests
 
 
 s = requests.Session()
-data = {'username': 'Eugene', 'password': 'qwerty'}
+data = {'username': 'eugene', 'password': 'qwerty'}
 response = requests.post('http://localhost:8000/users/login', data=json.dumps(data)).json()
 print(response)
 headers = {'Authorization': f"Bearer {response['access_token']}"}
