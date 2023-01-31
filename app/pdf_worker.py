@@ -2,11 +2,10 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from roman import toRoman
 
 
-def month_day_report(dataset, year):
-    data = []
-    title = 'month_day'
+def initialize_document(title, data):
     doc = SimpleDocTemplate(
         'mypdf.pdf',
         pagesize=A4,
@@ -28,12 +27,14 @@ def month_day_report(dataset, year):
     title = Paragraph(title, title_style)
     elements.append(title)
 
-    t = Table(
+    table = Table(
         data,
         colWidths=(width - 70) / 3
     )
 
-    t.setStyle(TableStyle(
+    # table
+
+    table.setStyle(TableStyle(
         [
             ('ALIGN', (1, 0), (1, -1), 'CENTER'),
             ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),
@@ -46,7 +47,7 @@ def month_day_report(dataset, year):
     dark_lines = colors.Color(0.878, 0.878, 0.878, alpha=1)
     blueish_gray = colors.Color(0.862, 0.874, 0.89, alpha=1)
 
-    t.setStyle(TableStyle(
+    table.setStyle(TableStyle(
         [
             ('LINEABOVE', (0, 0), (-1, 0), border_thickness, border),  # обводка таблицы сверху
             ('LINEBELOW', (0, -1), (-1, -1), border_thickness, border),  # обводка таблицы снизу
@@ -60,31 +61,57 @@ def month_day_report(dataset, year):
     ))
 
     for i in range(1, len(data)):
-        t.setStyle(TableStyle(
+        table.setStyle(TableStyle(
             [
                 ('BACKGROUND', (0, i), (-1, i), light_lines if i % 2 != 0 else dark_lines),
             ]
         ))
-    t.setStyle(TableStyle(
+
+    table.setStyle(TableStyle(
         [
             ('BACKGROUND', (0, 0), (-1, 0), blueish_gray),
             ('BACKGROUND', (0, -1), (-1, -1), blueish_gray),
         ]
     ))
 
-    elements.append(t)
+    elements.append(table)
 
     doc.build(elements)
 
-    # for day, hash, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
-    #     # report.append({'total': hash, 'average': average, 'date': f'{month_name[0:3]}. {day}, {year}'})
-    #     pass
+
+def month_day_report(dataset, year):
+    month_name = dataset.month_name.unique()[0]
+
+    table_data = [['Date', 'Year', 'Days Hashrate (EH)']]
+
+    for day, hash, average in dataset[['day', 'hash', 'average']].values:
+        table_data.append([f'{month_name[0:3]}. {day}, {year}', year, hash])
+
+    table_data.append(['Totals', year, dataset.hash.sum()])
+
+    title = f'Month by Day Report - {month_name} {year}'
+
+    initialize_document(title, table_data)
 
     return {'total': float(dataset.hash.sum())}
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
-    pass
+    table_data = [['Date', 'Year', 'Days Hashrate (EH)']]
+
+    for quarter in quarter_groups:
+        for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
+            table_data.append([month_name, year, months_sum.get(month_name)])
+
+        table_data.append([f'{toRoman(quarter[0])} Quarter', year, quarter_sum.get(quarter[0])])
+
+    table_data.append(['Totals:', year, dataset.hash.sum()])
+
+    title = f'Year by months/quarters - {year}'
+
+    initialize_document(title, table_data)
+
+    return {'total': float(dataset.hash.sum())}
 
 
 def year_quarter_report(dataset, quarters_sum, year):

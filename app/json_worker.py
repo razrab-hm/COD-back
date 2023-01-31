@@ -45,13 +45,13 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
         report.append({'type': 'quarter', 'date': f'{toRoman(quarter[0])} quarter', 'total': quarter_sum.get(quarter[0]), 'average': quarter_sum_average.get(quarter[0])})
 
-    return {'report': report, 'total': float(dataset.hash.sum())}
+    return {'report': report, 'total': float(dataset.hash.sum()), 'year': year}
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
     report = []
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
-        report.append({int(month_pk): {'date': month_name, 'total': month_sum}})
+        report.append({'date': month_name, 'total': month_sum})
 
     return {'report': report, 'total': float(dataset.hash.sum()), 'year': year, 'quarter': quarter}
 
