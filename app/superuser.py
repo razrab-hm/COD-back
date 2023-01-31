@@ -1,10 +1,8 @@
 import hashlib
 import sys
 
-from sqlalchemy.orm import Session
-
-import app.db as core_db
-from models.db import auth, companies, hashrates, users
+import app.app.db as core_db
+from app.models.db import auth, companies, hashrates, users
 
 
 def create():

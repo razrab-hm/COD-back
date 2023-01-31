@@ -5,8 +5,9 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from models.db import users as db_users, companies as db_companies
-from models.dto import users as dto_users
+from app.models.db import companies as db_companies
+from app.models.db import users as db_users
+from app.models.dto import users as dto_users
 
 
 def get_user_by_username(db: Session, username: str):

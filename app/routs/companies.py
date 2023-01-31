@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from app.db import get_db
-from models.dto import companies as dto_companies
-
-from app import handlers
+from app.app.db import get_db
+from app.models.dto import companies as dto_companies
+from app.app import handlers
 
 router = APIRouter(prefix='/companies', tags=["companies"])
 

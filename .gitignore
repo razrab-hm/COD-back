@@ -126,4 +126,4 @@ dmypy.json
 .pyre/
 
 # alembic stuff
-alembic.ini
+app/alembic.ini

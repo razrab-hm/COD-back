@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Body
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from app import handlers
-from app.db import get_db
+from app.app import handlers
+from app.app.db import get_db
 
 router = APIRouter(prefix='/reports', tags=["reports"])
 

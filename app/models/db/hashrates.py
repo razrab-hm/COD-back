@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, Date, Float
 
-from app.db import Base
+from app.app.db import Base
 
 
 class Hashrate(Base):

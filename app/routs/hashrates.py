@@ -1,13 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Body
+from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi_jwt_auth import AuthJWT
-from pydantic.types import date
 from sqlalchemy.orm import Session
 
-import app.hashrates
-import app.users
-from app import handlers
-from app.db import get_db
-from models.dto import hashrates as dto_hashrates
+from app.app import handlers
+from app.app.db import get_db
+from app.models.dto import hashrates as dto_hashrates
 
 router = APIRouter(prefix='/hashrates', tags=["hashrates"])
 

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from app.db import get_db
-from app import handlers
+from app.app.db import get_db
+from app.app import handlers
 
 router = APIRouter(prefix='/tokens', tags=["tokens"])
 

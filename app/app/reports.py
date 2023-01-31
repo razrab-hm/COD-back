@@ -5,9 +5,9 @@ from fastapi import HTTPException
 from pandas import Series
 from sqlalchemy import extract
 
-from app import json_worker, xls_worker, pdf_worker
-from app.db import engine
-from models.db import hashrates as db_hashrates
+from app.app import json_worker, xls_worker, pdf_worker
+from app.app.db import engine
+from app.models.db import hashrates as db_hashrates
 
 
 def check_report_type(date_type: str):

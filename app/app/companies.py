@@ -1,8 +1,9 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from models.db import companies as db_companies, users as db_users
-from models.dto import companies as dto_companies
+from app.models.db import companies as db_companies
+from app.models.db import users as db_users
+from app.models.dto import companies as dto_companies
 
 
 def create_company(db: Session, company: dto_companies.CompanyBase):

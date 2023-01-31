@@ -4,9 +4,10 @@ from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from app.users import get_user_by_username, get_user_by_email
-from models.db import auth as db_token, users as db_users
-from models.dto import users as dto_users
+from app.app.users import get_user_by_username, get_user_by_email
+from app.models.db import auth as db_token
+from app.models.db import users as db_users
+from app.models.dto import users as dto_users
 
 
 def check_username_in_base(db, username, login=False):

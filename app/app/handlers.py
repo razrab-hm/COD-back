@@ -1,15 +1,14 @@
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-import app.auth as app_auth
-import app.companies as app_companies
-import app.reports
-import app.users as app_users
-import app.hashrates as app_hashrates
-import app.reports as app_reports
-from models.dto import (companies as dto_companies,
-                        users as dto_users,
-                        hashrates as dto_hashrates)
+import app.app.auth as app_auth
+import app.app.companies as app_companies
+import app.app.users as app_users
+import app.app.hashrates as app_hashrates
+import app.app.reports as app_reports
+from app.models.dto import (companies as dto_companies,
+                        users as dto_users)
+from app.models.dto import hashrates as dto_hashrates
 
 
 def create_company_handler(auth: AuthJWT, company: dto_companies.CompanyBase, db: Session):
