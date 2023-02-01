@@ -40,6 +40,9 @@ jobs:
       - name: Check
         run: netstat -lntu
 
+      - name: Start test
+        run: python app/tests/registration.py
+
   start_test:
     needs: [deploy]
     runs-on: ubuntu-latest
