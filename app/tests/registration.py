@@ -9,7 +9,7 @@ def test(username, password, email):
           "password": password,
           "email": email
             }
-    return requests.post('http://0.0.0.0:8080/users/', data=json.dumps(data)).text
+    return requests.post('web://0.0.0.0:8080/users/', data=json.dumps(data)).text
 
 
 answer = test('test', 'test', 'test@mail.ru')
