@@ -10,12 +10,12 @@ from app.app import handlers
 router = APIRouter(prefix='/users', tags=["users"])
 
 
-@router.post('/', response_model=dto_users.User)
+@router.post('/', response_model=dto_users.User, status_code=201)
 def register_user(user: dto_users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.create_user_handler(auth, user, db)
 
 
-@router.post('/login', response_model=dto_users.Token)
+@router.post('/login', response_model=dto_users.Token, status_code=202)
 def login_user(user: dto_users.UserBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.login_user_handler(db, user, auth)
 

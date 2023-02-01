@@ -2,7 +2,7 @@ version: '3.1'
 services:
   web:
     build: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic revision --autogenerate; alembic upgrade head; uvicorn app.main:app --host 0.0.0.0'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic revision --autogenerate; alembic upgrade head; uvicorn app.main:app --host 0.0.0.0; python tests/user.py'
     volumes:
       - .:/app
     ports:

@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse
 
 def initialize_document(title, data, header_rows=[]):
     doc = SimpleDocTemplate(
-        'mypdf.pdf',
+        'pdf.pdf',
         pagesize=A4,
         topMargin=9
     )
@@ -85,7 +85,7 @@ def initialize_document(title, data, header_rows=[]):
 
     doc.build(elements)
 
-    return FileResponse('mypdf.pdf')
+    return FileResponse('pdf.pdf')
 
 
 def month_day_report(dataset, year):
@@ -122,9 +122,7 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     title = f'Year by months/quarters - {year}'
 
-    initialize_document(title, table_data, header_rows)
-
-    return {'total': float(dataset.hash.sum())}
+    return initialize_document(title, table_data, header_rows)
 
 
 def year_quarter_report(dataset, quarters_sum, year):
@@ -137,9 +135,7 @@ def year_quarter_report(dataset, quarters_sum, year):
 
     title = f'Year by Quarter Report - {year}'
 
-    initialize_document(title, table_data)
-
-    return {'total': float(dataset.hash.sum())}
+    return initialize_document(title, table_data)
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
@@ -166,9 +162,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     title = f'Year by day/months/quarters - {year}'
 
-    initialize_document(title, table_data, header_rows)
-
-    return {'total': float(dataset.hash.sum())}
+    return initialize_document(title, table_data, header_rows)
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
@@ -181,9 +175,7 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
 
     title = f'Quarterly by months/quarters - {toRoman(quarter)} Quarter {year}'
 
-    initialize_document(title, table_data)
-
-    return {'total': float(dataset.hash.sum())}
+    return initialize_document(title, table_data)
 
 
 def quarter_month_day_report(dataset, months_sum, year, quarter):
@@ -206,7 +198,5 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
 
     title = f'Quarterly by days/months - {toRoman(quarter)} Quarter {year}'
 
-    initialize_document(title, table_data, header_rows)
-
-    return {'total': float(dataset.hash.sum())}
+    return initialize_document(title, table_data, header_rows)
 

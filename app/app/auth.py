@@ -14,7 +14,7 @@ def check_username_in_base(db, username, login=False):
     user = get_user_by_username(db, username)
     if not login:
         if user:
-            raise HTTPException(status_code=400, detail="Username already registered")
+            raise HTTPException(status_code=406, detail="Username already registered")
     else:
         if not user:
             raise HTTPException(status_code=401, detail='Username or password incorrect')
@@ -25,7 +25,7 @@ def check_email_in_base(db, email, login=False):
     user = get_user_by_email(db, email)
     if not login:
         if user:
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise HTTPException(status_code=406, detail="Email already registered")
     else:
         if not user:
             raise HTTPException(status_code=401, detail='Username or password incorrect')
@@ -41,11 +41,11 @@ def check_inactive_account(db, user_id):
 def check_email_valid(email):
     email = email.split('@')
     if len(email) != 2:
-        raise HTTPException(status_code=401, detail="Email is not valid")
+        raise HTTPException(status_code=406, detail="Email is not valid")
     _, host = email
     host = host.split('.')
     if len(host) != 2:
-        raise HTTPException(status_code=401, detail="Email is not valid")
+        raise HTTPException(status_code=406, detail="Email is not valid")
 
 
 def check_user_password(password, hash_password):

@@ -1,5 +1,4 @@
 import json
-from time import sleep
 
 import requests
 
@@ -35,8 +34,9 @@ data3 = {
   "company_id": 1
 }
 
-# response = requests.post('http://localhost:8000/companies/create', data=json.dumps(data), headers=headers).json()
-# print(response)
+response = requests.post('http://localhost:8000/companies/', data=json.dumps(data), headers=headers).json()
+print(response)
+
 # response = requests.post('http://localhost:8000/users/add_company', data=json.dumps(data2), headers=headers).json()
 # print(response)
 # response = requests.post('http://localhost:8000/hashrates/me', data=json.dumps(data3), headers=headers).json()

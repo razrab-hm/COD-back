@@ -7,6 +7,7 @@ from openpyxl.styles import Font, PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 from pandas import DataFrame
 from roman import toRoman
+from fastapi.responses import FileResponse
 
 
 class Style(Enum):
@@ -62,7 +63,7 @@ def month_day_report(dataset, year):
 
     wb.save("sample.xlsx")
 
-    return {'total': dataset.hash.sum()}
+    return FileResponse('xlsx.xlsx')
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
@@ -81,7 +82,7 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     wb.save("sample.xlsx")
 
-    return {'total': dataset.hash.sum()}
+    return FileResponse('xlsx.xlsx')
 
 
 def year_quarter_report(dataset, quarters_sum, year):
@@ -96,7 +97,7 @@ def year_quarter_report(dataset, quarters_sum, year):
 
     wb.save("sample.xlsx")
 
-    return {'total': dataset.hash.sum()}
+    return FileResponse('xlsx.xlsx')
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
@@ -119,7 +120,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     wb.save("sample.xlsx")
 
-    return {'total': dataset.hash.sum()}
+    return FileResponse('xlsx.xlsx')
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
@@ -134,7 +135,7 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
 
     wb.save("sample.xlsx")
 
-    return {'total': dataset.hash.sum()}
+    return FileResponse('xlsx.xlsx')
 
 
 def quarter_month_day_report(dataset, months_sum, year, quarter):
@@ -151,7 +152,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
 
     insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("sample.xlsx")
+    wb.save("xlsx.xlsx")
 
-    return {'total': dataset.hash.sum()}
+    return FileResponse('xlsx.xlsx')
 
