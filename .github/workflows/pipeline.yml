@@ -38,7 +38,7 @@ jobs:
         run: ls -la
 
       - name: Docker Build
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Python Test
         run: sudo apt install net-tools
