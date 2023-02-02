@@ -35,7 +35,7 @@ def check_email_in_base(db, email, login=False):
 def check_inactive_account(db, user_id):
     inactive = db.query(db_users.User.inactive).filter(db_users.User.id == user_id).first()
     if inactive.inactive:
-        raise HTTPException(status_code=406, detail="Inactive account!")
+        raise HTTPException(status_code=401, detail="Inactive account!")
 
 
 def check_email_valid(email):

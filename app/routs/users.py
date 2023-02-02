@@ -50,7 +50,7 @@ def get_user_by_id(user_id: int, auth: AuthJWT = Depends(), db: Session = Depend
     return handlers.get_user_by_id_handler(db, user_id, auth)
 
 
-@router.delete('/{user_id}', response_model=dto_users.User)
+@router.delete('/{user_id}', response_model=dto_users.User, status_code=202)
 def set_inactive_user(user_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.set_inactive_user(db, auth, user_id)
 
