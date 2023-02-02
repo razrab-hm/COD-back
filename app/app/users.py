@@ -107,7 +107,7 @@ def create_user(db: Session, user: dto_users.UserCreate):
     db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False, username=user.username)
     db.add(db_user)
     db.commit()
-    return {'username': db_user.username, 'id': db_user.id}
+    return {'username': db_user.username, 'role': db_user.role}
 
 
 def get_company_users(db, company_id, access_level, from_user_id):
@@ -122,7 +122,7 @@ def get_company_users(db, company_id, access_level, from_user_id):
 
 def get_all_users(db, access_level, user_id):
     if access_level == 1:
-        return db.query(db_users.User).all()
+        return db.query(db_users.User.id, db_users.User.username).all()
     elif access_level == 2:
         companies_id = db.query(db_users.User).filter(db_users.UserCompany.user_id == user_id).all()
         users = []
