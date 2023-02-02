@@ -6,7 +6,7 @@ env:
   POSTGRES_USER: root
   POSTGRES_DB: db01
   POSTGRES_HOST: db
-  DATABASE_LINK: postgresql://root:123123@db:5432/db01
+  DATABASE_LINK: postgresql://root:123123@127.0.0.1:5432/db01
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
