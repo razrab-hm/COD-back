@@ -55,7 +55,7 @@ jobs:
         run: netstat -lntu
 
       - name: Start test
-        run: python tests/user.py
+        run: pytest tests/user.py
 
   start_test:
     needs: [deploy]

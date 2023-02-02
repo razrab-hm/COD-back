@@ -1,8 +1,10 @@
 from fastapi.testclient import TestClient
+import pytest
 
-from COD-back.app.main import app
+from app.main import app
 
-client = TestClient(app.main.app)
+
+client = TestClient(app)
 
 
 def test_good_register():
@@ -43,8 +45,4 @@ def test_login():
     print(response)
     assert response.status_code == 202
 
-
-test_good_register()
-test_bad_register()
-test_login()
 

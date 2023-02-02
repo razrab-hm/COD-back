@@ -25,7 +25,7 @@ def auto_insert(dataset, year):
             if date not in dataset.date.values:
                 dataset = dataset.append({'date': date}, ignore_index=True)
 
-    dataset = dataset.fillna(0)
+    dataset = dataset.fillna(0.0)
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset = dataset.sort_values(by='date')
 
