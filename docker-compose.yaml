@@ -1,17 +1,5 @@
 version: '3.1'
 services:
-  web:
-    build: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic revision --autogenerate; alembic upgrade head; uvicorn app.main:app --host 0.0.0.0 --port 8080'
-    volumes:
-      - .:/app
-    ports:
-      - "0.0.0.0:8080:8080"
-
-    environment:
-      - DATABASE_URL=postgresql://root:123123@db:5432/db01
-    depends_on:
-      - db
   db:
     image: postgres
     volumes:
@@ -24,8 +12,8 @@ services:
 #      PGDATA: /var/lib/postgresql/data/
 #      POSTGRES_HOST: ${POSTGRES_HOST}
 
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
 
 
 volumes:
