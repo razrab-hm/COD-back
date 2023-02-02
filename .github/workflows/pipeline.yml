@@ -32,7 +32,6 @@ jobs:
           compose-file: "docker-compose.yaml"
           down-flags: "--volumes"
           services: |
-            web
             db
 
       - name: Check files
