@@ -3,7 +3,7 @@ import os
 from fastapi.testclient import TestClient
 import pytest
 
-import setupdb_tests
+import tests.setupdb_tests
 from app.main import app
 
 client = TestClient(app)
