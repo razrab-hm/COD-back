@@ -38,6 +38,9 @@ def month_day_report(db, year, month, output):
 
     # dataset = auto_insert(dataset, year)
 
+    dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
+    dataset = dataset.sort_values(by='date')
+
     dataset['month'] = dataset.date.dt.month
     dataset = dataset.loc[dataset.month == month]
     dataset['day']: Series = dataset.date.dt.day
