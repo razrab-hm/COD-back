@@ -48,7 +48,7 @@ jobs:
         run: netstat -lntu
 
       - name: Start test
-        run: python app/tests/registration.py
+        run: python app/tests/user.py
 
   start_test:
     needs: [deploy]
