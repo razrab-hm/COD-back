@@ -67,10 +67,14 @@ def test_set_inactive_user_good(root_access_token):
     assert response.status_code == 202
 
 
-@pytest.mark.parametrize('access', ['admin_access_token',
-                                    'manager_access_token'])
-def test_set_inactive_user_bad(access):
-    response = client.delete('/users/5', headers={'Authorization': f'Bearer {access}'})
+def test_set_inactive_user_bad_admin(manager_access_token):
+    response = client.delete('/users/5', headers={'Authorization': f'Bearer {manager_access_token}'})
+    assert response.status_code == 406
+    assert response.json()['detail'] == "You don't have permissions"
+
+
+def test_set_inactive_user_bad_manager(admin_access_token):
+    response = client.delete('/users/5', headers={'Authorization': f'Bearer {admin_access_token}'})
     assert response.status_code == 406
     assert response.json()['detail'] == "You don't have permissions"
 
