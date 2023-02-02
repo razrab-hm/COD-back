@@ -46,7 +46,7 @@ def test_login_good():
 
 
 def test_set_inactive_user(admin_access_token):
-    response = client.delete('/users/1', headers={'Authorization': f'Bearer {admin_access_token}'})
+    response = client.delete('/users/2', headers={'Authorization': f'Bearer {admin_access_token}'})
     assert response.status_code == 202
 
 
