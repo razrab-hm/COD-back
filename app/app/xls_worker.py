@@ -61,7 +61,7 @@ def month_day_report(dataset, year):
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("sample.xlsx")
+    wb.save("xlsx.xlsx")
 
     return FileResponse('xlsx.xlsx')
 
@@ -80,7 +80,7 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("sample.xlsx")
+    wb.save("xlsx.xlsx")
 
     return FileResponse('xlsx.xlsx')
 
@@ -95,7 +95,7 @@ def year_quarter_report(dataset, quarters_sum, year):
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("sample.xlsx")
+    wb.save("xlsx.xlsx")
 
     return FileResponse('xlsx.xlsx')
 
@@ -118,7 +118,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     insert_data(ws, ['Totals:', dataset.average.sum(), dataset.hash.sum()], row_counter, True)
 
-    wb.save("sample.xlsx")
+    wb.save("xlsx.xlsx")
 
     return FileResponse('xlsx.xlsx')
 
@@ -133,7 +133,7 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
 
     insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("sample.xlsx")
+    wb.save("xlsx.xlsx")
 
     return FileResponse('xlsx.xlsx')
 

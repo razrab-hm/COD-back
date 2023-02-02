@@ -187,7 +187,6 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
     for month_name in dataset.month_name.unique():
         for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name']].values:
             table_data.append([f'{month_name} {day_ds[0]}, {year}', year, day_ds[1]])
-            header_rows.append(row_counter)
             row_counter += 1
 
         table_data.append([f'{month_name} Total', year, months_sum.get(month_name)])
