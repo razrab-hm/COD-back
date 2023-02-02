@@ -37,6 +37,9 @@ jobs:
       - name: Check files
         run: ls -la
 
+      - name: install depends
+        run: pip install -r requirements.txt
+
       - name: alembic
         run: |
           alembic revision --autogenerate
