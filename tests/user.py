@@ -3,11 +3,28 @@ import os
 from fastapi.testclient import TestClient
 import pytest
 
-import superuser
+import setupdb_tests
 from app.main import app
 
 client = TestClient(app)
-superuser.create_to_test()
+
+
+@pytest.fixture()
+def root_access_token():
+    response = client.post('/users/login', json={'username': 'root_test', 'password': 'qwerty'})
+    return response.json()['access_token']
+
+
+@pytest.fixture()
+def admin_access_token():
+    response = client.post('/users/login', json={'username': 'admin_test', 'password': 'qwerty'})
+    return response.json()['access_token']
+
+
+@pytest.fixture()
+def manager_access_token():
+    response = client.post('/users/login', json={'username': 'manager_test', 'password': 'qwerty'})
+    return response.json()['access_token']
 
 
 @pytest.mark.parametrize('username, email, password', [('test1', 'test1@mail.ru', 'qwerty'),
@@ -45,8 +62,14 @@ def test_login_good():
     assert response.status_code == 202
 
 
-def test_set_inactive_user(admin_access_token):
-    response = client.delete('/users/2', headers={'Authorization': f'Bearer {admin_access_token}'})
+def test_set_inactive_user_good(root_access_token):
+    response = client.delete('/users/4', headers={'Authorization': f'Bearer {root_access_token}'})
+    assert response.status_code == 202
+
+
+@pytest.mark.parametrize('access', [admin_access_token, manager_access_token])
+def test_set_inactive_user_bad(access):
+    response = client.delete('/users/4', headers={'Authorization': f'Bearer {access}'})
     assert response.status_code == 202
 
 
@@ -59,15 +82,8 @@ def test_login_bad(username, password, detail):
     assert response.json()['detail'] == detail
 
 
-def test_get_user(admin_access_token):
-    response = client.get('/users', headers={'Authorization': f'Bearer {admin_access_token}'})
+def test_get_user(root_access_token):
+    response = client.get('/users', headers={'Authorization': f'Bearer {root_access_token}'})
     assert response.status_code == 200
     assert len(response.json()) == 4
-
-
-@pytest.fixture()
-def admin_access_token():
-    response = client.post('/users/login', json={'username': 'root_test', 'password': 'qwerty'})
-    return response.json()['access_token']
-
 

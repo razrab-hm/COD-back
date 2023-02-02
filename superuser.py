@@ -17,19 +17,6 @@ def create():
     return user
 
 
-def create_to_test():
-    username = 'root_test'
-    password = 'qwerty'
-    db = core_db.get_core_db()
-    user = users.User(username=username, hash_password=hashlib.md5(password.encode('utf-8')).hexdigest(), role='root',
-                      inactive=False)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    db.close()
-    return user
-
-
 name = sys.argv[1]
 
 f = globals().get(name)
