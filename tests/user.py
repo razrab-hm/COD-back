@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 
-from app.main import app
+import app.main as main
 
-client = TestClient(app)
+client = TestClient(main.app)
 
 
 def test_good_register():
