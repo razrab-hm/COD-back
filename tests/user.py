@@ -67,8 +67,8 @@ def test_set_inactive_user_good(root_access_token):
     assert response.status_code == 202
 
 
-@pytest.mark.parametrize('access', [pytest.lazy_fixture('admin_access_token'),
-                                    pytest.lazy_fixture('manager_access_token')])
+@pytest.mark.parametrize('access', ['admin_access_token',
+                                    'manager_access_token'])
 def test_set_inactive_user_bad(access):
     response = client.delete('/users/5', headers={'Authorization': f'Bearer {access}'})
     assert response.status_code == 406
