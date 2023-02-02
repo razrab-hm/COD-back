@@ -27,7 +27,7 @@ def test_bad_register():
 
     response = client.post('/users', json=data)
     print(response)
-    assert response.status_code == 406
+    assert response.status_code == 407
 
     data = {
         'username': 'test',
