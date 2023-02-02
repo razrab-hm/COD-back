@@ -107,7 +107,7 @@ def create_user(db: Session, user: dto_users.UserCreate):
     db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False, username=user.username)
     db.add(db_user)
     db.commit()
-    return {'username': db_user.username, 'role': db_user.role}
+    return {'username': db_user.username, 'id': db_user.id}
 
 
 def get_company_users(db, company_id, access_level, from_user_id):

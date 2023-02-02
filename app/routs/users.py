@@ -35,12 +35,12 @@ def update_user(update_data: dto_users.UserUpdate, db: Session = Depends(get_db)
     return handlers.update_user_handler(update_data, db, auth)
 
 
-@router.get('/me', response_model=dto_users.User)
+@router.get('/me', response_model=dto_users.User, status_code=200)
 def get_user(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_user_handler(db, auth)
 
 
-@router.get('/', response_model=list[dto_users.User])
+@router.get('/', response_model=list[dto_users.User], status_code=200)
 def get_all_users(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_all_users_handler(db, auth)
 
