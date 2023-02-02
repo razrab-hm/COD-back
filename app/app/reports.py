@@ -36,7 +36,7 @@ def month_day_report(db, year, month, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
     dataset = pd.read_sql(statement, engine)
 
-    dataset = auto_insert(dataset, year)
+    # dataset = auto_insert(dataset, year)
 
     dataset['month'] = dataset.date.dt.month
     dataset = dataset.loc[dataset.month == month]
