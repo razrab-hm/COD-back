@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from ... import app
+from COD-back.app.main import app
 
 client = TestClient(app.main.app)
 
