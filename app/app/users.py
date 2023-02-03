@@ -94,6 +94,11 @@ def update_user(update_data, db: Session, auth):
         elif user.username != update_data.username:
             raise HTTPException(status_code=409, detail="User already exists")
     if update_data.email:
+        if not get_user_by_email(db, update_data.email):
+            user.username = update_data.username
+        elif user.email != update_data.email:
+            raise HTTPException(status_code=409, detail="Email already exists")
+
         user.email = update_data.email
     if update_data.role:
         user.role = update_data.role
@@ -155,3 +160,14 @@ def get_all_users(db, access_level, user_id):
     else:
         return []
 
+
+def update_user_companies(db, companies_id, user_id):
+    db.query(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).delete()
+    db.commit()
+
+    for i in companies_id:
+        obj = db_users.UserCompany(user_id=user_id, company_id=i)
+        db.add(obj)
+
+    db.commit()
+    return {'message': 'success'}

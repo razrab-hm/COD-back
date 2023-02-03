@@ -201,3 +201,9 @@ def logout_handler(db, auth):
 def get_dates_handler(auth, db):
     auth.jwt_required()
     return app_hashrates.get_dates(db)
+
+
+def update_user_companies_handler(user_id, companies_id, auth, db):
+    auth.jwt_required()
+    app_users.check_access(db, auth, 1)
+    return app_users.update_user_companies()

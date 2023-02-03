@@ -76,3 +76,11 @@ def add_user_company(company_id: int = Body(),
     return handlers.remove_company_handler(company_id, user_id, auth, db)
 
 
+@router.put('/update_companies')
+def update_user_companies(user_id: int = Body(...),
+                          companies_id: list = Body(...),
+                          auth: AuthJWT = Depends(),
+                          db: Session = Depends(get_db)):
+    return handlers.update_user_companies_handler(user_id, companies_id, auth, db)
+
+

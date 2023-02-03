@@ -9,7 +9,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, unique=True)
     username = Column(String(50), unique=True)
-    email = Column(String(50))
+    email = Column(String(50), unique=True)
     hash_password = Column(Text)
     role = Column(String)
     inactive = Column(Boolean)

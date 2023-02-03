@@ -67,8 +67,8 @@ def test_login_inactive_bad():
     [user_creator.root_user, user_creator.admin_user]
 ])
 def test_update_user_good(updater, to_update):
-    updater = updater('user1')
-    to_update = to_update('user2')
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
     headers = conftest.auth_user(updater)
     update_data = {
           "username": "123",
@@ -95,8 +95,8 @@ def test_update_user_good(updater, to_update):
     [user_creator.admin_user, user_creator.user]
 ])
 def test_update_user_bad(updater, to_update):
-    updater = updater('user1')
-    to_update = to_update('user2')
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
     headers = conftest.auth_user(updater)
     update_data = {
         "username": "123",
@@ -114,7 +114,7 @@ def test_update_user_bad(updater, to_update):
 def test_update_user_username_bad():
     updater = user_creator.root_user()
     to_update = user_creator.user()
-    user = user_creator.user('user2')
+    user = user_creator.user('user2', 'mail2@mail.ru')
 
     headers = conftest.auth_user(updater)
     update_data = {
@@ -146,7 +146,7 @@ def test_change_user_password_good():
 
 def test_change_user_password_bad():
     user = user_creator.user()
-    user2 = user_creator.user('user2')
+    user2 = user_creator.user('user2', 'mail2@mail.ru')
     headers = conftest.auth_user(user)
     update_data = {
         "id": user2.id,
@@ -207,7 +207,7 @@ def test_get_user_by_id_bad():
     company_creator.company()
 
     checker = user_creator.user(company=1)
-    user = user_creator.user(company=1, username='user2')
+    user = user_creator.user(company=1, username='user2', email='mail2@mail.ru')
 
     headers = conftest.auth_user(checker)
 
@@ -242,8 +242,8 @@ def test_set_inactive_user_good(root, user):
     [user_creator.user, user_creator.root_user]
 ])
 def test_set_inactive_user_bad(root, user):
-    root = root(username='user1')
-    user = user(username='user2')
+    root = root(username='user1', email='mail2@mail.ru')
+    user = user(username='user2', email='mail3@mail.ru')
 
     headers = conftest.auth_user(root)
     print(root.id)

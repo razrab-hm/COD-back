@@ -5,11 +5,11 @@ from app.app import db as core_db
 from app.tests import company_creator
 
 
-def user(username='user', company=None):
+def user(username='user', email='user@mail.ru', company=None):
     db = core_db.get_core_db()
 
     db_user = users.User(username=username,
-                         email='user@mail.ru',
+                         email=email,
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='manager', inactive=False)
 
@@ -27,11 +27,11 @@ def user(username='user', company=None):
     return db_user
 
 
-def root_user(username='root_user', company=None):
+def root_user(username='root_user', email='root_user@mail.ru', company=None):
     db = core_db.get_core_db()
 
     db_user = users.User(username=username,
-                         email='root_user@mail.ru',
+                         email=email,
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='root', inactive=False)
 
@@ -50,11 +50,11 @@ def root_user(username='root_user', company=None):
     return db_user
 
 
-def admin_user(username='admin_user', company=None):
+def admin_user(username='admin_user', email='admin_user@mail.ru', company=None):
     db = core_db.get_core_db()
 
     db_user = users.User(username=username,
-                         email='admin_user@mail.ru',
+                         email=email,
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='admin', inactive=False)
 
