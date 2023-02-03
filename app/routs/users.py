@@ -74,3 +74,5 @@ def add_user_company(company_id: int = Body(),
                      auth: AuthJWT = Depends(),
                      db: Session = Depends(get_db)):
     return handlers.remove_company_handler(company_id, user_id, auth, db)
+
+

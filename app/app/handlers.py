@@ -86,7 +86,9 @@ def login_user_handler(db, user, auth):
     bd_user = app_auth.check_username_in_base(db, user.username, True)
     app_auth.check_user_password(user.password, bd_user.hash_password)
     app_auth.check_inactive_account(db, bd_user.id)
-    return app_auth.create_tokens(auth, bd_user.id, bd_user.role)
+    response = app_auth.create_tokens(auth, bd_user.id)
+    response['role'] = bd_user.role
+    return response
 
 
 def refresh_handler(auth, db):

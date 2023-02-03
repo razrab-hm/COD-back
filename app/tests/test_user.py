@@ -2,22 +2,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.tests import conftest
 
 client = TestClient(app)
 
 
-# @pytest.fixture()
-# def root_access_token():
-#     response = client.post('/users/login', json={'username': 'root_test', 'password': 'qwerty'})
-#     return response.json()['access_token']
-#
-#
-# @pytest.fixture()
-# def admin_access_token():
-#     response = client.post('/users/login', json={'username': 'admin_test', 'password': 'qwerty'})
-#     return response.json()['access_token']
-#
-#
 @pytest.mark.parametrize('username, email, password', [('test1', 'test1@mail.ru', 'qwerty'),
                                                        ('test2', 'test2@gmail.com', 'qwerty'),
                                                        ('test3', 'test3@gmail.com', 'qwerty')])
@@ -32,11 +21,12 @@ def test_register_good(username, email, password):
     assert response.status_code == 201
 
 
-@pytest.mark.parametrize('username, email, password, detail', [['test1', 'abc@mail.ru', 'qwerty', 'Username already registered'],
-                                                               ['test4', 'test1@mail.ru', 'qwerty', 'Email already registered'],
-                                                               ['test5', 'unvalidmail1', 'qwerty', 'Email is not valid'],
-                                                               ['test6', 'unvalidmail2@mail', 'qwerty', 'Email is not valid']])
+@pytest.mark.parametrize('username, email, password, detail', [['user', 'abc@mail.ru', 'qwerty', 'Username already registered'],
+                                                               ['user2', 'user@mail.ru', 'qwerty', 'Email already registered'],
+                                                               ['user2', 'unvalidmail1', 'qwerty', 'Email is not valid'],
+                                                               ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid']])
 def test_register_bad(username, email, password, detail):
+    conftest.user()
     data = {
         'username': username,
         'email': email,
@@ -49,26 +39,10 @@ def test_register_bad(username, email, password, detail):
 
 
 def test_login_good():
-    response = client.post('/users/login', json={'username': 'test1', 'password': 'qwerty'})
+    user = conftest.user()
+    response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
     print(response)
     assert response.status_code == 202
-
-
-# def test_set_inactive_user_good(root_access_token):
-#     response = client.delete('/users/4', headers={'Authorization': f'Bearer {root_access_token}'})
-#     assert response.status_code == 202
-
-
-# def test_set_inactive_user_bad_admin(manager_access_token):
-#     response = client.delete('/users/5', headers={'Authorization': f'Bearer {manager_access_token}'})
-#     assert response.status_code == 406
-#     assert response.json()['detail'] == "You don't have permissions"
-
-
-# def test_set_inactive_user_bad_manager(admin_access_token):
-#     response = client.delete('/users/5', headers={'Authorization': f'Bearer {admin_access_token}'})
-#     assert response.status_code == 406
-#     assert response.json()['detail'] == "You don't have permissions"
 
 
 @pytest.mark.parametrize('username, password, detail', [['test2', 'qwer', 'Username or password incorrect'],
@@ -79,8 +53,24 @@ def test_login_bad(username, password, detail):
     assert response.json()['detail'] == detail
 
 
-# def test_get_user(root_access_token):
-#     response = client.get('/users', headers={'Authorization': f'Bearer {root_access_token}'})
-#     assert response.status_code == 200
-#     assert len(response.json()) == 6
+def test_login_inactive_bad():
+    user = conftest.inactive_user()
+    response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Inactive account!'
+
+
+def test_update_user_good():
+    admin = conftest.admin_user()
+    user = conftest.user()
+    headers = conftest.auth_user(admin)
+    update_data = {
+          "username": "123",
+          "password": "123",
+          "id": user.id,
+          "email": "123",
+          "role": "root"}
+
+    client.put('/users', headers=headers, )
+
 
