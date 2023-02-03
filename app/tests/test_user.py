@@ -250,5 +250,5 @@ def test_get_company_users_good(user):
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize
+@pytest.mark.parametrize()
 def test_get_company_users_bad(user)
