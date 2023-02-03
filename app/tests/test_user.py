@@ -74,7 +74,7 @@ def test_update_user_good(updater, to_update):
           "username": "123",
           "password": "123",
           "id": to_update.id,
-          "email": "123",
+          "email": "123@mail.ru",
           "role": "admin"}
 
     response = client.put('/users', headers=headers, json=update_data)
@@ -86,6 +86,152 @@ def test_update_user_good(updater, to_update):
 
     assert response.status_code == 200
     assert res_data == update_data
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.admin_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user]
+])
+def test_update_user_username_good(updater, to_update):
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
+    headers = conftest.auth_user(updater)
+    update_data = {
+          "username": "1232",
+          "id": to_update.id}
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    res_data = response.json()
+
+    assert response.status_code == 200
+    assert res_data['id'] == to_update.id
+    assert res_data['username'] != to_update.username
+    assert res_data['role'] == to_update.role
+    assert res_data['email'] == to_update.email
+    assert res_data['hash_password'] == to_update.hash_password
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.admin_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user]
+])
+def test_update_user_username_bad(updater, to_update):
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
+
+    headers = conftest.auth_user(updater)
+
+    update_data = {
+        "username": "user1",
+        "id": to_update.id
+    }
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    res_data = response.json()
+
+    assert response.status_code == 409
+    assert res_data['detail'] == 'User already exists'
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.admin_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user]
+])
+def test_update_user_email_good(updater, to_update):
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
+    headers = conftest.auth_user(updater)
+    update_data = {
+          "email": "1232@mail.ru",
+          "id": to_update.id}
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    res_data = response.json()
+
+    assert response.status_code == 200
+    assert res_data['id'] == to_update.id
+    assert res_data['username'] == to_update.username
+    assert res_data['role'] == to_update.role
+    assert res_data['email'] != to_update.email
+    assert res_data['hash_password'] == to_update.hash_password
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.admin_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user]
+])
+def test_update_user_email_bad(updater, to_update):
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
+
+    headers = conftest.auth_user(updater)
+
+    update_data = {
+        "email": "mail2@mail.ru",
+        "id": to_update.id
+    }
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    res_data = response.json()
+
+    assert response.status_code == 409
+    assert res_data['detail'] == 'Email already exists'
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.admin_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user]
+])
+def test_update_user_password_good(updater, to_update):
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
+    headers = conftest.auth_user(updater)
+    update_data = {
+          "password": "qwer",
+          "id": to_update.id}
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    res_data = response.json()
+
+    assert response.status_code == 200
+    assert res_data['id'] == to_update.id
+    assert res_data['username'] == to_update.username
+    assert res_data['role'] == to_update.role
+    assert res_data['email'] == to_update.email
+    assert res_data['hash_password'] != to_update.hash_password
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.admin_user, user_creator.admin_user],
+    [user_creator.user, user_creator.user]
+])
+def test_update_user_password_bad(updater, to_update):
+    updater = updater('user1', 'mail2@mail.ru')
+    to_update = to_update('user2', 'mail3@mail.ru')
+
+    headers = conftest.auth_user(updater)
+
+    update_data = {
+        "password": "qwer",
+        "id": to_update.id
+    }
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    res_data = response.json()
+
+    assert response.status_code == 406
+    assert res_data['detail'] == "You don't have permissions"
 
 
 @pytest.mark.parametrize('updater, to_update', [
@@ -111,22 +257,6 @@ def test_update_user_bad(updater, to_update):
     assert response.status_code == 406
 
 
-def test_update_user_username_bad():
-    updater = user_creator.root_user()
-    to_update = user_creator.user()
-    user = user_creator.user('user2', 'mail2@mail.ru')
-
-    headers = conftest.auth_user(updater)
-    update_data = {
-        "username": "user2",
-        "id": to_update.id}
-
-    response = client.put('/users', headers=headers, json=update_data)
-
-    assert response.json()['detail'] == "User already exists"
-    assert response.status_code == 409
-
-
 def test_change_user_password_good():
     user = user_creator.user()
     headers = conftest.auth_user(user)
@@ -136,9 +266,6 @@ def test_change_user_password_good():
     }
     response = client.put('/users', headers=headers, json=update_data)
     res_data = response.json()
-    res_data.pop('hash_password')
-    res_data.pop('inactive')
-    update_data.pop('password')
 
     assert res_data['id'] == update_data['id']
     assert response.status_code == 200
@@ -282,4 +409,38 @@ def test_get_company_users_bad(user, company_id):
     assert response.status_code == 200
 
 
-def test_add_user_companies_
+@pytest.mark.parametrize('user, companies_id', [
+    [user_creator.root_user, [1, 2, 3]],
+    [user_creator.admin_user, [1]]
+])
+def test_add_user_companies_good(user, companies_id):
+    company = company_creator.company()
+    company2 = company_creator.company(company_name='Test2Company', company_id=2)
+    company3 = company_creator.company(company_name='Test3Company', company_id=3)
+
+    user = user(company=company.id)
+
+    headers = conftest.auth_user(user)
+    response = client.put(f'/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
+
+    assert response.json() == {'message': 'success'}
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize('user, companies_id', [
+    [user_creator.admin_user, [2]],
+    [user_creator.user, [1]]
+])
+def test_add_user_companies_bad(user, companies_id):
+    company = company_creator.company()
+    company2 = company_creator.company(company_name='Test2Company', company_id=2)
+    company3 = company_creator.company(company_name='Test3Company', company_id=3)
+
+    user = user(company=company.id)
+
+    headers = conftest.auth_user(user)
+    response = client.put(f'/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
+
+    assert response.json()['detail'] == "You don't have permissions"
+    assert response.status_code == 406
+

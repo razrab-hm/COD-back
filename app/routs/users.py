@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Body
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-import app.app.users
 from app.app.db import get_db
 from app.models.dto import users as dto_users
 from app.app import handlers

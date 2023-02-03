@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from pydantic.schema import Optional
 
 
 class UserBase(BaseModel):
@@ -9,9 +8,6 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     email: str
-    # role: str = 'manager'
-    # company_id: int
-    # permission_id: int
 
 
 class UserUpdate(UserBase):

@@ -117,6 +117,7 @@ def get_user_companies_handler(user_id, auth, db):
 
 
 def get_my_company_handler(auth, db):
+    app_users.check_access(db, auth, 1)
     return app_companies.get_user_companies(auth.get_jwt_subject(), db)
 
 
@@ -205,5 +206,6 @@ def get_dates_handler(auth, db):
 
 def update_user_companies_handler(user_id, companies_id, auth, db):
     auth.jwt_required()
-    app_users.check_access(db, auth, 1)
-    return app_users.update_user_companies(db, companies_id, user_id)
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    return app_users.update_user_companies(db, companies_id, user_id, access_level, auth.get_jwt_subject())
+

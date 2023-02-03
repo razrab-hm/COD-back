@@ -9,12 +9,12 @@ from app.app import handlers
 router = APIRouter(prefix='/companies', tags=["companies"])
 
 
-@router.post('/', response_model=dto_companies.Company)
+@router.post('/', status_code=201)
 def create_company(company: dto_companies.CompanyBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.create_company_handler(auth, company, db)
 
 
-@router.put('/', response_model=dto_companies.Company)
+@router.put('/')
 def update_company(company: dto_companies.CompanyUpdate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.update_company_handler(auth, company, db)
 

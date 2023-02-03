@@ -3,12 +3,11 @@ import hashlib
 from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy import and_
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models.db import companies as db_companies
 from app.models.db import users as db_users
 from app.models.dto import users as dto_users
+from app.app import companies as app_companies
 
 
 def get_user_by_username(db: Session, username: str):
@@ -88,6 +87,11 @@ def update_user(update_data, db: Session, auth):
 
     user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
 
+    root_access = get_access_level(db, auth.get_jwt_subject())
+    to_access = get_access_level(db, user.id)
+    if root_access >= to_access and auth.get_jwt_subject() != user.id:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
+
     if update_data.username:
         if not get_user_by_username(db, update_data.username):
             user.username = update_data.username
@@ -95,7 +99,9 @@ def update_user(update_data, db: Session, auth):
             raise HTTPException(status_code=409, detail="User already exists")
     if update_data.email:
         if not get_user_by_email(db, update_data.email):
-            user.username = update_data.username
+            from app.app.auth import check_email_valid
+            check_email_valid(update_data.email)
+            user.email = update_data.email
         elif user.email != update_data.email:
             raise HTTPException(status_code=409, detail="Email already exists")
 
@@ -161,7 +167,14 @@ def get_all_users(db, access_level, user_id):
         return []
 
 
-def update_user_companies(db, companies_id, user_id):
+def update_user_companies(db, companies_id, user_id, access_level, from_user_id):
+    if access_level == 2:
+        companies = app_companies.get_user_companies(from_user_id, db)
+        if not (companies_id in companies or companies == companies_id):
+            raise HTTPException(status_code=406, detail="You don't have permissions")
+    elif access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
+
     db.query(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).delete()
     db.commit()
 
@@ -170,4 +183,5 @@ def update_user_companies(db, companies_id, user_id):
         db.add(obj)
 
     db.commit()
+
     return {'message': 'success'}

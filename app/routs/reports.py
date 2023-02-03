@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Body
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
-from fastapi.responses import FileResponse
 
 from app.app import handlers
 from app.app.db import get_db

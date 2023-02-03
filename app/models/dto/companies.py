@@ -10,8 +10,14 @@ class CompanyBase(BaseModel):
     description: str
 
 
-class CompanyUpdate(CompanyBase):
+class CompanyUpdate(BaseModel):
     id: int
+    title: str = None
+    contact_fio: str = None
+    contact_email: str = None
+    contact_phone: str = None
+    img_logo: str = None
+    description: str = None
 
 
 class CompanyRead(BaseModel):

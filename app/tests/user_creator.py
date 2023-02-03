@@ -1,8 +1,7 @@
 import hashlib
 
-from app.models.db import users, companies, auth, hashrates
+from app.models.db import users
 from app.app import db as core_db
-from app.tests import company_creator
 
 
 def user(username='user', email='user@mail.ru', company=None):

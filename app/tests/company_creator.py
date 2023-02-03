@@ -1,4 +1,4 @@
-from app.models.db import users, companies, auth, hashrates
+from app.models.db import companies
 from app.app import db as core_db
 
 

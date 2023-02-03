@@ -21,17 +21,17 @@ def get_company_by_id(db: Session, company_id: int, access_level, user_id):
         if db.query(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).filter(db_users.UserCompany.company_id == company_id).first():
             return db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
         else:
-            return {'status': 'Deny'}
+            raise HTTPException(status_code=406, detail="You don't have permissions")
     else:
-        return {'status': 'Deny'}
+        raise HTTPException(status_code=406, detail="You don't have permissions")
 
 
 def update_company(db: Session, update_data):
     company = db.query(db_companies.Company).filter(db_companies.Company.id == update_data.id).first()
     if update_data.title:
-        company.name = update_data.name
+        company.title = update_data.title
     if update_data.contact_fio:
-        company.contact_name = update_data.contact_name
+        company.contact_fio = update_data.contact_fio
     if update_data.contact_email:
         company.contact_email = update_data.contact_email
     if update_data.img_logo:
@@ -41,6 +41,7 @@ def update_company(db: Session, update_data):
     if update_data.description:
         company.description = update_data.description
     db.commit()
+    db.refresh(company)
     return company
 
 
@@ -63,5 +64,5 @@ def set_inactive_company(db: Session, company_id):
 
 
 def get_user_companies(user_id, db):
-    return db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
-
+    companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
+    return [company.id for company in companies]
