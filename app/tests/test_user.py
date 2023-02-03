@@ -1,10 +1,11 @@
 import pytest
-from fastapi.testclient import TestClient
 
+from fastapi.testclient import TestClient
 from app.main import app
-from app.tests import conftest
 
 client = TestClient(app)
+from app.tests import conftest
+from app.tests import user_creator
 
 
 @pytest.mark.parametrize('username, email, password', [('test1', 'test1@mail.ru', 'qwerty'),
@@ -26,7 +27,7 @@ def test_register_good(username, email, password):
                                                                ['user2', 'unvalidmail1', 'qwerty', 'Email is not valid'],
                                                                ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid']])
 def test_register_bad(username, email, password, detail):
-    conftest.user()
+    user_creator.user()
     data = {
         'username': username,
         'email': email,
@@ -39,7 +40,7 @@ def test_register_bad(username, email, password, detail):
 
 
 def test_login_good():
-    user = conftest.user()
+    user = user_creator.user()
     response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
     print(response)
     assert response.status_code == 202
@@ -54,25 +55,105 @@ def test_login_bad(username, password, detail):
 
 
 def test_login_inactive_bad():
-    user = conftest.inactive_user()
+    user = user_creator.inactive_user()
     response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
     assert response.status_code == 401
     assert response.json()['detail'] == 'Inactive account!'
 
 
-def test_update_user_good():
-    admin = conftest.admin_user()
-    user = conftest.user()
-    headers = conftest.auth_user(admin)
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.admin_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user]
+])
+def test_update_user_good(updater, to_update):
+    updater = updater('user1')
+    to_update = to_update('user2')
+    headers = conftest.auth_user(updater)
     update_data = {
           "username": "123",
           "password": "123",
-          "id": user.id,
+          "id": to_update.id,
           "email": "123",
-          "role": "root"}
+          "role": "admin"}
 
     response = client.put('/users', headers=headers, json=update_data)
 
-    assert response.json() == 1
+    res_data = response.json()
+    res_data.pop('hash_password')
+    res_data.pop('inactive')
+    update_data.pop('password')
+
+    assert response.status_code == 200
+    assert res_data == update_data
+
+
+@pytest.mark.parametrize('updater, to_update', [
+    [user_creator.admin_user, user_creator.admin_user],
+    [user_creator.user, user_creator.user],
+    [user_creator.user, user_creator.admin_user],
+    [user_creator.admin_user, user_creator.user]
+])
+def test_update_user_bad(updater, to_update):
+    updater = updater('user1')
+    to_update = to_update('user2')
+    headers = conftest.auth_user(updater)
+    update_data = {
+        "username": "123",
+        "password": "123",
+        "id": to_update.id,
+        "email": "123",
+        "role": "root"}
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    assert response.json()['detail'] == "You don't have permissions"
+    assert response.status_code == 406
+
+
+def test_change_user_password_good():
+    user = user_creator.user()
+    headers = conftest.auth_user(user)
+    update_data = {
+        "id": user.id,
+        "password": 'qwer'
+    }
+    response = client.put('/users', headers=headers, json=update_data)
+    res_data = response.json()
+    res_data.pop('hash_password')
+    res_data.pop('inactive')
+    update_data.pop('password')
+
+    assert res_data['id'] == update_data['id']
+    assert response.status_code == 200
+
+
+def test_change_user_password_bad():
+    user = user_creator.user()
+    user2 = user_creator.user('user2')
+    headers = conftest.auth_user(user)
+    update_data = {
+        "id": user2.id,
+        "password": 'qwer'
+    }
+    response = client.put('/users', headers=headers, json=update_data)
+    res_data = response.json()
+
+    assert res_data['detail'] == "You don't have permissions"
+    assert response.status_code == 406
+
+
+@pytest.mark.parametrize('checker, user', [[user_creator.root_user, user_creator.user],
+                                           [user_creator.admin_user, user_creator.user]])
+def test_get_users_good(checker, user):
+    checker = checker(company=1)
+    user = user(company=1)
+    headers = conftest.auth_user(checker)
+
+    response = client.get('/users', headers=headers)
+
+    assert len(response.json()) == 2
+    assert response.status_code == 200
+
 
 

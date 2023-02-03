@@ -19,6 +19,7 @@ class UserUpdate(UserBase):
     email: str = None
     password: str = None
     role: str = None
+    username: str = None
 
 
 class UserRead(BaseModel):

@@ -75,21 +75,28 @@ def get_access_level(db, user_id):
 def update_user(update_data, db: Session, auth):
     if update_data.role == 'root':
         check_access(db, auth, 1)
-    elif update_data.email or update_data.role == 'admin':
+    elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
         check_access(db, auth, 2)
+        if get_access_level(db, update_data.id) < 3:
+            HTTPException(status_code=405, detail="You don't have permissions")
     else:
         if update_data.id != auth.get_jwt_subject() and get_current_user(db, auth).role == 'manager':
             HTTPException(status_code=405, detail="You can't manage password to other user")
+        else:
+            HTTPException(status_code=405, detail="You don't have permissions")
 
     user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
 
+    if update_data.username:
+        user.username = update_data.username
     if update_data.email:
         user.email = update_data.email
     if update_data.role:
         user.role = update_data.role
     if update_data.password:
-        user.password = hashlib.md5(update_data.password.encode('utf-8'))
+        user.hash_password = hashlib.md5(update_data.password.encode('utf-8')).hexdigest()
     db.commit()
+    db.refresh(user)
     return user
 
 
