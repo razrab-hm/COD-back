@@ -25,7 +25,7 @@ def get_user_by_id(db: Session, user_id: int, access_level=None, from_user_id=No
         if access_level == 2:
             companies_id = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == from_user_id).all()
             for company_id in companies_id:
-                user = db.query(db_users.User).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_users.UserCompany.user_id == user_id).first()
+                user = db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_users.UserCompany.user_id == user_id).first()
                 if user:
                     return user
             raise HTTPException(status_code=406, detail="User not in yours company!")
@@ -67,7 +67,7 @@ def check_access(db, auth: AuthJWT, needed):
 def get_access_level(db, user_id):
     role = db.query(db_users.User.role).filter(db_users.User.id == user_id).first()
     if not role:
-        raise HTTPException(status_code=406, detail="Not authorizated")
+        raise HTTPException(status_code=406, detail="User does't exists")
     role = role[0]
     return 1 if role == 'root' else 2 if role == 'admin' else 3
 
@@ -116,6 +116,7 @@ def set_inactive_user(db: Session, user_id):
         raise HTTPException(status_code=403, detail="User does not exist")
     user.inactive = True
     db.commit()
+    db.refresh(user)
     return user
 
 
@@ -141,10 +142,10 @@ def get_all_users(db, access_level, user_id):
     if access_level == 1:
         return db.query(db_users.User.id, db_users.User.username).all()
     elif access_level == 2:
-        companies_id = db.query(db_users.User).filter(db_users.UserCompany.user_id == user_id).all()
+        companies_id = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == user_id).all()
         users = []
         for company_id in companies_id:
-            users.extend(db.query(db_users.User).filter(db_users.UserCompany.company_id == company_id[0]).all())
+            users.extend(db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id[0]).all())
         return users
     else:
         return []

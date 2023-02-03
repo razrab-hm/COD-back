@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
-from app.tests import conftest
+from app.tests import conftest, company_creator
 from app.tests import user_creator
 
 
@@ -146,8 +146,11 @@ def test_change_user_password_bad():
 @pytest.mark.parametrize('checker, user', [[user_creator.root_user, user_creator.user],
                                            [user_creator.admin_user, user_creator.user]])
 def test_get_users_good(checker, user):
+    company_creator.company()
+
     checker = checker(company=1)
     user = user(company=1)
+
     headers = conftest.auth_user(checker)
 
     response = client.get('/users', headers=headers)
@@ -156,4 +159,96 @@ def test_get_users_good(checker, user):
     assert response.status_code == 200
 
 
+def test_get_users_bad():
+    company_creator.company()
+    user = user_creator.user(company=1)
 
+    headers = conftest.auth_user(user)
+
+    response = client.get('/users', headers=headers)
+
+    assert response.json() == []
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize('checker, user', [[user_creator.root_user, user_creator.user],
+                                           [user_creator.admin_user, user_creator.user]])
+def test_get_user_by_id_good(checker, user):
+    company_creator.company()
+
+    checker = checker(company=1)
+    user = user(company=1)
+
+    headers = conftest.auth_user(checker)
+
+    response = client.get(f'/users/{user.id}', headers=headers)
+
+    assert response.json()['id'] == user.id
+    assert response.status_code == 200
+
+
+def test_get_user_by_id_bad():
+    company_creator.company()
+
+    checker = user_creator.user(company=1)
+    user = user_creator.user(company=1, username='user2')
+
+    headers = conftest.auth_user(checker)
+
+    response = client.get(f'/users/{user.id}', headers=headers)
+
+    assert response.json() == None
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize('root, user', [
+    [user_creator.root_user, user_creator.user],
+    [user_creator.root_user, user_creator.admin_user],
+    [user_creator.admin_user, user_creator.user]
+])
+def test_set_inactive_user_good(root, user):
+    root = root()
+    user = user()
+
+    headers = conftest.auth_user(root)
+    print(root.id)
+    response = client.delete(f'/users/{user.id}', headers=headers)
+
+    assert response.json()['id'] == user.id
+    assert response.status_code == 202
+
+
+@pytest.mark.parametrize('root, user', [
+    [user_creator.root_user, user_creator.root_user],
+    [user_creator.admin_user, user_creator.admin_user],
+    [user_creator.user, user_creator.user],
+    [user_creator.user, user_creator.admin_user],
+    [user_creator.user, user_creator.root_user]
+])
+def test_set_inactive_user_bad(root, user):
+    root = root(username='user1')
+    user = user(username='user2')
+
+    headers = conftest.auth_user(root)
+    print(root.id)
+    response = client.delete(f'/users/{user.id}', headers=headers)
+
+    assert response.json()['detail'] == "You don't have permissions"
+    assert response.status_code == 403
+
+
+@pytest.mark.parametrize('user', [user_creator.root_user, user_creator.admin_user])
+def test_get_company_users_good(user):
+    company = company_creator.company()
+    user = user(company=company.id)
+
+    headers = conftest.auth_user(user)
+
+    response = client.get(f'/users/companies/{company.id}', headers=headers)
+
+    assert len(response.json()) == 1
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize
+def test_get_company_users_bad(user)

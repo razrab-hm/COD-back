@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
@@ -49,7 +50,12 @@ def get_all_users_handler(db: Session, auth: AuthJWT):
 
 
 def set_inactive_user(db: Session, auth: AuthJWT, user_id):
-    app_users.check_access(db, auth, 1)
+    root_access = app_users.get_access_level(db, auth.get_jwt_subject())
+    print(auth.get_jwt_subject(), root_access)
+    user_access = app_users.get_access_level(db, user_id)
+    if root_access >= user_access:
+        raise HTTPException(status_code=403, detail="You don't have permissions")
+
     return app_users.set_inactive_user(db, user_id)
 
 
