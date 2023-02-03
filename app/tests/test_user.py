@@ -111,6 +111,22 @@ def test_update_user_bad(updater, to_update):
     assert response.status_code == 406
 
 
+def test_update_user_username_bad():
+    updater = user_creator.root_user()
+    to_update = user_creator.user()
+    user = user_creator.user('user2')
+
+    headers = conftest.auth_user(updater)
+    update_data = {
+        "username": "user2",
+        "id": to_update.id}
+
+    response = client.put('/users', headers=headers, json=update_data)
+
+    assert response.json()['detail'] == "User already exists"
+    assert response.status_code == 409
+
+
 def test_change_user_password_good():
     user = user_creator.user()
     headers = conftest.auth_user(user)
@@ -251,4 +267,5 @@ def test_get_company_users_good(user):
 
 
 @pytest.mark.parametrize()
-def test_get_company_users_bad(user)
+def test_get_company_users_bad(user):
+    pass

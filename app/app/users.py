@@ -88,7 +88,10 @@ def update_user(update_data, db: Session, auth):
     user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
 
     if update_data.username:
-        user.username = update_data.username
+        if not get_user_by_username(db, update_data.username):
+            user.username = update_data.username
+        else:
+            raise HTTPException(status_code=409, detail="User already exists")
     if update_data.email:
         user.email = update_data.email
     if update_data.role:
