@@ -280,3 +280,6 @@ def test_get_company_users_bad(user, company_id):
 
     assert not response.json()
     assert response.status_code == 200
+
+
+def test_add_user_companies_

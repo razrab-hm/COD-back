@@ -206,4 +206,4 @@ def get_dates_handler(auth, db):
 def update_user_companies_handler(user_id, companies_id, auth, db):
     auth.jwt_required()
     app_users.check_access(db, auth, 1)
-    return app_users.update_user_companies()
+    return app_users.update_user_companies(db, companies_id, user_id)
