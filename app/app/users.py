@@ -94,9 +94,10 @@ def update_user(update_data, db: Session, auth):
 
 
 def check_user_in_companies(db, user_id, input_companies):
-    companies = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == user_id).all
-    if input_companies not in companies:
-        raise HTTPException(status_code=403, detail="You don't have permissions to watch this company")
+    companies: list = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == user_id).all()
+    for i in input_companies:
+        if i not in [company[0] for company in companies]:
+            raise HTTPException(status_code=403, detail="You don't have permissions to watch this company")
 
 
 def set_inactive_user(db: Session, user_id):

@@ -54,8 +54,8 @@ def month_day_report(db, companies, year, month, output):
         return json_worker.month_day_report(dataset, year)
 
 
-def year_quarter_month_report(db, year, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+def year_quarter_month_report(db, companies, year, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
     dataset = auto_insert(dataset, year)
@@ -78,8 +78,8 @@ def year_quarter_month_report(db, year, output):
         return json_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
 
 
-def year_quarter_report(db, year, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+def year_quarter_report(db, companies, year, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
     dataset = auto_insert(dataset, year)
@@ -95,8 +95,8 @@ def year_quarter_report(db, year, output):
         return json_worker.year_quarter_report(dataset, quarters_sum, year)
 
 
-def year_quarter_month_day_report(db, year, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+def year_quarter_month_day_report(db, companies, year, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
     dataset = auto_insert(dataset, year)
@@ -122,8 +122,8 @@ def year_quarter_month_day_report(db, year, output):
         return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
 
 
-def quarter_month_report(db, year, quarter, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+def quarter_month_report(db, companies, year, quarter, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
     dataset = auto_insert(dataset, year)
@@ -145,8 +145,8 @@ def quarter_month_report(db, year, quarter, output):
         return json_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
 
 
-def quarter_month_day_report(db, year, quarter, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+def quarter_month_day_report(db, companies, year, quarter, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
     dataset = auto_insert(dataset, year)
