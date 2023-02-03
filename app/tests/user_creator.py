@@ -17,7 +17,7 @@ def user(username='user', company=None):
     db.commit()
 
     if company:
-        user_company = users.UserCompany(company_id=1, user_id=db_user.id)
+        user_company = users.UserCompany(company_id=company, user_id=db_user.id)
         db.add(user_company)
         db.commit()
         db.refresh(user_company)
@@ -39,7 +39,7 @@ def root_user(username='root_user', company=None):
     db.commit()
 
     if company:
-        user_company = users.UserCompany(company_id=1, user_id=db_user.id)
+        user_company = users.UserCompany(company_id=company, user_id=db_user.id)
         db.add(user_company)
         db.commit()
         db.refresh(user_company)
@@ -62,7 +62,7 @@ def admin_user(username='admin_user', company=None):
     db.commit()
 
     if company:
-        user_company = users.UserCompany(company_id=1, user_id=db_user.id)
+        user_company = users.UserCompany(company_id=company, user_id=db_user.id)
         db.add(user_company)
         db.commit()
         db.refresh(user_company)

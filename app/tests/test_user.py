@@ -266,6 +266,17 @@ def test_get_company_users_good(user):
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize()
-def test_get_company_users_bad(user):
-    pass
+@pytest.mark.parametrize('user, company_id', [[user_creator.user, 1],
+                                              [user_creator.admin_user, 2]
+                                              ])
+def test_get_company_users_bad(user, company_id):
+    company = company_creator.company()
+    company2 = company_creator.company(company_name='Test2Company', company_id=2)
+
+    user = user(company=company_id)
+
+    headers = conftest.auth_user(user)
+    response = client.get(f'/users/companies/{company.id}', headers=headers)
+
+    assert not response.json()
+    assert response.status_code == 200

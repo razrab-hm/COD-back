@@ -2,6 +2,7 @@ import hashlib
 
 from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
+from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -90,7 +91,7 @@ def update_user(update_data, db: Session, auth):
     if update_data.username:
         if not get_user_by_username(db, update_data.username):
             user.username = update_data.username
-        else:
+        elif user.username != update_data.username:
             raise HTTPException(status_code=409, detail="User already exists")
     if update_data.email:
         user.email = update_data.email
@@ -135,7 +136,8 @@ def get_company_users(db, company_id, access_level, from_user_id):
     if access_level == 1:
         return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
     elif access_level == 2:
-        if db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).filter(db_users.UserCompany.user_id == from_user_id).first():
+        print(db.query(db_users.User).join(db_users.UserCompany).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).first())
+        if db.query(db_users.User).join(db_users.UserCompany).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).first():
             return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
     else:
         return []
