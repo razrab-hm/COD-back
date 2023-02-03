@@ -43,7 +43,7 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
 
 
 @app.exception_handler(500)
-def authjwt_exception_handler(request: Request, exc: AuthJWTException):
+def authjwt_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": 'DataBase Error'})
