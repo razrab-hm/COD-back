@@ -10,12 +10,12 @@ from app.app import handlers
 router = APIRouter(prefix='/users', tags=["users"])
 
 
-@router.post('/', response_model=dto_users.User, status_code=201)
+@router.post('/', status_code=201)
 def register_user(user: dto_users.UserCreate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.create_user_handler(auth, user, db)
 
 
-@router.post('/login', response_model=dto_users.Token, status_code=202)
+@router.post('/login', status_code=202)
 def login_user(user: dto_users.UserBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.login_user_handler(db, user, auth)
 
@@ -30,12 +30,12 @@ def get_inactive(db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.get_inactive(db, auth)
 
 
-@router.put('/', response_model=dto_users.User)
+@router.put('/')
 def update_user(update_data: dto_users.UserUpdate, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.update_user_handler(update_data, db, auth)
 
 
-@router.get('/me', response_model=dto_users.User, status_code=200)
+@router.get('/me', status_code=200)
 def get_user(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_user_handler(db, auth)
 
@@ -50,7 +50,7 @@ def get_user_by_id(user_id: int, auth: AuthJWT = Depends(), db: Session = Depend
     return handlers.get_user_by_id_handler(db, user_id, auth)
 
 
-@router.delete('/{user_id}', response_model=dto_users.User, status_code=202)
+@router.delete('/{user_id}', status_code=202)
 def set_inactive_user(user_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.set_inactive_user(db, auth, user_id)
 

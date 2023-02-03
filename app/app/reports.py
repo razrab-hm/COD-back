@@ -32,8 +32,8 @@ def auto_insert(dataset, year):
     return dataset
 
 
-def month_day_report(db, year, month, output):
-    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).statement
+def month_day_report(db, companies, year, month, output):
+    statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
     # dataset = auto_insert(dataset, year)

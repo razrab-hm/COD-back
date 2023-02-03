@@ -46,7 +46,7 @@ jobs:
 #        run: docker compose up -d --build
 
       - name: Start test
-        run: pytest tests/user.py
+        run: pytest tests/test_user.py
 
 
 

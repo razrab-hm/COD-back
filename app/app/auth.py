@@ -53,7 +53,7 @@ def check_user_password(password, hash_password):
         raise HTTPException(status_code=401, detail="Username or password incorrect")
 
 
-def create_tokens(auth, user_id, role):
+def create_tokens(auth, user_id, role=None):
     access_token = auth.create_access_token(subject=user_id, expires_time=60)
     refresh_token = auth.create_refresh_token(subject=user_id)
     return {
