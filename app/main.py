@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import Err
 
 
 from app.routs.users import router as user_router
