@@ -71,6 +71,8 @@ def test_update_user_good():
           "email": "123",
           "role": "root"}
 
-    client.put('/users', headers=headers, )
+    response = client.put('/users', headers=headers, json=update_data)
+
+    assert response.json() == 1
 
 

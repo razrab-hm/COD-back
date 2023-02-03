@@ -84,6 +84,6 @@ def inactive_user():
 
 
 def auth_user(user):
-    response = client.get('/users/login', json={'username': user.username, 'password': 'qwerty'})
-    return {'Authorization': f"Bearer {response['access_token']}"}
+    response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
+    return {'Authorization': f"Bearer {response.json()['access_token']}"}
 
