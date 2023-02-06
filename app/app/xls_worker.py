@@ -55,9 +55,15 @@ def month_day_report(dataset, year):
     wb, ws = initialize_workbook(['Date', 'Year', 'Days Hashrate (EH)'])
     row_counter = 2
 
-    for day, hash_rate, average, month_name in dataset[['day', 'hash', 'average', 'month_name']].values:
-        insert_data(ws, [f'{month_name} {day}, {year}', year, hash_rate], row_counter)
-        row_counter += 1
+    date_hash_sum = dataset.groupby('date').hash.sum()
+
+    dates = []
+
+    for day, hash_rate, average, month_name, date in dataset[['day', 'hash', 'average', 'month_name', 'date']].values:
+        if date not in dates:
+            insert_data(ws, [f'{month_name} {day}, {year}', year, date_hash_sum.get(date)], row_counter)
+            row_counter += 1
+            dates.append(date)
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
@@ -104,11 +110,18 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
     wb, ws = initialize_workbook(['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)'])
     row_counter = 2
 
+    date_hash_sum = dataset.groupby('date').hash.sum()
+    date_average_sum = dataset.groupby('date').hash.sum()
+
+    dates = []
+
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average']].values:
-                insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', day_ds[3], day_ds[1]], row_counter)
-                row_counter += 1
+            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date']].values:
+                if day_ds[4] not in dates:
+                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', date_average_sum.get(day_ds[4]), date_hash_sum.get(day_ds[4])], row_counter)
+                    row_counter += 1
+                    dates.append(day_ds[4])
 
             insert_data(ws, [f'{month_name} Total', months_sum_average.get(month_name), months_sum.get(month_name)], row_counter, True)
             row_counter += 1
@@ -142,10 +155,16 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
     wb, ws = initialize_workbook(['Date', 'Year', 'Days/Months Hashrate (EH)'])
     row_counter = 2
 
+    date_hash_sum = dataset.groupby('date').hash.sum()
+
+    dates = []
+
     for month_name in dataset.month_name.unique():
-        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name']].values:
-            insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, day_ds[1]], row_counter)
-            row_counter += 1
+        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date']].values:
+            if day_ds[3] not in dates:
+                insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, date_hash_sum.get(day_ds[3])], row_counter)
+                row_counter += 1
+                dates.append(day_ds[3])
 
         insert_data(ws, [f'{month_name} Total', year, months_sum.get(month_name)], row_counter, True)
         row_counter += 1

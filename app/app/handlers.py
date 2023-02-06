@@ -60,7 +60,13 @@ def set_inactive_user(db: Session, auth: AuthJWT, user_id):
 
 
 def create_hashrate_handler(auth: AuthJWT, hashrate: dto_hashrates.HashrateBase, db: Session):
-    app_users.check_access(db, auth, 1)
+    app_companies.check_company_exists(db, hashrate.company_id)
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    if access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
+    if access_level == 2:
+        app_companies.check_user_in_company(db, auth.get_jwt_subject(), hashrate.company_id)
+
     return app_hashrates.create_hashrate(db, hashrate)
 
 

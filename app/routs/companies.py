@@ -29,7 +29,7 @@ def get_company(company_id: int, db: Session = Depends(get_db), auth: AuthJWT = 
     return handlers.get_company_by_id_handler(db, auth, company_id)
 
 
-@router.delete('/{company_id}', response_model=dto_companies.Company)
+@router.delete('/{company_id}', status_code=205)
 def set_inactive_company(company_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.set_inactive_company_handler(auth, db, company_id)
 

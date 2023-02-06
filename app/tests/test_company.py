@@ -125,19 +125,30 @@ def test_get_company_by_id_bad(user):
 
 
 def test_delete_company_good():
-    pass
+    company = company_creator.company()
+    root = user_creator.root_user(company=company.id)
+    headers = conftest.auth_user(root)
+
+    response = client.delete(f'/companies/{company.id}', headers=headers)
+
+    assert response.status_code == 205
+    assert response.json()['id'] == company.id
 
 
-def test_delete_company_bad():
-    pass
+@pytest.mark.parametrize('user, company_id, status_code, detail', [
+    [user_creator.user, 1, 406, "You don't have permissions"],
+    [user_creator.admin_user, 1, 406, "You don't have permissions"],
+    [user_creator.root_user, 2, 403, "Company does not exist"],
+])
+def test_delete_company_bad(user, company_id, status_code, detail):
+    company = company_creator.company()
+    user = user(company=company.id)
+    headers = conftest.auth_user(user)
 
+    response = client.delete(f'/companies/{company_id}', headers=headers)
 
-def test_get_user_companies_good():
-    pass
-
-
-def test_get_user_companies_bad():
-    pass
+    assert response.status_code == status_code
+    assert response.json()['detail'] == detail
 
 
 

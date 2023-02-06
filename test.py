@@ -34,8 +34,8 @@ data3 = {
   "company_id": 1
 }
 
-response = requests.post('http://localhost:8000/companies/', data=json.dumps(data), headers=headers).json()
-print(response)
+# response = requests.post('http://localhost:8000/companies/', data=json.dumps(data), headers=headers).json()
+# print(response)
 
 # response = requests.post('http://localhost:8000/users/add_company', data=json.dumps(data2), headers=headers).json()
 # print(response)
@@ -43,9 +43,9 @@ print(response)
 # response = requests.get('http://localhost:8000/hashrates/company/1', headers=headers).json()
 # print(response)
 
-file = {'file':  open('test_hr.xls', 'rb'), "company_id": 1}
+file = {'file':  open('test_hr.xls', 'rb')}
 # data4 = {'file_format': 'json', 'year': 2022}
-response = requests.post('http://localhost:8000/hashrates/import/1', files=file, headers=headers).text
+response = requests.post('http://localhost:8000/hashrates/import/2', files=file, headers=headers).text
 
 print(response)
 

@@ -9,7 +9,7 @@ from app.models.dto import hashrates as dto_hashrates
 router = APIRouter(prefix='/hashrates', tags=["hashrates"])
 
 
-@router.post('/', response_model=dto_hashrates.Hashrate)
+@router.post('/', status_code=201)
 def create_hash(hashrate: dto_hashrates.HashrateBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.create_hashrate_handler(auth, hashrate, db)
 

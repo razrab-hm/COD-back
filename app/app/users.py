@@ -185,3 +185,4 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
     db.commit()
 
     return {'message': 'success'}
+
