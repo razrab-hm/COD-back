@@ -8,10 +8,10 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, unique=True)
-    username = Column(String(50), unique=True)
+    username = Column(String(50), unique=True, nullable=False)
     email = Column(String(50), unique=True)
     hash_password = Column(Text)
-    role = Column(String)
+    role = Column(String(10))
     inactive = Column(Boolean)
     company = relationship('UserCompany')
     hashrate = relationship('Hashrate')
