@@ -5,6 +5,7 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+from app.app.logger import log
 from app.models.db import users as db_users
 from app.models.dto import users as dto_users
 from app.app import companies as app_companies
@@ -19,6 +20,7 @@ def get_user_by_email(db: Session, email: str):
 
 
 def get_user_by_id(db: Session, user_id: int, access_level=None, from_user_id=None):
+    log.input(db, user_id, access_level, from_user_id)
     if (not access_level and not from_user_id) or access_level == 1:
         return db.query(db_users.User).filter(db_users.User.id == user_id).first()
     else:
@@ -34,6 +36,7 @@ def get_user_by_id(db: Session, user_id: int, access_level=None, from_user_id=No
 
 
 def add_user_company(company_id, user_id, db):
+    log.input(company_id, user_id, db)
     data = db.query(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).filter(db_users.UserCompany.user_id == user_id).first()
     if data:
         raise HTTPException(status_code=406, detail="User already in group")
@@ -44,6 +47,7 @@ def add_user_company(company_id, user_id, db):
 
 
 def remove_user_company(company_id, user_id, db):
+    log.input(company_id, user_id, db)
     obj = db.query(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).filter(db_users.UserCompany.user_id == user_id).delete()
     db.commit()
     if obj:
@@ -53,18 +57,21 @@ def remove_user_company(company_id, user_id, db):
 
 
 def get_current_user(db, auth: AuthJWT):
+    log.input(db, auth)
     auth.jwt_required()
     current_user = get_user_by_id(db, auth.get_jwt_subject())
     return current_user
 
 
 def check_access(db, auth: AuthJWT, needed):
+    log.input(db, auth, needed)
     access_level = get_access_level(db, auth.get_jwt_subject())
     if access_level > needed:
         raise HTTPException(status_code=406, detail="You don't have permissions")
 
 
 def get_access_level(db, user_id):
+    log.input(db, user_id)
     role = db.query(db_users.User.role).filter(db_users.User.id == user_id).first()
     if not role:
         raise HTTPException(status_code=406, detail="User does't exists")
@@ -73,6 +80,7 @@ def get_access_level(db, user_id):
 
 
 def update_user(update_data, db: Session, auth):
+    log.input(update_data, db, auth)
     if update_data.role == 'root':
         check_access(db, auth, 1)
     elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
@@ -117,10 +125,12 @@ def update_user(update_data, db: Session, auth):
 
     db.commit()
     db.refresh(user)
+    log.output(user)
     return user
 
 
 def check_user_in_companies(db, user_id, input_companies):
+    log.input(db, user_id, input_companies)
     if input_companies:
         companies: list = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == user_id).all()
         for i in input_companies:
@@ -131,6 +141,7 @@ def check_user_in_companies(db, user_id, input_companies):
 
 
 def set_inactive_user(db: Session, user_id):
+    log.input(db, user_id)
     user = db.query(db_users.User).filter(db_users.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=403, detail="User does not exist")
@@ -141,6 +152,7 @@ def set_inactive_user(db: Session, user_id):
 
 
 def create_user(db: Session, user: dto_users.UserCreate):
+    log.input(db, user)
     hashed_password = hashlib.md5(user.password.encode('utf-8')).hexdigest()
     db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False, username=user.username)
     db.add(db_user)
@@ -149,6 +161,7 @@ def create_user(db: Session, user: dto_users.UserCreate):
 
 
 def get_company_users(db, company_id, access_level, from_user_id):
+    log.input(db, company_id, access_level, from_user_id)
     if access_level == 1:
         return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
     elif access_level == 2:
@@ -160,6 +173,7 @@ def get_company_users(db, company_id, access_level, from_user_id):
 
 
 def get_all_users(db, access_level, user_id):
+    log.input(db, access_level, user_id)
     if access_level == 1:
         return db.query(db_users.User.id, db_users.User.username).all()
     elif access_level == 2:
@@ -173,6 +187,7 @@ def get_all_users(db, access_level, user_id):
 
 
 def update_user_companies(db, companies_id, user_id, access_level, from_user_id):
+    log.input(db, companies_id, user_id, access_level, from_user_id)
     if access_level == 2:
         companies = app_companies.get_user_companies(from_user_id, db)
         if not (companies_id in companies or companies == companies_id):
