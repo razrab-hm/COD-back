@@ -76,6 +76,11 @@ def get_user_companies(user_id, db):
     return [company.id for company in companies]
 
 
+def get_user_companies_full(user_id, db):
+    companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
+    return companies
+
+
 def check_user_in_company(db, user_id, company_id):
     user_company = db.query(db_users.UserCompany).filter(and_(db_users.UserCompany.user_id == user_id, db_users.UserCompany.company_id == company_id)).first()
     if not user_company:

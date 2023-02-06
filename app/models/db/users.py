@@ -9,10 +9,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, unique=True)
     username = Column(String(50), unique=True, nullable=False)
-    email = Column(String(50), unique=True)
+    email = Column(String(50), unique=True, nullable=False)
     first_name = Column(String(50))
     last_name = Column(String(50))
-    hash_password = Column(Text)
+    hash_password = Column(Text, nullable=False)
     role = Column(String(10))
     inactive = Column(Boolean)
     company = relationship('UserCompany')

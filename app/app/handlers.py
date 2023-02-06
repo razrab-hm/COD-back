@@ -119,7 +119,7 @@ def set_inactive_company_handler(auth, db, company_id):
 
 def get_user_companies_handler(user_id, auth, db):
     app_users.check_access(db, auth, 1)
-    return app_companies.get_user_companies(user_id, db)
+    return app_companies.get_user_companies_full(user_id, db)
 
 
 def get_my_company_handler(auth, db):
