@@ -41,6 +41,12 @@ def update_company(db: Session, update_data):
         company.contact_phone = update_data.contact_phone
     if update_data.description:
         company.description = update_data.description
+    if update_data.inactive:
+        if update_data.inactive == 'true':
+            company.inactive = True
+        else:
+            company.inactive = False
+
     db.commit()
     db.refresh(company)
     return company

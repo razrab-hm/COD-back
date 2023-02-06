@@ -7,6 +7,7 @@ import app.app.companies as app_companies
 import app.app.users as app_users
 import app.app.hashrates as app_hashrates
 import app.app.reports as app_reports
+from app.app.logger import logger
 from app.models.dto import (companies as dto_companies,
                         users as dto_users)
 from app.models.dto import hashrates as dto_hashrates
@@ -23,6 +24,7 @@ def update_company_handler(auth: AuthJWT, company: dto_companies.CompanyUpdate, 
 
 
 def create_user_handler(auth: AuthJWT, user: dto_users.UserCreate, db: Session):
+    logger.write('test')
     app_auth.check_email_valid(user.email)
     app_auth.check_username_in_base(db, user.username)
     app_auth.check_email_in_base(db, user.email)

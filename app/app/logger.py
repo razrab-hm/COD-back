@@ -1,15 +1,15 @@
 import logging
 
-FORMAT = '%(asctime)s | %(funcName)s | %(message)s'
-logging.basicConfig(format=FORMAT, level=10, filename='logs.log')
 
-logger = logging.getLogger('api')
-logger.setLevel(10)
+class Logger:
+    def __int__(self):
+        FORMAT = '%(asctime)s | %(funcName)s | %(message)s'
+        logging.basicConfig(format=FORMAT, level=10, filename='./logs.log')
+        self.logger = logging.getLogger('api')
+        self.logger.setLevel(10)
+
+    def write(self, msg):
+        self.logger.debug(msg)
 
 
-def test(val):
-    logger.debug(val)
-    return val+1
-
-
-test(5)
+logger = Logger()

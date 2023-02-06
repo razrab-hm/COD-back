@@ -43,7 +43,7 @@ def test_reports_good(user):
 ])
 def test_reports_bad(user, company_id, detail):
     company = import_hashrate.upload()
-    company = company_creator.company(company_name='Test2Company', company_id=2)
+    company2 = company_creator.company(company_name='Test2Company', company_id=2)
     user = user(company=2, username='TestReport', email='test_report@mail.ru')
 
     headers = conftest.auth_user(user)
