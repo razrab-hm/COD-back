@@ -3,11 +3,11 @@ from pydantic import BaseModel
 
 class CompanyBase(BaseModel):
     title: str
-    contact_fio: str
+    contact_fio: str = None
     contact_email: str
-    contact_phone: str
-    img_logo: str
-    description: str
+    contact_phone: str = None
+    img_logo: str = None
+    description: str = None
 
 
 class CompanyUpdate(BaseModel):

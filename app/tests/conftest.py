@@ -16,8 +16,8 @@ from app.tests.test_user import client
 def clear_db():
     db = core_db.get_core_db()
     db.query(users.UserCompany).delete()
-    db.query(users.User).delete()
     db.query(hashrates.Hashrate).delete()
+    db.query(users.User).delete()
     db.query(companies.Company).delete()
     db.commit()
     db.close()

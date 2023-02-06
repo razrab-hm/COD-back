@@ -70,3 +70,43 @@ def test_create_hashrate_admin_not_in_company_bad(user):
     assert response.json()['detail'] == "You don't have permissions"
 
 
+@pytest.mark.parametrize('user', [
+    user_creator.root_user, user_creator.admin_user
+])
+def test_import_hashrate_good(user):
+    company = company_creator.company()
+    user = user(company=company.id)
+    headers = conftest.auth_user(user)
+
+    file = {'file': open('test_hr.xls', 'rb')}
+
+    response = client.post(f'/hashrates/import/{company.id}', headers=headers, files=file)
+
+    assert response.status_code == 200
+    assert response.json()[0] == {'status': 'new'}
+
+
+def test_import_hashrate_bad():
+    company = company_creator.company()
+    user = user_creator.user(company=company.id)
+    headers = conftest.auth_user(user)
+
+    file = {'file': open('test_hr.xls', 'rb')}
+
+    response = client.post(f'/hashrates/import/{company.id}', headers=headers, files=file)
+
+    assert response.status_code == 406
+    assert response.json()['detail'] == "You don't have permissions"
+
+
+def test_import_hashrate_company_bad():
+    company = company_creator.company()
+    user = user_creator.user(company=company.id)
+    headers = conftest.auth_user(user)
+
+    file = {'file': open('test_hr.xls', 'rb')}
+
+    response = client.post(f'/hashrates/import/2', headers=headers, files=file)
+
+    assert response.status_code == 403
+    assert response.json()['detail'] == "You don't have permissions"
