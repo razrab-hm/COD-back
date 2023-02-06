@@ -8,6 +8,8 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     email: str
+    first_name: str
+    last_name: str
 
 
 class UserUpdate(UserBase):
@@ -16,6 +18,8 @@ class UserUpdate(UserBase):
     password: str = None
     role: str = None
     username: str = None
+    first_name: str = None
+    last_name: str = None
 
 
 class UserRead(BaseModel):
