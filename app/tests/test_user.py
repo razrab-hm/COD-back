@@ -15,7 +15,9 @@ def test_register_good(username, email, password):
     data = {
         'username': username,
         'email': email,
-        'password': password
+        'password': password,
+        'last_name': 'last_name',
+        'first_name': 'first_name'
     }
     response = client.post('/users', json=data)
     print(response)
@@ -31,7 +33,9 @@ def test_register_bad(username, email, password, detail):
     data = {
         'username': username,
         'email': email,
-        'password': password
+        'password': password,
+        'last_name': 'last_name',
+        'first_name': 'first_name'
     }
 
     response = client.post('/users', json=data)
@@ -81,6 +85,8 @@ def test_update_user_good(updater, to_update):
 
     res_data = response.json()
     res_data.pop('hash_password')
+    res_data.pop('last_name')
+    res_data.pop('first_name')
     res_data.pop('inactive')
     update_data.pop('password')
 

@@ -9,6 +9,8 @@ def user(username='user', email='user@mail.ru', company=None):
 
     db_user = users.User(username=username,
                          email=email,
+                         last_name='last_name',
+                         first_name='first_name',
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='manager', inactive=False)
 
@@ -31,6 +33,8 @@ def root_user(username='root_user', email='root_user@mail.ru', company=None):
 
     db_user = users.User(username=username,
                          email=email,
+                         last_name='last_name',
+                         first_name='first_name',
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='root', inactive=False)
 
@@ -54,6 +58,8 @@ def admin_user(username='admin_user', email='admin_user@mail.ru', company=None):
 
     db_user = users.User(username=username,
                          email=email,
+                         last_name='last_name',
+                         first_name='first_name',
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='admin', inactive=False)
 
@@ -76,6 +82,8 @@ def inactive_user():
 
     db_user = users.User(username='inactive_user',
                          email='inactive_user@mail.ru',
+                         last_name='last_name',
+                         first_name='first_name',
                          hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
                          role='manager', inactive=True)
 
