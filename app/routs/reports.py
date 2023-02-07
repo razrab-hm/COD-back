@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Body
 from fastapi_jwt_auth import AuthJWT
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.app import handlers
@@ -69,3 +70,7 @@ def quarter_month_day(output_type: str = Body(...),
 def get_dates(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_dates_handler(auth, db)
 
+
+@router.get('/xlsx')
+def get_xlsx():
+    return FileResponse('xlsx.xlsx')
