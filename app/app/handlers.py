@@ -143,7 +143,6 @@ def get_user_companies_handler(user_id, auth, db):
 
 def get_my_company_handler(auth, db):
     log.input(auth, db)
-    app_users.check_access(db, auth, 1)
     return app_companies.get_user_companies_full(auth.get_jwt_subject(), db)
 
 
