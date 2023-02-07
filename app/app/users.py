@@ -123,6 +123,12 @@ def update_user(update_data, db: Session, auth):
     if update_data.last_name:
         user.last_name = update_data.last_name
 
+    if update_data.inactive:
+        if update_data.inactive == 'True':
+            user.inactive = True
+        else:
+            user.inactive = False
+
     db.commit()
     db.refresh(user)
     log.output(user)
