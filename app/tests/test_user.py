@@ -430,7 +430,7 @@ def test_add_user_companies_good(user, companies_id):
     response = client.put(f'/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
 
     assert response.json().get('updated_companies', False)
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 
 @pytest.mark.parametrize('user, companies_id', [
