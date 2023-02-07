@@ -27,12 +27,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - uses: isbang/compose-action@v1.4.1
-        with:
-          compose-file: "docker-compose.yaml"
-          down-flags: "--volumes"
-          services: |
-            db
+#      - uses: isbang/compose-action@v1.4.1
+#        with:
+#          compose-file: "docker-compose.yaml"
+#          down-flags: "--volumes"
+#          services: |
+#            db
+
+      - name: start docker
+        run: docker compose up -d
 
       - name: install depends
         run: pip install -r requirements.txt
