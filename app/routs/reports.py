@@ -73,6 +73,6 @@ def get_dates(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
 
 @router.get('/xlsx')
 def get_xlsx():
-    return FileResponse('xlsx.xls', media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={'Content-Disposition': 'attachment; filename="Book.xls"'})
+    return FileResponse('xlsx.xls', headers={'Content-Disposition': 'attachment; filename="Book.xls"'})
 
 
