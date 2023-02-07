@@ -37,10 +37,10 @@ jobs:
       - name: install depends
         run: pip install -r requirements.txt
 
-      - name: alembic
-        run: |
-          alembic revision --autogenerate
-          alembic upgrade head
+#      - name: alembic
+#        run: |
+#          alembic revision --autogenerate
+#          alembic upgrade head
 
 #      - name: Docker Build
 #        run: docker compose up -d --build

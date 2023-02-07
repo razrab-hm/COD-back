@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-os.environ['DATABASE_LINK'] = 'postgresql://root:123123@127.0.0.1:5431/db01'
+os.environ['DATABASE_LINK'] = 'postgresql://root:123123@db:5431/db01'
 os.system('alembic revision --autogenerate')
 os.system('alembic upgrade head')
 
