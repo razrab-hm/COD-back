@@ -1,12 +1,14 @@
 version: '3.1'
 services:
+
   web:
-    image: cr.yandex/crp01uukkk8lv8ng4keh/server:server
+    image: cr.yandex/crpeam5f0o0iuj2u3vtj/server:server
+    build: .
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic revision --autogenerate; alembic upgrade head; uvicorn app.main:app --host 0.0.0.0'
     volumes:
       - .:/app
     ports:
-      - 8000:8000
+      - 80:8000
 
     environment:
       - DATABASE_LINK=postgresql://root:123123@db:5432/db01

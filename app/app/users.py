@@ -6,7 +6,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.app.logger import log
-from app.models.db import users as db_users
+from app.models.db import users as db_users, companies as db_companies
 from app.models.dto import users as dto_users
 from app.app import companies as app_companies
 
@@ -25,9 +25,9 @@ def get_user_by_id(db: Session, user_id: int, access_level=None, from_user_id=No
         return db.query(db_users.User).filter(db_users.User.id == user_id).first()
     else:
         if access_level == 2:
-            companies_id = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == from_user_id).all()
+            companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == from_user_id).filter(db_companies.Company.inactive != True).all()
             for company_id in companies_id:
-                user = db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_users.UserCompany.user_id == user_id).first()
+                user = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).first()
                 if user:
                     return user
             raise HTTPException(status_code=406, detail="User not in yours company!")
@@ -132,7 +132,7 @@ def update_user(update_data, db: Session, auth):
 def check_user_in_companies(db, user_id, input_companies):
     log.input(db, user_id, input_companies)
     if input_companies:
-        companies: list = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == user_id).all()
+        companies: list = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
         for i in input_companies:
             if i not in [company[0] for company in companies]:
                 raise HTTPException(status_code=403, detail="You don't have permissions to watch this company")
@@ -163,11 +163,10 @@ def create_user(db: Session, user: dto_users.UserCreate):
 def get_company_users(db, company_id, access_level, from_user_id):
     log.input(db, company_id, access_level, from_user_id)
     if access_level == 1:
-        return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
+        return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).filter(db_companies.Company.inactive != True).all()
     elif access_level == 2:
-        print(db.query(db_users.User).join(db_users.UserCompany).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).first())
-        if db.query(db_users.User).join(db_users.UserCompany).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).first():
-            return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
+        if db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).filter(db_companies.Company.inactive != True).first():
+            return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).filter(db_companies.Company.inactive != True).all()
     else:
         return []
 
@@ -177,10 +176,10 @@ def get_all_users(db, access_level, user_id):
     if access_level == 1:
         return db.query(db_users.User.id, db_users.User.username).all()
     elif access_level == 2:
-        companies_id = db.query(db_users.UserCompany.company_id).filter(db_users.UserCompany.user_id == user_id).all()
+        companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
         users = []
         for company_id in companies_id:
-            users.extend(db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id[0]).all())
+            users.extend(db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_companies.Company.inactive != True).all())
         return users
     else:
         return []
