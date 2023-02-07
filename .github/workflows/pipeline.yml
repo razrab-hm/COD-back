@@ -51,6 +51,20 @@ jobs:
       - name: Start test
         run: pytest
 
+  deploy:
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
+      - name: docker build
+        run: docker build --tag server .
 
-    
+      - name: docker yandex login
+        run: docker login \--username oauth \--password y0_AgAAAAAUJhycAATuwQAAAADbp37TaO5aIGPWS9SpXSWOs7CFiIsYFts \cr.yandex
+
+      - name: docker yandex prepare
+        run: docker tag server \cr.yandex/crp5tgdvoc0u5hqd20ng/test2:test2
+
+      - name: docker push yandex
+        run: docker push \cr.yandex/crp5tgdvoc0u5hqd20ng/test2:test2
