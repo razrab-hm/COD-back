@@ -346,8 +346,8 @@ def test_get_user_by_id_bad():
 
     response = client.get(f'/users/{user.id}', headers=headers)
 
-    assert response.json() == None
-    assert response.status_code == 200
+    assert response.json()['detail'] == "You don't have permissions"
+    assert response.status_code == 403
 
 
 @pytest.mark.parametrize('root, user', [
@@ -429,7 +429,7 @@ def test_add_user_companies_good(user, companies_id):
     headers = conftest.auth_user(user)
     response = client.put(f'/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
 
-    assert response.json() == {'message': 'success'}
+    assert response.json().get('updated_companies', False)
     assert response.status_code == 200
 
 

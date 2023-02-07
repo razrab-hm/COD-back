@@ -160,7 +160,7 @@ def get_user_by_id_handler(db, user_id, auth):
 
 def get_inactive(db, auth: AuthJWT):
     log.input(db, auth)
-    return app_auth.check_inactive_account(db, auth.get_jwt_subject())
+    app_auth.check_inactive_account(db, auth.get_jwt_subject())
 
 
 def add_company_handler(company_id, user_id, auth, db):

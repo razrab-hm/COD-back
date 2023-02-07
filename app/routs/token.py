@@ -3,17 +3,18 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from app.app.db import get_db
+from app.models.schemas import tokens
 from app.app import handlers
 
 router = APIRouter(prefix='/tokens', tags=["tokens"])
 
 
-@router.post('/refresh')
+@router.post('/refresh', response_model=tokens.TokenCreate)
 def refresh(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.refresh_handler(auth, db)
 
 
-@router.get('/')
+@router.get('/', response_model=tokens.TokenValid)
 def check_token(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.check_token_valid(db, auth)
 

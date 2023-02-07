@@ -6,9 +6,12 @@ from roman import toRoman
 from fastapi.responses import FileResponse
 
 
+savefile = 'files/pdf.pdf'
+
+
 def initialize_document(title, data, header_rows=[]):
     doc = SimpleDocTemplate(
-        'pdf.pdf',
+        savefile,
         pagesize=A4,
         topMargin=9
     )
@@ -85,7 +88,7 @@ def initialize_document(title, data, header_rows=[]):
 
     doc.build(elements)
 
-    return FileResponse('pdf.pdf')
+    return FileResponse(savefile)
 
 
 def month_day_report(dataset, year):

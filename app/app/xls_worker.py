@@ -10,6 +10,9 @@ from roman import toRoman
 from fastapi.responses import FileResponse
 
 
+savefile = 'files/xls.xls'
+
+
 class Style(Enum):
     FONT = Font(bold=True)
     FILL = PatternFill("solid", fgColor="00C0C0C0")
@@ -67,9 +70,9 @@ def month_day_report(dataset, year):
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("xlsx.xls")
+    wb.save(savefile)
 
-    return FileResponse('xlsx.xls')
+    return FileResponse(savefile)
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
@@ -86,9 +89,9 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("xlsx.xls")
+    wb.save(savefile)
 
-    return FileResponse('xlsx.xls')
+    return FileResponse(savefile)
 
 
 def year_quarter_report(dataset, quarters_sum, year):
@@ -101,9 +104,9 @@ def year_quarter_report(dataset, quarters_sum, year):
 
     insert_data(ws, ['Totals:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("xlsx.xls")
+    wb.save(savefile)
 
-    return FileResponse('xlsx.xls')
+    return FileResponse(savefile)
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
@@ -131,9 +134,9 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     insert_data(ws, ['Totals:', dataset.average.sum(), dataset.hash.sum()], row_counter, True)
 
-    wb.save("xlsx.xls")
+    wb.save(savefile)
 
-    return FileResponse('xlsx.xls')
+    return FileResponse(savefile)
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
@@ -146,9 +149,9 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
 
     insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("xlsx.xls")
+    wb.save(savefile)
 
-    return FileResponse('xlsx.xls')
+    return FileResponse(savefile)
 
 
 def quarter_month_day_report(dataset, months_sum, year, quarter):
@@ -171,7 +174,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
 
     insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()], row_counter, True)
 
-    wb.save("xlsx.xls")
+    wb.save(savefile)
 
-    return FileResponse('xlsx.xls')
+    return FileResponse(savefile)
 

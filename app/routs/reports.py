@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.app import handlers
 from app.app.db import get_db
+from app.models.schemas import reports
 
 router = APIRouter(prefix='/reports', tags=["reports"])
 

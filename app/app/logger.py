@@ -3,7 +3,7 @@ import logging
 
 class Logger:
     FORMAT = '%(asctime)s | %(funcName)s | %(message)s'
-    logging.basicConfig(format=FORMAT, level=10, filename='./logs.log')
+    logging.basicConfig(format=FORMAT, level=10, filename='./logs/logs.log')
     logger = logging.getLogger('api')
     logger.setLevel(10)
 

@@ -32,7 +32,7 @@ def get_user_by_id(db: Session, user_id: int, access_level=None, from_user_id=No
                     return user
             raise HTTPException(status_code=406, detail="User not in yours company!")
         else:
-            pass
+            raise HTTPException(status_code=403, detail="You don't have permissions")
 
 
 def add_user_company(company_id, user_id, db):
@@ -167,6 +167,8 @@ def get_company_users(db, company_id, access_level, from_user_id):
     elif access_level == 2:
         if db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).filter(db_companies.Company.inactive != True).first():
             return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).filter(db_companies.Company.inactive != True).all()
+        else:
+            return []
     else:
         return []
 
@@ -197,11 +199,14 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
     db.query(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).delete()
     db.commit()
 
+    response = []
+
     for i in companies_id:
         obj = db_users.UserCompany(user_id=user_id, company_id=i)
+        response.append(obj)
         db.add(obj)
 
     db.commit()
 
-    return {'message': 'success'}
+    return {'updated_companies': response}
 
