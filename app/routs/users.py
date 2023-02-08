@@ -52,7 +52,7 @@ def get_all_users(role: str = Query(default='all'),
                   inactive: bool = Query(default=False),
                   auth: AuthJWT = Depends(),
                   db: Session = Depends(get_db)):
-    return handlers.get_all_users_handler(db, auth, role, companies_id,inactive)
+    return handlers.get_all_users_handler(db, auth, role, companies_id, inactive)
 
 
 @router.get('/{user_id}', response_model=users.UserGetId)

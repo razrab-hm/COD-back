@@ -106,7 +106,7 @@ def get_user_companies_full(user_id, db):
 
 def check_user_in_company(db, user_id, company_id):
     log.input(db, user_id, company_id)
-    user_company = db.query(db_users.UserCompany).filter(and_(db_users.UserCompany.user_id == user_id, db_users.UserCompany.company_id == company_id)).filter(db_companies.Company.inactive != True).first()
+    user_company = db.query(db_users.UserCompany).join(db_companies.Company).filter(and_(db_users.UserCompany.user_id == user_id, db_users.UserCompany.company_id == company_id)).filter(db_companies.Company.inactive != True).first()
     if not user_company:
         raise HTTPException(status_code=406, detail="You don't have permissions")
     return True
