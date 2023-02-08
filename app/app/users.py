@@ -188,6 +188,9 @@ def get_all_users(db, access_level, user_id):
         users = []
         for company_id in companies_id:
             users.extend(db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_companies.Company.inactive != True).all())
+        for user in users:
+            while users.count(user) > 1:
+                users.remove(user)
         return users
     else:
         return []
