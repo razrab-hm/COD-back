@@ -1,8 +1,6 @@
 FROM python:3.9.4-slim
 
-RUN mkdir "/app"
-
-WORKDIR /app
+WORKDIR .
 
 # set env variables
 ENV PYTHONDONTWRITEBYTECODE 1
