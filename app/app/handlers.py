@@ -266,3 +266,9 @@ def update_user_companies_handler(user_id, companies_id, auth, db):
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
     return app_users.update_user_companies(db, companies_id, user_id, access_level, auth.get_jwt_subject())
 
+
+def new_user_handler(user, db, auth):
+    log.input(user, db, auth)
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    return app_users.new_user_with_companies(user, db, auth, access_level)
+

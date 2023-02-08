@@ -45,3 +45,6 @@ def get_my_companies(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_my_company_handler(auth, db)
 
 
+
+
+

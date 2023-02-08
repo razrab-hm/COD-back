@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from app.app.logger import log
 from app.models.db import users as db_users, companies as db_companies
-from app.models.dto import users as dto_users
 from app.app import companies as app_companies
 
 
@@ -157,13 +156,13 @@ def set_inactive_user(db: Session, user_id):
     return user
 
 
-def create_user(db: Session, user: dto_users.UserCreate):
+def create_user(db: Session, user):
     log.input(db, user)
     hashed_password = hashlib.md5(user.password.encode('utf-8')).hexdigest()
-    db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False, username=user.username)
+    db_user = db_users.User(email=user.email, hash_password=hashed_password, role='manager', inactive=False, username=user.username, last_name=user.last_name, first_name=user.first_name)
     db.add(db_user)
     db.commit()
-    return {'username': db_user.username, 'role': db_user.role}
+    return {'username': db_user.username, 'role': db_user.role, 'id': db_user.id}
 
 
 def get_company_users(db, company_id, access_level, from_user_id):
@@ -218,4 +217,15 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
     db.commit()
 
     return {'updated_companies': response}
+
+
+def new_user_with_companies(user, db, auth, access_level):
+    if access_level == 1:
+        new_user = create_user(db, user)
+        update_user_companies(db, user.companies_id, new_user['id'], access_level, auth.get_jwt_subject())
+    elif access_level == 2:
+        new_user = create_user(db, user)
+        update_user_companies(db, user.companies_id, new_user['id'], access_level, auth.get_jwt_subject())
+    else:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
 

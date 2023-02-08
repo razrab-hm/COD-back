@@ -12,6 +12,13 @@ class UserCreate(UserBase):
     last_name: str = None
 
 
+class UserCreateAdmin(UserBase):
+    email: str
+    first_name: str = None
+    last_name: str = None
+    companies_id: list[int]
+
+
 class UserUpdate(UserBase):
     id: int
     email: str = None
