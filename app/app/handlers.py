@@ -30,7 +30,8 @@ def create_user_handler(auth: AuthJWT, user: dto_users.UserCreate, db: Session):
     app_auth.check_email_valid(user.email)
     app_auth.check_username_in_base(db, user.username)
     app_auth.check_email_in_base(db, user.email)
-    return app_users.create_user(db, user)
+    db_user = app_users.create_user(db, user)
+    return {'username': db_user.username, 'role': db_user.role}
 
 
 def update_user_handler(update_data: dto_users.UserUpdate, db: Session, auth: AuthJWT):
