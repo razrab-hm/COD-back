@@ -137,7 +137,7 @@ def set_inactive_company_handler(auth, db, company_id):
 
 def get_user_companies_handler(user_id, auth, db):
     log.input(user_id, auth, db)
-    app_users.check_access(db, auth, 1)
+    app_users.check_access(db, auth, 2)
     return app_companies.get_user_companies_full(user_id, db)
 
 
