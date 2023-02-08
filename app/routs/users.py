@@ -49,9 +49,10 @@ def get_user(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
 @router.get('/', status_code=200, response_model=list[users.UserGetId])
 def get_all_users(role: str = Query(default='all'),
                   companies_id: list[int] = Query(default=[0]),
+                  inactive: bool = Query(default=False),
                   auth: AuthJWT = Depends(),
                   db: Session = Depends(get_db)):
-    return handlers.get_all_users_handler(db, auth, role, companies_id)
+    return handlers.get_all_users_handler(db, auth, role, companies_id,inactive)
 
 
 @router.get('/{user_id}', response_model=users.UserGetId)

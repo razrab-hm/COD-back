@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
@@ -21,8 +21,8 @@ def update_company(company: dto_companies.CompanyUpdate, db: Session = Depends(g
 
 
 @router.get('/', response_model=list[companies.CompaniesGet])
-def get_company(db: Session = Depends(get_db), auth: AuthJWT = Depends()):
-    return handlers.get_companies_handler(db, auth)
+def get_company(inactive: bool = Query(default=False), db: Session = Depends(get_db), auth: AuthJWT = Depends()):
+    return handlers.get_companies_handler(db, auth, inactive)
 
 
 @router.get('/company/{company_id}', response_model=companies.CompanyGetId)

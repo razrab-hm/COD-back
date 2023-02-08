@@ -185,7 +185,7 @@ def get_company_users(db, company_id, access_level, from_user_id):
         return []
 
 
-def get_all_users(db, access_level, user_id, role, companies_id):
+def get_all_users(db, access_level, user_id, role, companies_id, inactive):
     log.input(db, access_level, user_id)
     if access_level == 1:
         query = db.query(db_users.User.id, db_users.User.username)
@@ -199,6 +199,9 @@ def get_all_users(db, access_level, user_id, role, companies_id):
                 query = query.filter(db_users.User.id.notin_(user_ids))
             else:
                 query = query.join(db_users.UserCompany).filter(db_users.UserCompany.company_id.in_(companies_id))
+
+        if inactive:
+            query = query.filter(db_users.User.inactive == True)
 
         return query.all()
 
@@ -218,6 +221,9 @@ def get_all_users(db, access_level, user_id, role, companies_id):
                     query = query.filter(db_users.User.id.notin_(user_ids))
                 else:
                     query = query.join(db_users.UserCompany).filter(db_users.UserCompany.company_id.in_(companies_id))
+
+            if inactive:
+                query = query.filter(db_users.User.inactive == True)
 
             users.extend(query.all())
         for user in users:

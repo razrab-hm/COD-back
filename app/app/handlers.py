@@ -52,12 +52,12 @@ def check_token_valid(db: Session, auth: AuthJWT):
     return {"message": 'success', 'role': db_user.role}
 
 
-def get_all_users_handler(db: Session, auth: AuthJWT, role, companies_id):
+def get_all_users_handler(db: Session, auth: AuthJWT, role, companies_id, inactive):
     print(role, companies_id)
     log.input(db, auth, role, companies_id)
     # access_level = app_users.get_access_level(db, auth.get_jwt_subject())
     access_level = 1
-    return app_users.get_all_users(db, access_level, auth.get_jwt_subject(), role, companies_id)
+    return app_users.get_all_users(db, access_level, auth.get_jwt_subject(), role, companies_id, inactive)
 
 
 def set_inactive_user(db: Session, auth: AuthJWT, user_id):
@@ -101,10 +101,10 @@ def get_all_hashrates_handler(db, auth):
     return app_hashrates.get_all_hashrates(db)
 
 
-def get_companies_handler(db, auth):
+def get_companies_handler(db, auth, inactive):
     log.input(db, auth)
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
-    return app_companies.get_companies(db, auth.get_jwt_subject(), access_level)
+    return app_companies.get_companies(db, auth.get_jwt_subject(), access_level, inactive)
 
 
 def get_company_by_id_handler(db, auth, company_id):

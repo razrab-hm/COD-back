@@ -55,12 +55,18 @@ def update_company(db: Session, update_data):
     return company
 
 
-def get_companies(db, user_id, access_level):
+def get_companies(db, user_id, access_level, inactive):
     log.input(db, user_id, access_level)
     if access_level == 1:
-        return db.query(db_companies.Company).all()
+        query = db.query(db_companies.Company)
+        if inactive:
+            query = query.filter(db_companies.Company.inactive == True)
+        return query.all()
     elif access_level == 2:
-        return db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
+        query = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id)
+        if inactive:
+            query = query.filter(db_companies.Company.inactive == True)
+        return query.all()
     else:
         return []
 
