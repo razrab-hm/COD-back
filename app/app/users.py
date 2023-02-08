@@ -206,7 +206,12 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
     log.input(db, companies_id, user_id, access_level, from_user_id)
     if access_level == 2:
         companies = app_companies.get_user_companies(from_user_id, db)
-        if not (companies_id in companies or companies == companies_id):
+        suc = False
+        for i in companies_id:
+            if i in companies:
+                suc = True
+                break
+        if not (suc or companies == companies_id):
             raise HTTPException(status_code=406, detail="You don't have permissions")
     elif access_level == 3:
         raise HTTPException(status_code=406, detail="You don't have permissions")
