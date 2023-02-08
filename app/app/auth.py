@@ -7,8 +7,9 @@ from sqlalchemy.orm import Session
 from app.app.logger import log
 from app.app.users import get_user_by_username, get_user_by_email
 from app.models.db import auth as db_token
-from app.models.db import users as db_users
+from app.models.db import users as db_users, companies as db_companies
 from app.models.dto import users as dto_users
+from app.app import companies as app_companies
 
 
 def check_username_in_base(db, username, login=False):
@@ -85,6 +86,14 @@ def check_refresh_token_is_in_blacklist(db, jti):
     token_in_blacklist = db.query(db_token.Token).filter(db_token.Token.refresh_token == jti).first()
     if token_in_blacklist:
         raise HTTPException(status_code=401, detail="Refresh token is inactive. Please login again")
+
+
+def check_inactive_company(db, user_id):
+    companies_ids = app_companies.get_user_companies(db, user_id)
+    for company_id in companies_ids:
+        if not db.query(db_companies.Company.inactive).filter(db_companies.Company.id == company_id).first():
+            return
+    raise HTTPException(status_code=407, detail="Your companies was inactive")
 
 
 @AuthJWT.load_config

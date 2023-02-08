@@ -55,8 +55,7 @@ def check_token_valid(db: Session, auth: AuthJWT):
 def get_all_users_handler(db: Session, auth: AuthJWT, role, companies_id, inactive):
     print(role, companies_id)
     log.input(db, auth, role, companies_id)
-    # access_level = app_users.get_access_level(db, auth.get_jwt_subject())
-    access_level = 1
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
     return app_users.get_all_users(db, access_level, auth.get_jwt_subject(), role, companies_id, inactive)
 
 
@@ -118,6 +117,7 @@ def login_user_handler(db, user, auth):
     bd_user = app_auth.check_username_in_base(db, user.username, True)
     app_auth.check_user_password(user.password, bd_user.hash_password)
     app_auth.check_inactive_account(db, bd_user.id)
+    app_auth.check_inactive_company(db, bd_user.id)
     response = app_auth.create_tokens(auth, bd_user.id)
     response['role'] = bd_user.role
     return response
