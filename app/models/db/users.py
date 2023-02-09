@@ -14,6 +14,7 @@ class User(Base):
     last_name = Column(String(50))
     hash_password = Column(Text, nullable=False)
     role = Column(String(10))
+    description = Column(String(50))
     inactive = Column(Boolean)
     company = relationship('UserCompany')
     hashrate = relationship('Hashrate')

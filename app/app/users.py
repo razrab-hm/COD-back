@@ -175,7 +175,8 @@ def create_user(db: Session, user):
                             inactive=False,
                             username=user.username,
                             last_name=user.last_name,
-                            first_name=user.first_name)
+                            first_name=user.first_name,
+                            description=user.description)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

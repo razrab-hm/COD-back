@@ -10,6 +10,7 @@ class UserCreate(UserBase):
     email: str
     first_name: str = None
     last_name: str = None
+    description: str = ''
 
 
 class UserCreateAdmin(UserBase):
