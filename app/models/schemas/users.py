@@ -50,6 +50,7 @@ class UserGetId(BaseModel):
     username: str = None
     first_name: str = None
     last_name: str = None
+    description: str = None
 
 
 class UserCompany(BaseModel):
