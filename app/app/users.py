@@ -78,10 +78,20 @@ def get_access_level(db, user_id):
     return 1 if role == 'root' else 2 if role == 'admin' else 3
 
 
+def get_count_active_root_users(db):
+    users = db.query(db_users.User).filter(db_users.User.role == 'root').filter(db_users.User.inactive != True).all()
+    return len(users)
+
+
 def update_user(update_data, db: Session, auth):
     log.input(update_data, db, auth)
     if update_data.role == 'root':
         check_access(db, auth, 1)
+        if update_data.inactive:
+            if update_data.inactive == 'True':
+                if get_count_active_root_users(db) < 2:
+                    raise HTTPException(status_code=406, detail="You can't set inactive last root user")
+
     elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
         check_access(db, auth, 2)
         if get_access_level(db, update_data.id) < 3:
