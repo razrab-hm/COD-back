@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+from app.app import users as app_users
 from app.app.logger import log
 from app.models.db import companies as db_companies
 from app.models.db import users as db_users
@@ -98,6 +99,10 @@ def get_user_companies(user_id, db):
 
 
 def get_user_companies_full(user_id, db):
+    if app_users.get_access_level(db, user_id) == 1:
+        companies = db.query(db_companies.Company).filter(db_companies.Company.inactive != True).all()
+        return companies
+
     log.input(user_id, db)
     companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
     log.output(companies)
