@@ -188,10 +188,12 @@ def get_company_users(db, company_id, access_level, from_user_id):
 def get_all_users(db, access_level, user_id, role, company_ids, inactive):
     log.input(db, access_level, user_id)
     if access_level == 1:
-        query = db.query(db_users.User.id, db_users.User.username)
+        query = db.query(db_users.User)
+
         if role != 'all':
             query = query.filter(db_users.User.role == role)
         if company_ids != [0]:
+
             if company_ids == [-1]:
                 company_ids = []
             if not company_ids:
