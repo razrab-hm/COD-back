@@ -21,8 +21,8 @@ class Style(Enum):
 
 def get_xls_data(file: UploadFile):
     if file.filename.split('.')[-1] == 'csv':
-        csv = pd.read_csv(file.file)
 
+        csv = pd.read_csv(file.file)
         if type(csv.values[0][0]) == str:
             return zip(csv[csv.keys()[0]], csv[csv.keys()[1]])
         else:
