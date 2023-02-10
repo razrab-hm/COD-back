@@ -95,3 +95,4 @@ def update_user_companies(user_id: int = Body(...),
     return handlers.update_user_companies_handler(user_id, companies_id, auth, db)
 
 
+

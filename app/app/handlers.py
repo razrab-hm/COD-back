@@ -90,8 +90,9 @@ def get_my_hashrates_handler(auth: AuthJWT, db):
 
 def get_company_hashrate_handler(company_id, db, auth):
     log.input(company_id, db, auth)
-    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
-    return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level, auth.get_jwt_subject())
+    user_id = auth.get_jwt_subject()
+    access_level = app_users.get_access_level(db, user_id)
+    return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level)
 
 
 def get_all_hashrates_handler(db, auth):
