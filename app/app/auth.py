@@ -93,7 +93,10 @@ def check_inactive_company(db, user_id):
     for company_id in companies_ids:
         if not db.query(db_companies.Company.inactive).filter(db_companies.Company.id == company_id).first():
             return True
-    raise HTTPException(status_code=407, detail="Your companies was inactive")
+    if companies_ids:
+        return False
+    else:
+        return True
 
 
 @AuthJWT.load_config
