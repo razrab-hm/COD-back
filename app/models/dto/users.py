@@ -18,6 +18,7 @@ class UserCreateAdmin(UserBase):
     first_name: str = None
     last_name: str = None
     companies_id: list[int]
+    description: str = ''
 
 
 class UserUpdate(UserBase):
