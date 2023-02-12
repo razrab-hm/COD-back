@@ -185,8 +185,7 @@ def remove_company_handler(company_id, user_id, auth, db):
 def get_xls_handler(file, db, company_id, auth):
     log.input(file, db, company_id, auth)
     app_companies.check_company_exists(db, company_id)
-    # access_level = app_users.get_access_level(db, auth.get_jwt_subject())
-    access_level = 1
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
     if access_level == 3:
         raise HTTPException(status_code=406, detail="You don't have permissions")
     if access_level == 2:
@@ -279,4 +278,11 @@ def new_user_handler(user, db, auth):
     log.input(user, db, auth)
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
     return app_users.new_user_with_companies(user, db, auth, access_level)
+
+
+def update_company_users_handler(company_id, users_id, auth, db):
+    log.input(company_id, users_id, auth, db)
+    auth.jwt_required()
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    return app_companies.update_company_users(db, users_id, company_id, access_level, auth.get_jwt_subject())
 

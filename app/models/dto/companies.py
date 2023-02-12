@@ -19,6 +19,7 @@ class CompanyUpdate(BaseModel):
     img_logo: str = None
     description: str = None
     inactive: str = None
+    users: list = []
 
 
 class CompanyRead(BaseModel):

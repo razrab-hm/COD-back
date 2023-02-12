@@ -115,3 +115,25 @@ def check_user_in_company(db, user_id, company_id):
     if not user_company:
         raise HTTPException(status_code=406, detail="You don't have permissions")
     return True
+
+
+def update_company_users(db, users_id, company_id, access_level, user_id):
+    log.input(db, users_id, company_id, access_level, user_id)
+    if access_level == 2:
+        check_user_in_company(db, user_id, company_id)
+    elif access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
+
+    db.query(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).delete()
+    db.commit()
+
+    response = []
+
+    for i in users_id:
+        obj = db_users.UserCompany(user_id=i, company_id=company_id)
+        response.append(obj)
+        db.add(obj)
+
+    db.commit()
+
+    return {'updated_users': response}

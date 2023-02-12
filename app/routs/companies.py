@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Body
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
@@ -45,6 +45,11 @@ def get_my_companies(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_my_company_handler(auth, db)
 
 
-
+@router.put('/update_users')
+def update_user_companies(company_id: int = Body(...),
+                          users_id: list[int] = Body(...),
+                          auth: AuthJWT = Depends(),
+                          db: Session = Depends(get_db)):
+    return handlers.update_company_users_handler(company_id, users_id, auth, db)
 
 
