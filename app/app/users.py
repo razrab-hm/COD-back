@@ -87,11 +87,6 @@ def update_user(update_data, db: Session, auth):
     log.input(update_data, db, auth)
     if update_data.role == 'root':
         check_access(db, auth, 1)
-        if update_data.inactive:
-            if update_data.inactive == 'True':
-                if get_count_active_root_users(db) < 2:
-                    raise HTTPException(status_code=406, detail="You can't set inactive last root user")
-
     elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
         check_access(db, auth, 2)
         if get_access_level(db, update_data.id) < 3:
@@ -106,7 +101,7 @@ def update_user(update_data, db: Session, auth):
 
     root_access = get_access_level(db, auth.get_jwt_subject())
     to_access = get_access_level(db, user.id)
-    if root_access >= to_access and auth.get_jwt_subject() != user.id:
+    if root_access >= to_access and auth.get_jwt_subject() != user.id and root_access != 1:
         raise HTTPException(status_code=406, detail="You don't have permissions")
 
     if update_data.username:
