@@ -2,11 +2,8 @@
 
 name: pipeline
 env:
-  POSTGRES_PASSWORD: 123123
-  POSTGRES_USER: root
-  POSTGRES_DB: db01
-  POSTGRES_HOST: db
-  DATABASE_LINK: postgresql://root:123123@127.0.0.1:5432/db01
+  DOCKER_LOGIN: ${{ vars.DOCKER_LOGIN }}
+  DOCKER_PASSWORD: ${{ vars.DOCKER_PASSWORD }}
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -15,6 +12,7 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -60,3 +58,5 @@ jobs:
       - name: docker build
         run: docker build --tag backcod/back:prod .
 
+      - name: docker login
+        run: docker login --username '${{ DOCKER_LOGIN }}' --password '${{ DOCKER_PASSWORD }}'
