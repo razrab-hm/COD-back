@@ -15,6 +15,7 @@ class UserLogin(BaseModel):
     access_token: str
     refresh_token: str
     role: str = 'manager'
+    message: str = None
 
 
 class UserLogout(BaseModel):

@@ -89,11 +89,12 @@ def check_refresh_token_is_in_blacklist(db, jti):
 
 
 def check_inactive_company(db, user_id):
-    companies_ids = app_companies.get_user_companies(user_id, db)
+    companies_ids = app_companies.get_user_companies_with_inactive(user_id, db)
     for company_id in companies_ids:
-        if not db.query(db_companies.Company.inactive).filter(db_companies.Company.id == company_id).first():
+        if not db.query(db_companies.Company.inactive).filter(db_companies.Company.id == company_id).first()[0]:
             return True
     if companies_ids:
+        print(companies_ids)
         return False
     else:
         return True
