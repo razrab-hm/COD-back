@@ -7,7 +7,7 @@ from app.models.schemas import users
 from app.models.dto import users as dto_users
 from app.app import handlers
 
-router = APIRouter(prefix='/users', tags=["users"])
+router = APIRouter(prefix='/users', tags=["users123"])
 
 
 @router.post('/', status_code=201, response_model=users.UserRegister)
