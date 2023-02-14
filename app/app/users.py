@@ -181,10 +181,10 @@ def create_user(db: Session, user):
 def get_company_users(db, company_id, access_level, from_user_id):
     log.input(db, company_id, access_level, from_user_id)
     if access_level == 1:
-        return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).filter(db_companies.Company.inactive != True).all()
+        return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
     elif access_level == 2:
-        if db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).filter(db_companies.Company.inactive != True).first():
-            return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).filter(db_companies.Company.inactive != True).all()
+        if db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).first():
+            return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).all()
         else:
             return []
     else:
@@ -216,28 +216,34 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
     elif access_level == 2:
         companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
         users = []
+
         for company_id in companies_id:
             company_id = company_id[0]
             query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id)
-
             if role != 'all':
                 query = query.filter(db_users.User.role == role)
+
             if company_ids != [0]:
-                if company_ids == [-1]:
-                    company_ids = []
-                if not company_ids:
-                    user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
-                    query = query.filter(db_users.User.id.notin_(user_ids))
-                else:
-                    query = query.join(db_users.UserCompany).filter(db_users.UserCompany.company_id.in_(companies_id))
+                if company_ids and companies_id != [-1]:
+                    query = query.filter(db_users.UserCompany.company_id.in_(company_ids))
 
             if inactive:
                 query = query.filter(db_users.User.inactive == True)
-
             else:
                 query = query.filter(db_companies.Company.inactive != True)
 
             users.extend(query.all())
+
+        query = db.query(db_users.User)
+
+        if company_ids != [0]:
+            if company_ids == [-1]:
+                user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
+
+                query = query.filter(db_users.User.id.notin_(user_ids))
+
+        users.extend(query.all())
+
         for user in users:
             while users.count(user) > 1:
                 users.remove(user)

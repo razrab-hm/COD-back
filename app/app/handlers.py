@@ -53,7 +53,6 @@ def check_token_valid(db: Session, auth: AuthJWT):
 
 
 def get_all_users_handler(db: Session, auth: AuthJWT, role, companies_id, inactive):
-    print(role, companies_id)
     log.input(db, auth, role, companies_id)
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
     return app_users.get_all_users(db, access_level, auth.get_jwt_subject(), role, companies_id, inactive)
