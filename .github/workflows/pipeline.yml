@@ -11,37 +11,17 @@ on:
   workflow_dispatch:
 
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   tests:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-#      - uses: isbang/compose-action@v1.4.1
-#        with:
-#          compose-file: "docker-compose.yaml"
-#          down-flags: "--volumes"
-#          services: |
-#            db
 
       - name: start docker
         run: docker compose up -d
 
       - name: install depends
         run: pip install -r requirements.txt
-
-#      - name: alembic
-#        run: |
-#          alembic revision --autogenerate
-#          alembic upgrade head
-
-#      - name: Docker Build
-#        run: docker compose up -d --build
 
       - name: Start test
         run: pytest
@@ -60,3 +40,15 @@ jobs:
 
       - name: docker push
         run: docker push ${{ secrets.DOCKER_LOGIN }}/back:prod
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            - whoami
+            - cd docker
+            - ls
