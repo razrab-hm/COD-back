@@ -12,6 +12,21 @@ on:
 
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            whoami
+            cd docker
+            ls
+
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -49,6 +64,6 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            - whoami
-            - cd docker
-            - ls
+            whoami
+            cd docker
+            ls
