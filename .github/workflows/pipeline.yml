@@ -50,6 +50,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd docker
-            docker rmi ${{ secrets.DOCKER_LOGIN }}/back --force
+            docker rmi ${{ secrets.DOCKER_LOGIN }}/back:prod --force
             docker compose down
             docker compose up -d
