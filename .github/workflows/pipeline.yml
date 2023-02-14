@@ -57,3 +57,6 @@ jobs:
 
       - name: docker login
         run: docker login --username '${{ secrets.DOCKER_LOGIN }}' --password '${{ secrets.DOCKER_PASSWORD }}'
+
+      - name: docker push
+        run: docker push ${{ secrets.DOCKER_LOGIN }}/back:prod
