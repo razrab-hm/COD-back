@@ -61,7 +61,7 @@ def test_login_bad(username, password, detail):
 def test_login_inactive_bad():
     user = user_creator.inactive_user()
     response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
-    assert response.status_code == 401
+    assert response.status_code == 403
     assert response.json()['detail'] == 'Inactive account!'
 
 
