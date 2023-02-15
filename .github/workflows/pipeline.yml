@@ -52,4 +52,5 @@ jobs:
             cd docker
             docker rmi ${{ secrets.DOCKER_LOGIN }}/back:prod --force
             docker compose down
+            docker login --username '${{ secrets.DOCKER_LOGIN }}' --password '${{ secrets.DOCKER_PASSWORD }}'
             docker compose up -d

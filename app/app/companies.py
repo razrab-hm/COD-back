@@ -74,7 +74,7 @@ def get_companies(db, user_id, access_level, inactive):
 
 def check_company_exists(db, company_id):
     log.input(db, company_id)
-    company = db.query(db_companies.Company).filter(db_companies.Company.id == company_id).filter(db_companies.Company.inactive != True).first()
+    company = db.query(db_companies.Company).filter(db_companies.Company.id == company_id).first()
     if not company:
         raise HTTPException(status_code=403, detail="Company does not exist")
 
