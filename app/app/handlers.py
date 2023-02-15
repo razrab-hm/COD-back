@@ -120,7 +120,8 @@ def login_user_handler(db, user, auth):
     response = app_auth.create_tokens(auth, bd_user.id)
     if not app_auth.check_inactive_company(db, bd_user.id):
         if bd_user.role != 'root':
-            response['message'] = "All your companies inactive"
+            raise HTTPException(status_code=403, detail="All your companies inactive")
+            # response['message'] = "All your companies inactive"
 
     response['role'] = bd_user.role
     return response
