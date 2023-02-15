@@ -107,11 +107,11 @@ def get_user_companies_with_inactive(user_id, db):
 
 def get_user_companies_full(user_id, db):
     if app_users.get_access_level(db, user_id) == 1:
-        companies = db.query(db_companies.Company).filter(db_companies.Company.inactive != True).all()
+        companies = db.query(db_companies.Company).all()
         return companies
 
     log.input(user_id, db)
-    companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
+    companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
     log.output(companies)
     return companies
 
