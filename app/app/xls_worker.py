@@ -90,7 +90,7 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            insert_data(ws, [month_name, year, months_sum.get(month_name)], row_counter)
+            insert_data(ws, [month_name, year, round(months_sum.get(month_name), 2)], row_counter)
             row_counter += 1
 
         insert_data(ws, [f'{toRoman(quarter[0])} Quarter', year, round(quarter_sum.get(quarter[0]), 2)], row_counter, True)
