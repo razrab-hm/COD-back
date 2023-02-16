@@ -13,7 +13,7 @@ from app.app import db as core_db
 
 from app.tests.test_user import client
 
-
+#
 @pytest.fixture(autouse=True)
 def clear_db():
     db = core_db.get_core_db()
