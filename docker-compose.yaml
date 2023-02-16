@@ -11,7 +11,7 @@ services:
       POSTGRES_HOST: 127.0.0.1
 
     ports:
-      - $DB_PORT:5432
+      - 5432:5432
 
   db-test:
     image: postgres
@@ -23,4 +23,4 @@ services:
       POSTGRES_HOST: 127.0.0.1
 
     ports:
-      - $DB_TEST_PORT:5432
+      - 5431:5432

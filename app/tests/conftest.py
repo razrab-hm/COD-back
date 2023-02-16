@@ -2,7 +2,9 @@ import os
 
 import pytest
 
+# Edit link here and in docker compose
 os.environ['DATABASE_LINK'] = 'postgresql://root:123123@127.0.0.1:5431/db01'
+
 os.system('alembic revision --autogenerate')
 os.system('alembic upgrade head')
 
