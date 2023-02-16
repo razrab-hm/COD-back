@@ -119,6 +119,7 @@ def login_user_handler(db, user, auth):
     app_auth.check_inactive_account(db, bd_user.id)
     app_auth.check_inactive_company(db, bd_user.id, bd_user.role)
     response['role'] = bd_user.role
+    response['username'] = bd_user.username
     return response
 
 
