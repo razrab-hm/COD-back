@@ -102,10 +102,10 @@ def month_day_report(dataset, year):
 
     for day, hash, average, date in dataset[['day', 'hash', 'average', 'date']].values:
         if date not in dates:
-            table_data.append([f'{month_name[0:3]}. {day}, {year}', year, date_hash_sum.get(date)])
+            table_data.append([f'{month_name[0:3]}. {day}, {year}', year, round(date_hash_sum.get(date), 2)])
             dates.append(date)
 
-    table_data.append(['Totals', year, dataset.hash.sum()])
+    table_data.append(['Totals', year, round(dataset.hash.sum(), 2)])
 
     title = f'Month by Day Report - {month_name} {year}'
 
@@ -120,14 +120,14 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            table_data.append([month_name, year, months_sum.get(month_name)])
+            table_data.append([month_name, year, round(months_sum.get(month_name), 2)])
             row_counter += 1
 
-        table_data.append([f'{toRoman(quarter[0])} Quarter', year, quarter_sum.get(quarter[0])])
+        table_data.append([f'{toRoman(quarter[0])} Quarter', year, round(quarter_sum.get(quarter[0]), 2)])
         header_rows.append(row_counter)
         row_counter += 1
 
-    table_data.append(['Totals:', year, dataset.hash.sum()])
+    table_data.append(['Totals:', year, round(dataset.hash.sum(), 2)])
 
     title = f'Year by months/quarters - {year}'
 
@@ -138,9 +138,9 @@ def year_quarter_report(dataset, quarters_sum, year):
     table_data = [['Quarter', 'Year', 'Quarter hashrate (EH)']]
 
     for quarter_pk, quarter_sum in quarters_sum.items():
-        table_data.append([f'{toRoman(quarter_pk)} Quarter', year, quarter_sum])
+        table_data.append([f'{toRoman(quarter_pk)} Quarter', year, round(quarter_sum, 2)])
 
-    table_data.append(['Totals:', year, dataset.hash.sum()])
+    table_data.append(['Totals:', year, round(dataset.hash.sum(), 2)])
 
     title = f'Year by Quarter Report - {year}'
 
@@ -162,19 +162,19 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
             for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date']].values:
                 if day_ds[4] not in dates:
-                    table_data.append([f'{month_name} {day_ds[0]}, {year}', date_average_sum.get(day_ds[4]), date_hash_sum.get(day_ds[4])])
+                    table_data.append([f'{month_name} {day_ds[0]}, {year}', round(date_average_sum.get(day_ds[4]), 2), round(date_hash_sum.get(day_ds[4]), 2)])
                     row_counter += 1
                     dates.append(day_ds[4])
 
-            table_data.append([f'{month_name} Total', months_sum_average.get(month_name), months_sum.get(month_name)])
+            table_data.append([f'{month_name} Total', round(months_sum_average.get(month_name), 2), round(months_sum.get(month_name), 2)])
             header_rows.append(row_counter)
             row_counter += 1
 
-        table_data.append([f'{toRoman(quarter[0])} Quarter', quarter_sum_average.get(quarter[0]),quarter_sum.get(quarter[0])])
+        table_data.append([f'{toRoman(quarter[0])} Quarter', round(quarter_sum_average.get(quarter[0]), 2), round(quarter_sum.get(quarter[0]), 2)])
         header_rows.append(row_counter)
         row_counter += 1
 
-    table_data.append(['Totals:', dataset.average.sum(), dataset.hash.sum()])
+    table_data.append(['Totals:', dataset.average.sum(), round(dataset.hash.sum(), 2)])
 
     title = f'Year by day/months/quarters - {year}'
 
@@ -185,9 +185,9 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
     table_data = [['Month', 'Year', 'Months/Quarterly Hashrate (EH)']]
 
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
-        table_data.append([month_name, year, month_sum])
+        table_data.append([month_name, year, round(month_sum, 2)])
 
-    table_data.append([f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()])
+    table_data.append([f'Totals {toRoman(quarter)} Quarter:', year, round(dataset.hash.sum(), 2)])
 
     title = f'Quarterly by months/quarters - {toRoman(quarter)} Quarter {year}'
 
@@ -207,15 +207,15 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
     for month_name in dataset.month_name.unique():
         for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date']].values:
             if day_ds[3] not in dates:
-                table_data.append([f'{month_name} {day_ds[0]}, {year}', year, date_hash_sum.get(day_ds[3])])
+                table_data.append([f'{month_name} {day_ds[0]}, {year}', year, round(date_hash_sum.get(day_ds[3]), 2)])
                 row_counter += 1
                 dates.append(day_ds[3])
 
-        table_data.append([f'{month_name} Total', year, months_sum.get(month_name)])
+        table_data.append([f'{month_name} Total', year, round(months_sum.get(month_name), 2)])
         header_rows.append(row_counter)
         row_counter += 1
 
-    table_data.append([f'Totals {toRoman(quarter)} Quarter:', year, dataset.hash.sum()])
+    table_data.append([f'Totals {toRoman(quarter)} Quarter:', year, round(dataset.hash.sum(), 2)])
 
     title = f'Quarterly by days/months - {toRoman(quarter)} Quarter {year}'
 
