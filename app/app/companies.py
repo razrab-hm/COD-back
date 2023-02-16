@@ -111,7 +111,7 @@ def get_user_companies_full(user_id, db):
         return companies
 
     log.input(user_id, db)
-    companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).all()
+    companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
     log.output(companies)
     return companies
 
