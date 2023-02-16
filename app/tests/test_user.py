@@ -58,6 +58,43 @@ def test_login_bad(username, password, detail):
     assert response.json()['detail'] == detail
 
 
+@pytest.mark.parametrize('user', [user_creator.user, user_creator.admin_user])
+def test_login_bad_companies(user):
+    company1 = company_creator.company(company_name='TestComp1', company_id=1)
+    company2 = company_creator.company(company_name='TestComp2', company_id=2)
+    root = user_creator.root_user('rooter', 'hz@mail.ru')
+    user = user(company=company1.id)
+    headers = conftest.auth_user(root)
+    data = {
+        'user_id': user.id,
+        'companies_id': [1, 2]
+    }
+
+    data = client.put('/users/update_companies', json=data, headers=headers)
+    assert data.json()['updated_companies'][0] == {'company_id': 1, 'user_id': user.id}
+    data = client.delete('/companies/1', headers=headers)
+    assert data.json()['inactive'] is True
+    data = client.delete('/companies/2', headers=headers)
+    assert data.json()['inactive'] is True
+    data = {
+        'username': user.username,
+        'password': 'qwerty'
+    }
+    data = client.post('/users/login', json=data)
+    assert data.json()['detail'] == 'All your companies inactive'
+
+
+@pytest.mark.parametrize('user', [user_creator.user, user_creator.admin_user])
+def test_login_bad_companies2(user):
+    user = user(company=0)
+    data = {
+        'username': user.username,
+        'password': 'qwerty'
+    }
+    data = client.post('/users/login', json=data)
+    assert data.json()['detail'] == "You don't have companies"
+
+
 def test_login_inactive_bad():
     user = user_creator.inactive_user()
     response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
@@ -450,3 +487,23 @@ def test_add_user_companies_bad(user, companies_id):
     assert response.json()['detail'] == "You don't have permissions"
     assert response.status_code == 406
 
+
+def test_set_me_inactive():
+    admin = user_creator.admin_user()
+    headers = conftest.auth_user(admin)
+
+    data = client.delete(f'/users/{admin.id}', headers=headers)
+    assert data.json()['detail'] == "You don't have permissions"
+
+
+def test_set_me_inactive2():
+    admin = user_creator.admin_user()
+    headers = conftest.auth_user(admin)
+
+    data = {
+        'id': admin.id,
+        'inactive': True
+    }
+
+    data = client.put(f'/users', json=data, headers=headers)
+    assert data.json()['detail'] == "You can't set inactive to yourself"

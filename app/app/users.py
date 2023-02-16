@@ -103,6 +103,9 @@ def update_user(update_data, db: Session, auth):
     to_access = get_access_level(db, user.id)
     if root_access >= to_access and auth.get_jwt_subject() != user.id and root_access != 1:
         raise HTTPException(status_code=406, detail="You don't have permissions")
+    if auth.get_jwt_subject() == user.id:
+        if update_data.inactive:
+            raise HTTPException(status_code=406, detail="You can't set inactive to yourself")
 
     if update_data.username:
         if not get_user_by_username(db, update_data.username):
