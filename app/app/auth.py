@@ -101,6 +101,15 @@ def check_inactive_company(db, user_id, role):
             raise HTTPException(status_code=406, detail="You don't have companies")
 
 
+def check_symbols(user):
+    email = user.email.split('@')
+    strokes = [user.username, user.first_name, user.last_name, email[0], email[1].replace('.', '')]
+    for s in strokes:
+        if not (s.isalpha() or s.isspace()):
+            print(s)
+            raise HTTPException(status_code=406, detail="Symbols in your data not ascii symbols, please check username, firstname, lastname, email")
+
+
 @AuthJWT.load_config
 def get_config():
     return dto_users.Settings()

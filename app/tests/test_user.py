@@ -8,16 +8,16 @@ from app.tests import conftest, company_creator
 from app.tests import user_creator
 
 
-@pytest.mark.parametrize('username, email, password', [('test1', 'test1@mail.ru', 'qwerty'),
-                                                       ('test2', 'test2@gmail.com', 'qwerty'),
-                                                       ('test3', 'test3@gmail.com', 'qwerty')])
+@pytest.mark.parametrize('username, email, password', [('testq', 'testq@mail.ru', 'qwerty'),
+                                                       ('testw', 'testw@gmail.com', 'qwerty'),
+                                                       ('teste', 'teste@gmail.com', 'qwerty')])
 def test_register_good(username, email, password):
     data = {
         'username': username,
         'email': email,
         'password': password,
-        'last_name': 'last_name',
-        'first_name': 'first_name'
+        'last_name': 'lastname',
+        'first_name': 'firstname'
     }
     response = client.post('/users', json=data)
     print(response)
@@ -27,7 +27,8 @@ def test_register_good(username, email, password):
 @pytest.mark.parametrize('username, email, password, detail', [['user', 'abc@mail.ru', 'qwerty', 'Username already registered'],
                                                                ['user2', 'user@mail.ru', 'qwerty', 'Email already registered'],
                                                                ['user2', 'unvalidmail1', 'qwerty', 'Email is not valid'],
-                                                               ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid']])
+                                                               ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid'],
+                                                               ['<div>', 'hello@mail.ru', 'qwerty', 'Symbols in your data not ascii symbols, please check username, firstname, lastname, email']])
 def test_register_bad(username, email, password, detail):
     user_creator.user()
     data = {
