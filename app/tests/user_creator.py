@@ -2,9 +2,10 @@ import hashlib
 
 from app.models.db import users
 from app.app import db as core_db
+from app.tests import company_creator
 
 
-def user(username='user', email='user@mail.ru', company=None):
+def user(username='user', email='user@mail.ru', company=100):
     db = core_db.get_core_db()
 
     db_user = users.User(username=username,
@@ -16,7 +17,11 @@ def user(username='user', email='user@mail.ru', company=None):
 
     db.add(db_user)
     db.commit()
-
+    if company == 100:
+        try:
+            company_creator.company('StandardCompany', 100)
+        except:
+            pass
     if company:
         user_company = users.UserCompany(company_id=company, user_id=db_user.id)
         db.add(user_company)
@@ -53,9 +58,8 @@ def root_user(username='root_user', email='root_user@mail.ru', company=None):
     return db_user
 
 
-def admin_user(username='admin_user', email='admin_user@mail.ru', company=None):
+def admin_user(username='admin_user', email='admin_user@mail.ru', company=100):
     db = core_db.get_core_db()
-
     db_user = users.User(username=username,
                          email=email,
                          last_name='last_name',
@@ -65,7 +69,11 @@ def admin_user(username='admin_user', email='admin_user@mail.ru', company=None):
 
     db.add(db_user)
     db.commit()
-
+    if company == 100:
+        try:
+            company_creator.company('StandardCompany', 100)
+        except:
+            pass
     if company:
         user_company = users.UserCompany(company_id=company, user_id=db_user.id)
         db.add(user_company)
