@@ -241,7 +241,7 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
             if company_ids == [-1]:
                 user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
 
-                query = query.filter(db_users.User.id.notin_(user_ids))
+                query = query.filter(db_users.User.id.notin_(user_ids)).filter(db_users.User.role != 'root')
 
         users.extend(query.all())
 

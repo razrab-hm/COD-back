@@ -101,53 +101,6 @@ def check_inactive_company(db, user_id, role):
             raise HTTPException(status_code=406, detail="You don't have companies")
 
 
-# def check_symbols(user):
-#     email = user.email.split('@')
-#     strokes = [user.username, user.first_name, user.last_name, email[0], email[1].replace('.', '')]
-#     if user.description:
-#         strokes.append(user.description)
-#     for s in strokes:
-#         if not (s.isalpha() or s.isspace()):
-#             print(s)
-#             raise HTTPException(status_code=406, detail="Symbols in your data not ascii symbols, please check username, firstname, lastname, email")
-#
-#
-# def check_symbols_company(company):
-#     email = company.contact_email.split('@')
-#     strokes = [company.title, company.contact_fio, email[0], email[1].replace('.', ''), company.description]
-#     for s in strokes:
-#         if not (s.replace(' ', '').isalpha()):
-#             print(s)
-#             raise HTTPException(status_code=406, detail="Symbols in your data not ascii symbols, please check username, firstname, lastname, email")
-#
-#     try:
-#         int(company.contact_phone)
-#     except:
-#         raise HTTPException(status_code=406, detail="Phone incorrect")
-#
-#
-# def check_symbols_user_update(update):
-#     strokes = []
-#     if update.email:
-#         email = update.email.split('@')
-#         strokes.append(email[0])
-#         strokes.append(email[1].replace('.', ''))
-#     if update.role:
-#         if update.role not in ['root', 'admin', 'manager']:
-#             raise HTTPException(status_code=406, detail="Role incorrect")
-#     if update.username:
-#         strokes.append(update.username)
-#     if update.first_name:
-#         strokes.append(update.first_name)
-#     if update.last_name:
-#         strokes.append(update.last_name)
-#     for s in strokes:
-#         if not (s.isalpha() or s.isspace()):
-#             print(s)
-#             raise HTTPException(status_code=406,
-#                                 detail="Symbols in your data not ascii symbols, please check username, firstname, lastname, email")
-#
-
 @AuthJWT.load_config
 def get_config():
     return dto_users.Settings()
