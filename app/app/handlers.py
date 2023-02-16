@@ -116,13 +116,8 @@ def login_user_handler(db, user, auth):
     log.input(db, user, auth)
     bd_user = app_auth.check_username_in_base(db, user.username, True)
     app_auth.check_user_password(user.password, bd_user.hash_password)
-    app_auth.check_inactive_account(db, bd_user.id)
     response = app_auth.create_tokens(auth, bd_user.id)
-    if not app_auth.check_inactive_company(db, bd_user.id):
-        if bd_user.role != 'root':
-            raise HTTPException(status_code=406, detail="All your companies inactive")
-            # response['message'] = "All your companies inactive"
-
+    app_auth.check_inactive_company(db, bd_user.id, bd_user.role)
     response['role'] = bd_user.role
     return response
 

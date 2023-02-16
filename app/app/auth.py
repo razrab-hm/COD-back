@@ -88,16 +88,17 @@ def check_refresh_token_is_in_blacklist(db, jti):
         raise HTTPException(status_code=401, detail="Refresh token is inactive. Please login again")
 
 
-def check_inactive_company(db, user_id):
+def check_inactive_company(db, user_id, role):
     companies_ids = app_companies.get_user_companies_with_inactive(user_id, db)
     for company_id in companies_ids:
         if not db.query(db_companies.Company.inactive).filter(db_companies.Company.id == company_id).first()[0]:
             return True
     if companies_ids:
-        print(companies_ids)
-        return False
+        if role != 'root':
+            raise HTTPException(status_code=406, detail="All your companies inactive")
     else:
-        return True
+        if role != 'root':
+            raise HTTPException(status_code=406, detail="You don't have companies")
 
 
 @AuthJWT.load_config
