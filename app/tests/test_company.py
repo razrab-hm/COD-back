@@ -11,9 +11,8 @@ def test_create_company_good():
     data = {
               "title": "TestCompany",
               "contact_fio": "TestFIO",
-              "contact_email": "TestContactEmail",
+              "contact_email": "TestContactEmail@mail.ru",
               "contact_phone": "+7952111111",
-              "img_logo": "test_logo_path",
               "description": "test description"
             }
     response = client.post('/companies', headers=headers, json=data)
@@ -21,6 +20,38 @@ def test_create_company_good():
     assert response.status_code == 201
     assert response.json()['title'] == data['title']
     assert response.json()['contact_fio'] == data['contact_fio']
+
+
+def test_create_company_bad_username():
+    user = user_creator.root_user()
+    headers = conftest.auth_user(user)
+    data = {
+              "title": "TestCompany<div>",
+              "contact_fio": "TestFIO",
+              "contact_email": "TestContactEmail@mail.ru",
+              "contact_phone": "+7952111111",
+              "description": "test description"
+            }
+    response = client.post('/companies', headers=headers, json=data)
+
+    assert response.status_code == 406
+    assert response.json()['detail'] == 'Symbols in your fields not ascii symbols or numerics'
+
+
+def test_create_company_bad_phone():
+    user = user_creator.root_user()
+    headers = conftest.auth_user(user)
+    data = {
+              "title": "TestCompany",
+              "contact_fio": "TestFIO",
+              "contact_email": "TestContactEmail@mail.ru",
+              "contact_phone": "+sd7952111111",
+              "description": "test description"
+            }
+    response = client.post('/companies', headers=headers, json=data)
+
+    assert response.status_code == 406
+    assert response.json()['detail'] == 'Phone incorrect'
 
 
 @pytest.mark.parametrize('user', [user_creator.admin_user, user_creator.user])
@@ -48,8 +79,8 @@ def test_update_company_good():
     data = {'id': company.id,
             'title': 'TestTitle',
             'contact_fio': 'TestFIO',
-            'contact_email': 'TestEMAIL',
-            'contact_phone': 'TestPHONE',
+            'contact_email': 'TestEMAIL@mail.ru',
+            'contact_phone': '+799999999',
             'img_logo': 'testLOGO',
             'description': 'TEST DESCRIPTION'
             }

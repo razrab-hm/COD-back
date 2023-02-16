@@ -27,10 +27,8 @@ def update_company_handler(auth: AuthJWT, company: dto_companies.CompanyUpdate, 
 
 def create_user_handler(auth: AuthJWT, user: dto_users.UserCreate, db: Session):
     log.input(auth, user, db)
-    app_auth.check_email_valid(user.email)
     app_auth.check_username_in_base(db, user.username)
     app_auth.check_email_in_base(db, user.email)
-    app_auth.check_symbols(user)
     db_user = app_users.create_user(db, user)
     return {'username': db_user.username, 'role': db_user.role}
 
@@ -274,7 +272,6 @@ def update_user_companies_handler(user_id, companies_id, auth, db):
 def new_user_handler(user, db, auth):
     log.input(user, db, auth)
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
-    app_auth.check_symbols(user)
     return app_users.new_user_with_companies(user, db, auth, access_level)
 
 

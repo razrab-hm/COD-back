@@ -33,7 +33,7 @@ def user(username='user', email='user@mail.ru', company=100):
     return db_user
 
 
-def root_user(username='root_user', email='root_user@mail.ru', company=None):
+def root_user(username='rootuser', email='root_user@mail.ru', company=None):
     db = core_db.get_core_db()
 
     db_user = users.User(username=username,
@@ -58,7 +58,7 @@ def root_user(username='root_user', email='root_user@mail.ru', company=None):
     return db_user
 
 
-def admin_user(username='admin_user', email='admin_user@mail.ru', company=100):
+def admin_user(username='adminuser', email='admin_user@mail.ru', company=100):
     db = core_db.get_core_db()
     db_user = users.User(username=username,
                          email=email,
@@ -88,7 +88,7 @@ def admin_user(username='admin_user', email='admin_user@mail.ru', company=100):
 def inactive_user():
     db = core_db.get_core_db()
 
-    db_user = users.User(username='inactive_user',
+    db_user = users.User(username='inactiveuser',
                          email='inactive_user@mail.ru',
                          last_name='last_name',
                          first_name='first_name',

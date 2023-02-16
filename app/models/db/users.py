@@ -1,7 +1,15 @@
+import string
+
+from fastapi import HTTPException
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from app.app.db import Base
+
+
+symbols = list(string.ascii_lowercase) + list('0123456789_-.')
+email_symobls = symbols + list('@')
+description_symbols = email_symobls + list(',!#$%^& ')
 
 
 class User(Base):
@@ -18,6 +26,46 @@ class User(Base):
     inactive = Column(Boolean)
     company = relationship('UserCompany')
     hashrate = relationship('Hashrate')
+
+    @validates("username")
+    def validate_username(self, key, username):
+        username = username.lower()
+        for symbol in username:
+            if symbol not in symbols:
+                raise HTTPException(status_code=406, detail="Symbols in your username not ascii symbols or numerics")
+        return username
+
+    @validates("email")
+    def validate_email(self, key, email):
+        email = email.lower()
+        for symbol in email:
+            if symbol not in email_symobls:
+                raise HTTPException(status_code=406, detail="Symbols in your email not ascii symbols or numerics")
+        spemail = email.split('@')
+        if len(spemail) != 2:
+            raise HTTPException(status_code=406, detail="Email is not valid")
+        _, host = spemail
+        host = host.split('.')
+        if len(host) != 2:
+            raise HTTPException(status_code=406, detail="Email is not valid")
+        return email
+
+    @validates("first_name", "last_name")
+    def validate_fields(self, key, field):
+        field = field.lower()
+        for symbol in field:
+            if symbol not in symbols:
+                raise HTTPException(status_code=406, detail="Symbols in your firstname or lastname not ascii symbols or numerics")
+        return field
+
+    @validates("description")
+    def validate_description(self, key, description):
+        description = description.lower()
+        for symbol in description:
+            if symbol not in description_symbols:
+                raise HTTPException(status_code=406,
+                                    detail="Symbols in your description not ascii symbols or numerics")
+        return description
 
 
 class UserCompany(Base):

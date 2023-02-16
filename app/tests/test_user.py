@@ -28,15 +28,15 @@ def test_register_good(username, email, password):
                                                                ['user2', 'user@mail.ru', 'qwerty', 'Email already registered'],
                                                                ['user2', 'unvalidmail1', 'qwerty', 'Email is not valid'],
                                                                ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid'],
-                                                               ['<div>', 'hello@mail.ru', 'qwerty', 'Symbols in your data not ascii symbols, please check username, firstname, lastname, email']])
+                                                               ['<div>', 'hello@mail.ru', 'qwerty', 'Symbols in your username not ascii symbols or numerics']])
 def test_register_bad(username, email, password, detail):
     user_creator.user()
     data = {
         'username': username,
         'email': email,
         'password': password,
-        'last_name': 'last_name',
-        'first_name': 'first_name'
+        'last_name': 'lastname',
+        'first_name': 'firstname'
     }
 
     response = client.post('/users', json=data)
@@ -113,10 +113,10 @@ def test_update_user_good(updater, to_update):
     to_update = to_update('user2', 'mail3@mail.ru')
     headers = conftest.auth_user(updater)
     update_data = {
-          "username": "123",
+          "username": "hello",
           "password": "123",
           "id": to_update.id,
-          "email": "123@mail.ru",
+          "email": "hdger@mail.ru",
           "role": "admin"}
 
     response = client.put('/users', headers=headers, json=update_data)
@@ -138,11 +138,11 @@ def test_update_user_good(updater, to_update):
     [user_creator.root_user, user_creator.admin_user]
 ])
 def test_update_user_username_good(updater, to_update):
-    updater = updater('user1', 'mail2@mail.ru')
-    to_update = to_update('user2', 'mail3@mail.ru')
+    updater = updater('userd', 'mails@mail.ru')
+    to_update = to_update('userx', 'mailz@mail.ru')
     headers = conftest.auth_user(updater)
     update_data = {
-          "username": "1232",
+          "username": "hello",
           "id": to_update.id}
 
     response = client.put('/users', headers=headers, json=update_data)
@@ -163,13 +163,13 @@ def test_update_user_username_good(updater, to_update):
     [user_creator.root_user, user_creator.admin_user]
 ])
 def test_update_user_username_bad(updater, to_update):
-    updater = updater('user1', 'mail2@mail.ru')
-    to_update = to_update('user2', 'mail3@mail.ru')
+    updater = updater('usersaf', 'mailasd@mail.ru')
+    to_update = to_update('usersdf', 'mailfsdf@mail.ru')
 
     headers = conftest.auth_user(updater)
 
     update_data = {
-        "username": "user1",
+        "username": "usersaf",
         "id": to_update.id
     }
 

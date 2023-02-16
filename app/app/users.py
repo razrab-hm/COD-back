@@ -115,8 +115,6 @@ def update_user(update_data, db: Session, auth):
 
     if update_data.email:
         if not get_user_by_email(db, update_data.email):
-            from app.app.auth import check_email_valid
-            check_email_valid(update_data.email)
             user.email = update_data.email
         elif user.email != update_data.email:
             raise HTTPException(status_code=409, detail="Email already exists")
