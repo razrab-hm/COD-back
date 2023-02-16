@@ -123,7 +123,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
     row_counter = 2
 
     date_hash_sum = dataset.groupby('date').hash.sum()
-    date_average_sum = dataset.groupby('date').hash.sum()
+    date_average_sum = dataset.groupby('date').average.sum()
 
     dates = []
 
