@@ -29,6 +29,13 @@ def get_user_by_id(db: Session, user_id: int, access_level=None, from_user_id=No
                 user = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id[0]).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).first()
                 if user:
                     return user
+                else:
+                    query = db.query(db_users.User)
+                    user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
+                    user = query.filter(db_users.User.id.notin_(user_ids)).filter(db_users.User.id == user_id).first()
+                    if user:
+                        return user
+
             raise HTTPException(status_code=406, detail="User not in yours company!")
         else:
             raise HTTPException(status_code=403, detail="You don't have permissions")
