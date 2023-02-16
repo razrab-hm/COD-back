@@ -142,12 +142,12 @@ def set_inactive_company_handler(auth, db, company_id):
 def get_user_companies_handler(user_id, auth, db):
     log.input(user_id, auth, db)
     app_users.check_access(db, auth, 2)
-    return app_companies.get_user_companies_full(user_id, db)
+    return app_companies.get_user_companies_full_admin(user_id, db)
 
 
 def get_my_company_handler(auth, db):
     log.input(auth, db)
-    return app_companies.get_user_companies_full(auth.get_jwt_subject(), db)
+    return app_companies.get_user_companies_full_me(auth.get_jwt_subject(), db)
 
 
 def get_company_users_handler(db, company_id, auth):

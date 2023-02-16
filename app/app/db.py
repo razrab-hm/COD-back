@@ -8,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_LINK')
-# DATABASE_URL = 'postgresql://root:123123@db:5432/db01'
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
