@@ -48,7 +48,7 @@ def check_token_valid(db: Session, auth: AuthJWT):
     log.input(db, auth)
     auth.jwt_required()
     db_user = app_users.get_user_by_id(db, auth.get_jwt_subject())
-    return {"message": 'success', 'role': db_user.role}
+    return {"message": 'success', 'role': db_user.role, 'username': db_user.username}
 
 
 def get_all_users_handler(db: Session, auth: AuthJWT, role, companies_id, inactive):
