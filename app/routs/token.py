@@ -14,7 +14,7 @@ def refresh(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.refresh_handler(auth, db)
 
 
-@router.get('/', response_model=tokens.TokenValid)
+@router.get('/')
 def check_token(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.check_token_valid(db, auth)
 
