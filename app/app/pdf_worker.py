@@ -174,7 +174,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
         header_rows.append(row_counter)
         row_counter += 1
 
-    table_data.append(['Totals:', dataset.average.sum(), round(dataset.hash.sum(), 2)])
+    table_data.append(['Totals:', round(dataset.average.sum(), 2), round(dataset.hash.sum(), 2)])
 
     title = f'Year by day/months/quarters - {year}'
 

@@ -20,7 +20,7 @@ def new_user(user: dto_users.UserCreateAdmin, db: Session = Depends(get_db), aut
     return handlers.new_user_handler(user, db, auth)
 
 
-@router.post('/login', status_code=202, response_model=users.UserLogin)
+@router.post('/login', status_code=202)
 def login_user(user: dto_users.UserBase, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.login_user_handler(db, user, auth)
 
