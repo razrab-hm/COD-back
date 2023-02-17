@@ -18,7 +18,7 @@ class CompanyUpdate(BaseModel):
     contact_phone: str = None
     img_logo: str = None
     description: str = None
-    inactive: str = None
+    inactive: bool = None
     users: list = []
 
 
