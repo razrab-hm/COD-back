@@ -21,8 +21,8 @@ def create_company_handler(auth: AuthJWT, company: dto_companies.CompanyBase, db
 
 def update_company_handler(auth: AuthJWT, company: dto_companies.CompanyUpdate, db: Session):
     log.input(auth, company, db)
-    app_users.check_access(db, auth, 1)
-    return app_companies.update_company(db, company)
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    return app_companies.update_company(db, company, access_level, auth.get_jwt_subject())
 
 
 def create_user_handler(auth: AuthJWT, user: dto_users.UserCreate, db: Session):

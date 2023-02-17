@@ -29,8 +29,12 @@ def get_company_by_id(db: Session, company_id: int, access_level, user_id):
         raise HTTPException(status_code=406, detail="You don't have permissions")
 
 
-def update_company(db: Session, update_data):
+def update_company(db: Session, update_data, access_level, user_id):
     log.input(db, update_data)
+    if access_level == 2:
+        check_user_in_company(db, user_id, update_data.id)
+    elif access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
     company = db.query(db_companies.Company).filter(db_companies.Company.id == update_data.id).first()
     if update_data.title:
         company.title = update_data.title

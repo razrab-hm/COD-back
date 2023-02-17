@@ -54,3 +54,4 @@ jobs:
             docker compose down
             docker login --username '${{ secrets.DOCKER_LOGIN }}' --password '${{ secrets.DOCKER_PASSWORD }}'
             docker compose up -d
+            docker system prune -a
