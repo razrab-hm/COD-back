@@ -40,14 +40,14 @@ def get_data_from_file(file, db, company_id, user_id):
             except:
                 hashrate = float(str(hashrate.replace(',', '.')[:-1]))
         if not db_hashrate:
-            to_db_hashrate = db_hashrates.Hashrate(date=date, average=round(hashrate / 86400 * 1000, 3), hash=round(hashrate, 3), company_id=company_id, user_id=user_id)
+            to_db_hashrate = db_hashrates.Hashrate(date=date, average=round(hashrate, 3), hash=round(hashrate * 86400 / 1000, 3), company_id=company_id, user_id=user_id)
             to_output_hashrate = to_db_hashrate.__dict__
             to_output_hashrate['status'] = 'new'
             hashrate_list.append(to_output_hashrate)
             db.add(to_db_hashrate)
         else:
-            db_hashrate.average = round(hashrate/86400*1000, 3)
-            db_hashrate.hash = hashrate
+            db_hashrate.average = round(hashrate, 3)
+            db_hashrate.hash = round(hashrate*86400/1000, 3)
             db_hashrate.user_id = user_id
             to_output_hashrate = db_hashrate.__dict__
             to_output_hashrate['status'] = 'updated'
