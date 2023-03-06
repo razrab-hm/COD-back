@@ -19,7 +19,7 @@ def test_register_good(username, email, password):
         'last_name': 'lastname',
         'first_name': 'firstname'
     }
-    response = client.post('/users', json=data)
+    response = client.post('/api/users', json=data)
     print(response)
     assert response.status_code == 201
 
@@ -39,14 +39,14 @@ def test_register_bad(username, email, password, detail):
         'first_name': 'firstname'
     }
 
-    response = client.post('/users', json=data)
+    response = client.post('/api/users', json=data)
     assert response.status_code == 406
     assert response.json()['detail'] == detail
 
 
 def test_login_good():
     user = user_creator.user()
-    response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
+    response = client.post('/api/users/login', json={'username': user.username, 'password': 'qwerty'})
     print(response)
     assert response.status_code == 202
 
@@ -54,7 +54,7 @@ def test_login_good():
 @pytest.mark.parametrize('username, password, detail', [['test2', 'qwer', 'Username or password incorrect'],
                                                         ['test', 'qwerty', 'Username or password incorrect']])
 def test_login_bad(username, password, detail):
-    response = client.post('/users/login', json={'username': username, 'password': password})
+    response = client.post('/api/users/login', json={'username': username, 'password': password})
     assert response.status_code == 401
     assert response.json()['detail'] == detail
 
@@ -71,17 +71,17 @@ def test_login_bad_companies(user):
         'companies_id': [1, 2]
     }
 
-    data = client.put('/users/update_companies', json=data, headers=headers)
+    data = client.put('/api/users/update_companies', json=data, headers=headers)
     assert data.json()['updated_companies'][0] == {'company_id': 1, 'user_id': user.id}
-    data = client.delete('/companies/1', headers=headers)
+    data = client.delete('/api/companies/1', headers=headers)
     assert data.json()['inactive'] is True
-    data = client.delete('/companies/2', headers=headers)
+    data = client.delete('/api/companies/2', headers=headers)
     assert data.json()['inactive'] is True
     data = {
         'username': user.username,
         'password': 'qwerty'
     }
-    data = client.post('/users/login', json=data)
+    data = client.post('/api/users/login', json=data)
     assert data.json()['detail'] == 'All your companies inactive'
 
 
@@ -92,13 +92,13 @@ def test_login_bad_companies2(user):
         'username': user.username,
         'password': 'qwerty'
     }
-    data = client.post('/users/login', json=data)
+    data = client.post('/api/users/login', json=data)
     assert data.json()['detail'] == "You don't have companies"
 
 
 def test_login_inactive_bad():
     user = user_creator.inactive_user()
-    response = client.post('/users/login', json={'username': user.username, 'password': 'qwerty'})
+    response = client.post('/api/users/login', json={'username': user.username, 'password': 'qwerty'})
     assert response.status_code == 403
     assert response.json()['detail'] == 'Inactive account!'
 
@@ -119,7 +119,7 @@ def test_update_user_good(updater, to_update):
           "email": "hdger@mail.ru",
           "role": "admin"}
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
     res_data.pop('hash_password')
@@ -145,7 +145,7 @@ def test_update_user_username_good(updater, to_update):
           "username": "hello",
           "id": to_update.id}
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
 
@@ -173,7 +173,7 @@ def test_update_user_username_bad(updater, to_update):
         "id": to_update.id
     }
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
 
@@ -194,7 +194,7 @@ def test_update_user_email_good(updater, to_update):
           "email": "1232@mail.ru",
           "id": to_update.id}
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
 
@@ -222,7 +222,7 @@ def test_update_user_email_bad(updater, to_update):
         "id": to_update.id
     }
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
 
@@ -243,7 +243,7 @@ def test_update_user_password_good(updater, to_update):
           "password": "qwer",
           "id": to_update.id}
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
 
@@ -270,7 +270,7 @@ def test_update_user_password_bad(updater, to_update):
         "id": to_update.id
     }
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     res_data = response.json()
 
@@ -295,7 +295,7 @@ def test_update_user_bad(updater, to_update):
         "email": "123",
         "role": "root"}
 
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
 
     assert response.json()['detail'] == "You don't have permissions"
     assert response.status_code == 406
@@ -308,7 +308,7 @@ def test_change_user_password_good():
         "id": user.id,
         "password": 'qwer'
     }
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
     res_data = response.json()
 
     assert res_data['id'] == update_data['id']
@@ -323,7 +323,7 @@ def test_change_user_password_bad():
         "id": user2.id,
         "password": 'qwer'
     }
-    response = client.put('/users', headers=headers, json=update_data)
+    response = client.put('/api/users', headers=headers, json=update_data)
     res_data = response.json()
 
     assert res_data['detail'] == "You don't have permissions"
@@ -340,7 +340,7 @@ def test_get_users_good(checker, user):
 
     headers = conftest.auth_user(checker)
 
-    response = client.get('/users', headers=headers)
+    response = client.get('/api/users', headers=headers)
 
     assert len(response.json()) == 2
     assert response.status_code == 200
@@ -352,7 +352,7 @@ def test_get_users_bad():
 
     headers = conftest.auth_user(user)
 
-    response = client.get('/users', headers=headers)
+    response = client.get('/api/users', headers=headers)
 
     assert response.json() == []
     assert response.status_code == 200
@@ -368,7 +368,7 @@ def test_get_user_by_id_good(checker, user):
 
     headers = conftest.auth_user(checker)
 
-    response = client.get(f'/users/{user.id}', headers=headers)
+    response = client.get(f'/api/users/{user.id}', headers=headers)
 
     assert response.json()['id'] == user.id
     assert response.status_code == 200
@@ -382,7 +382,7 @@ def test_get_user_by_id_bad():
 
     headers = conftest.auth_user(checker)
 
-    response = client.get(f'/users/{user.id}', headers=headers)
+    response = client.get(f'/api/users/{user.id}', headers=headers)
 
     assert response.json()['detail'] == "You don't have permissions"
     assert response.status_code == 403
@@ -399,7 +399,7 @@ def test_set_inactive_user_good(root, user):
 
     headers = conftest.auth_user(root)
     print(root.id)
-    response = client.delete(f'/users/{user.id}', headers=headers)
+    response = client.delete(f'/api/users/{user.id}', headers=headers)
 
     assert response.json()['id'] == user.id
     assert response.status_code == 202
@@ -418,7 +418,7 @@ def test_set_inactive_user_bad(root, user):
 
     headers = conftest.auth_user(root)
     print(root.id)
-    response = client.delete(f'/users/{user.id}', headers=headers)
+    response = client.delete(f'/api/users/{user.id}', headers=headers)
 
     assert response.json()['detail'] == "You don't have permissions"
     assert response.status_code == 403
@@ -431,7 +431,7 @@ def test_get_company_users_good(user):
 
     headers = conftest.auth_user(user)
 
-    response = client.get(f'/users/companies/{company.id}', headers=headers)
+    response = client.get(f'/api/users/companies/{company.id}', headers=headers)
 
     assert len(response.json()) == 1
     assert response.status_code == 200
@@ -447,7 +447,7 @@ def test_get_company_users_bad(user, company_id):
     user = user(company=company_id)
 
     headers = conftest.auth_user(user)
-    response = client.get(f'/users/companies/{company.id}', headers=headers)
+    response = client.get(f'/api/users/companies/{company.id}', headers=headers)
 
     assert not response.json()
     assert response.status_code == 200
@@ -465,7 +465,7 @@ def test_add_user_companies_good(user, companies_id):
     user = user(company=company.id)
 
     headers = conftest.auth_user(user)
-    response = client.put(f'/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
+    response = client.put(f'/api/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
 
     assert response.json().get('updated_companies', False)
     assert response.status_code == 200
@@ -483,7 +483,7 @@ def test_add_user_companies_bad(user, companies_id):
     user = user(company=company.id)
 
     headers = conftest.auth_user(user)
-    response = client.put(f'/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
+    response = client.put(f'/api/users/update_companies', headers=headers, json={'user_id': user.id, 'companies_id': companies_id})
 
     assert response.json()['detail'] == "You don't have permissions"
     assert response.status_code == 406
@@ -493,7 +493,7 @@ def test_set_me_inactive():
     admin = user_creator.admin_user()
     headers = conftest.auth_user(admin)
 
-    data = client.delete(f'/users/{admin.id}', headers=headers)
+    data = client.delete(f'/api/users/{admin.id}', headers=headers)
     assert data.json()['detail'] == "You don't have permissions"
 
 
@@ -506,5 +506,5 @@ def test_set_me_inactive2():
         'inactive': True
     }
 
-    data = client.put(f'/users', json=data, headers=headers)
+    data = client.put(f'/api/users', json=data, headers=headers)
     assert data.json()['detail'] == "You can't set inactive to yourself"

@@ -15,7 +15,7 @@ def test_create_company_good():
               "contact_phone": "+7952111111",
               "description": "test description"
             }
-    response = client.post('/companies', headers=headers, json=data)
+    response = client.post('/api/companies', headers=headers, json=data)
 
     assert response.status_code == 201
     assert response.json()['title'] == data['title']
@@ -32,7 +32,7 @@ def test_create_company_bad_username():
               "contact_phone": "+7952111111",
               "description": "test description"
             }
-    response = client.post('/companies', headers=headers, json=data)
+    response = client.post('/api/companies', headers=headers, json=data)
 
     assert response.status_code == 406
     assert response.json()['detail'] == 'Symbols in your fields not ascii symbols or numerics'
@@ -48,7 +48,7 @@ def test_create_company_bad_phone():
               "contact_phone": "+sd7952111111",
               "description": "test description"
             }
-    response = client.post('/companies', headers=headers, json=data)
+    response = client.post('/api/companies', headers=headers, json=data)
 
     assert response.status_code == 406
     assert response.json()['detail'] == 'Phone incorrect'
@@ -66,7 +66,7 @@ def test_create_company_bad(user):
               "img_logo": "test_logo_path",
               "description": "test description"
             }
-    response = client.post('/companies', headers=headers, json=data)
+    response = client.post('/api/companies', headers=headers, json=data)
 
     assert response.status_code == 406
     assert response.json()['detail'] == "You don't have permissions"
@@ -84,7 +84,7 @@ def test_update_company_good():
             'img_logo': 'testLOGO',
             'description': 'TEST DESCRIPTION'
             }
-    response = client.put('/companies', headers=headers, json=data)
+    response = client.put('/api/companies', headers=headers, json=data)
 
     assert response.status_code == 200
     assert response.json()['title'] != company.title
@@ -109,7 +109,7 @@ def test_update_company_bad(user):
             'img_logo': 'testLOGO',
             'description': 'TEST DESCRIPTION'
             }
-    response = client.put('/companies', headers=headers, json=data)
+    response = client.put('/api/companies', headers=headers, json=data)
 
     assert response.status_code == 406
     assert response.json()['detail'] == "You don't have permissions"
@@ -124,7 +124,7 @@ def test_get_companies_good(user, company_len):
     user = user(company=company.id)
     headers = conftest.auth_user(user)
 
-    response = client.get('/companies', headers=headers)
+    response = client.get('/api/companies', headers=headers)
 
     assert response.status_code == 200
     assert len(response.json()) == company_len
@@ -136,7 +136,7 @@ def test_get_company_by_id_good(user):
     user = user(company=company.id)
     headers = conftest.auth_user(user)
 
-    response = client.get(f'/companies/company/{company.id}', headers=headers)
+    response = client.get(f'/api/companies/company/{company.id}', headers=headers)
 
     assert response.status_code == 200
     assert response.json()['id'] == company.id
@@ -149,7 +149,7 @@ def test_get_company_by_id_bad(user):
     user = user(company=company.id)
     headers = conftest.auth_user(user)
 
-    response = client.get(f'/companies/company/{company2.id}', headers=headers)
+    response = client.get(f'/api/companies/company/{company2.id}', headers=headers)
 
     assert response.status_code == 406
     assert response.json()['detail'] == "You don't have permissions"
@@ -160,7 +160,7 @@ def test_delete_company_good():
     root = user_creator.root_user(company=company.id)
     headers = conftest.auth_user(root)
 
-    response = client.delete(f'/companies/{company.id}', headers=headers)
+    response = client.delete(f'/api/companies/{company.id}', headers=headers)
 
     assert response.status_code == 205
     assert response.json()['id'] == company.id
@@ -176,7 +176,7 @@ def test_delete_company_bad(user, company_id, status_code, detail):
     user = user(company=company.id)
     headers = conftest.auth_user(user)
 
-    response = client.delete(f'/companies/{company_id}', headers=headers)
+    response = client.delete(f'/api/companies/{company_id}', headers=headers)
 
     assert response.status_code == status_code
     assert response.json()['detail'] == detail

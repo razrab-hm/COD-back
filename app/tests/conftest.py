@@ -26,6 +26,6 @@ def clear_db():
 
 
 def auth_user(db_user):
-    response = client.post('/users/login', json={'username': db_user.username, 'password': 'qwerty'})
+    response = client.post('/api/users/login', json={'username': db_user.username, 'password': 'qwerty'})
     return {'Authorization': f"Bearer {response.json()['access_token']}"}
 

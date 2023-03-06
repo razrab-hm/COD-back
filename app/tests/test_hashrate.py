@@ -17,7 +17,7 @@ def test_create_hashrate_good(user):
         'company_id': company.id
     }
 
-    response = client.post('/hashrates', headers=headers, json=data)
+    response = client.post('/api/hashrates', headers=headers, json=data)
 
     res_data = response.json()
     res_data.pop('id')
@@ -44,7 +44,7 @@ def test_create_hashrate_bad(user, company_id, status_code, detail):
         'company_id': company_id
     }
 
-    response = client.post('/hashrates', headers=headers, json=data)
+    response = client.post('/api/hashrates', headers=headers, json=data)
 
     assert response.status_code == status_code
     assert response.json()['detail'] == detail
@@ -64,7 +64,7 @@ def test_create_hashrate_admin_not_in_company_bad(user):
         'company_id': 2
     }
 
-    response = client.post('/hashrates', headers=headers, json=data)
+    response = client.post('/api/hashrates', headers=headers, json=data)
 
     assert response.status_code == 406
     assert response.json()['detail'] == "You don't have permissions"
@@ -80,7 +80,7 @@ def test_import_hashrate_good(user):
 
     file = {'file': open('test_hr.xls', 'rb')}
 
-    response = client.post(f'/hashrates/import/{company.id}', headers=headers, files=file)
+    response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
 
     assert response.status_code == 200
     assert response.json()[0] == {'status': 'new'}
@@ -98,7 +98,7 @@ def test_import_hashrate_bad(user, company_id):
 
     file = {'file': open('test_hr.xls', 'rb')}
 
-    response = client.post(f'/hashrates/import/{company_id}', headers=headers, files=file)
+    response = client.post(f'/api/hashrates/import/{company_id}', headers=headers, files=file)
 
     assert response.status_code == 406
     assert response.json()['detail'] == "You don't have permissions"
@@ -111,7 +111,7 @@ def test_import_hashrate_company_bad():
 
     file = {'file': open('test_hr.xls', 'rb')}
 
-    response = client.post(f'/hashrates/import/2', headers=headers, files=file)
+    response = client.post(f'/api/hashrates/import/2', headers=headers, files=file)
 
     assert response.status_code == 403
     assert response.json()['detail'] == "Company does not exist"

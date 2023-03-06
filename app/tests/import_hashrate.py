@@ -9,6 +9,6 @@ def upload(company_id=1):
 
     file = {'file': open('test_hr.xls', 'rb')}
 
-    response = client.post(f'/hashrates/import/{company.id}', headers=headers, files=file)
+    response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
 
     return company

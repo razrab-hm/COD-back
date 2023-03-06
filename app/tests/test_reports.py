@@ -4,8 +4,8 @@ from app.tests.test_user import client
 from app.tests import conftest, company_creator, user_creator, import_hashrate
 
 
-api_links = ['/reports/month_day', '/reports/year_quarter_month', '/reports/year_quarter',
-             '/reports/year_quarter_month_day', '/reports/quarter_month', '/reports/quarter_month_day']
+api_links = ['/api/reports/month_day', '/api/reports/year_quarter_month', '/api/reports/year_quarter',
+             '/api/reports/year_quarter_month_day', '/api/reports/quarter_month', '/api/reports/quarter_month_day']
 
 
 @pytest.mark.parametrize('user', [
