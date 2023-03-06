@@ -88,5 +88,7 @@ def get_dates(db: Session):
     quarters = [int(quarter) for quarter in dataset.quarter.unique()]
     months = [month_name for month_name in dataset.month_name.unique()]
 
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August']
+
     return {'years': years, 'quarters': quarters, 'months': months}
 
