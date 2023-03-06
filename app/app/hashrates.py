@@ -35,7 +35,10 @@ def get_data_from_file(file, db, company_id, user_id):
     for date, hashrate in data:
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
         if type(hashrate) is str:
-            hashrate = float(hashrate.replace(',', '.'))
+            try:
+                hashrate = float(hashrate.replace(',', '.'))
+            except:
+                hashrate = float(str(hashrate.replace(',', '.')[:-1]))
         if not db_hashrate:
             to_db_hashrate = db_hashrates.Hashrate(date=date, average=round(hashrate / 86400 * 1000, 3), hash=round(hashrate, 3), company_id=company_id, user_id=user_id)
             to_output_hashrate = to_db_hashrate.__dict__
