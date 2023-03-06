@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,11 +11,13 @@ from app.routs.token import router as token_router
 from app.routs.reports import router as report_router
 
 app = FastAPI()
-app.include_router(user_router)
-app.include_router(company_router)
-app.include_router(hash_router)
-app.include_router(token_router)
-app.include_router(report_router)
+router = APIRouter(prefix='/api', tags=["api"])
+app.include_router(router)
+router.include_router(user_router)
+router.include_router(company_router)
+router.include_router(hash_router)
+router.include_router(token_router)
+router.include_router(report_router)
 
 
 origins = [
