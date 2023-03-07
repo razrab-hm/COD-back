@@ -17,13 +17,16 @@ def check_report_type(date_type: str):
 
 
 def auto_insert(dataset, year):
-    # if len(dataset) < 365:
-    #     base = datetime.datetime(year=year, day=1, month=1)
-    #     date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-    #
-    #     for date in date_list:
-    #         if date not in dataset.date.values:
-    #             dataset = dataset.append({'date': date}, ignore_index=True)
+    if len(dataset) < 365:
+        base = datetime.datetime(year=year, day=1, month=1)
+        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+        dates = []
+        for date in date_list:
+            if date not in dataset.date.values:
+                dates.append({'date': date})
+                # dataset = dataset.append({'date': date}, ignore_index=True)
+
+        dataset = pd.concat([dataset, pd.DataFrame(dates)])
 
     dataset = dataset.fillna(0.0)
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
