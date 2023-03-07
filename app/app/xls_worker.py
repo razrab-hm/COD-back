@@ -1,3 +1,4 @@
+import random
 from enum import Enum
 
 import openpyxl
@@ -8,18 +9,6 @@ from openpyxl.worksheet.worksheet import Worksheet
 from pandas import DataFrame
 from roman import toRoman
 from fastapi.responses import FileResponse
-
-
-savefile = 'files/xls.xls'
-counter = 0
-
-
-def update_savefile():
-    global savefile, counter
-    savefile = f'files/xls{counter}.xls'
-    counter += 1
-    if counter == 100:
-        counter = 0
 
 
 class Style(Enum):
@@ -47,7 +36,6 @@ def get_xls_data(file: UploadFile):
 
 
 def initialize_workbook(titles):
-    update_savefile()
     wb = openpyxl.Workbook()
     ws: Worksheet = wb.active
 
@@ -74,6 +62,7 @@ def insert_data(ws, data, row_counter, is_header=False):
 
 
 def month_day_report(dataset, year):
+    savefile = f'files/xls{random.randint(0, 100)}.xls'
     wb, ws = initialize_workbook(['Date', 'Year', 'Days Hashrate (EH)'])
     row_counter = 2
 
@@ -95,6 +84,7 @@ def month_day_report(dataset, year):
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
+    savefile = f'files/xls{random.randint(0, 100)}.xls'
     wb, ws = initialize_workbook(['Month', 'Year', 'Month hashrate (EH)'])
     row_counter = 2
 
@@ -114,6 +104,7 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
 
 def year_quarter_report(dataset, quarters_sum, year):
+    savefile = f'files/xls{random.randint(0, 100)}.xls'
     wb, ws = initialize_workbook(['Quarter', 'Year', 'Quarter hashrate (EH)'])
     row_counter = 2
 
@@ -129,6 +120,7 @@ def year_quarter_report(dataset, quarters_sum, year):
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
+    savefile = f'files/xls{random.randint(0, 100)}.xls'
     wb, ws = initialize_workbook(['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)'])
     row_counter = 2
 
@@ -159,6 +151,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
+    savefile = f'files/xls{random.randint(0, 100)}.xls'
     wb, ws = initialize_workbook(['Month', 'Year', 'Months/Quarterly Hashrate (EH)'])
     row_counter = 2
 
@@ -174,6 +167,7 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
 
 
 def quarter_month_day_report(dataset, months_sum, year, quarter):
+    savefile = f'files/xls{random.randint(0, 100)}.xls'
     wb, ws = initialize_workbook(['Date', 'Year', 'Days/Months Hashrate (EH)'])
     row_counter = 2
 

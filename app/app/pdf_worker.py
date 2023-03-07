@@ -1,3 +1,5 @@
+import random
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -6,20 +8,8 @@ from roman import toRoman
 from fastapi.responses import FileResponse
 
 
-savefile = 'files/pdf.pdf'
-counter = 0
-
-
-def update_savefile():
-    global savefile, counter
-    savefile = f'files/pdf{counter}.pdf'
-    counter += 1
-    if counter == 100:
-        counter = 0
-
-
 def initialize_document(title, data, header_rows=[]):
-    update_savefile()
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
     doc = SimpleDocTemplate(
         savefile,
         pagesize=A4,
