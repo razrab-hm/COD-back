@@ -17,13 +17,13 @@ def check_report_type(date_type: str):
 
 
 def auto_insert(dataset, year):
-    if len(dataset) < 365:
-        base = datetime.datetime(year=year, day=1, month=1)
-        date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
-
-        for date in date_list:
-            if date not in dataset.date.values:
-                dataset = dataset.append({'date': date}, ignore_index=True)
+    # if len(dataset) < 365:
+    #     base = datetime.datetime(year=year, day=1, month=1)
+    #     date_list = [(base + datetime.timedelta(days=x)).date() for x in range(365)]
+    #
+    #     for date in date_list:
+    #         if date not in dataset.date.values:
+    #             dataset = dataset.append({'date': date}, ignore_index=True)
 
     dataset = dataset.fillna(0.0)
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
@@ -36,7 +36,7 @@ def month_day_report(db, companies, year, month, output):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
-    # dataset = auto_insert(dataset, year)
+    dataset = auto_insert(dataset, year)
 
     dataset['date'] = pd.to_datetime(dataset.date, format='%Y-%m-%d')
     dataset = dataset.sort_values(by='date')
