@@ -199,7 +199,7 @@ async def month_day_report_handler(output_type, companies, year, month, db, auth
     return app_reports.month_day_report(db, companies, year, month, output_type)
 
 
-def year_quarter_month_report_handler(output_type, companies, year, db, auth):
+async def year_quarter_month_report_handler(output_type, companies, year, db, auth):
     log.input(output_type, companies, year, db, auth)
     auth.jwt_required()
     for company in companies:
@@ -209,7 +209,7 @@ def year_quarter_month_report_handler(output_type, companies, year, db, auth):
     return app_reports.year_quarter_month_report(db, companies, year, output_type)
 
 
-def year_quarter_report_handler(output_type, companies, year, db, auth):
+async def year_quarter_report_handler(output_type, companies, year, db, auth):
     log.input(output_type, companies, year, db, auth)
     auth.jwt_required()
     for company in companies:
@@ -219,7 +219,7 @@ def year_quarter_report_handler(output_type, companies, year, db, auth):
     return app_reports.year_quarter_report(db, companies, year, output_type)
 
 
-def year_quarter_month_day_report_handler(output_type, companies, year, db, auth):
+async def year_quarter_month_day_report_handler(output_type, companies, year, db, auth):
     log.input(output_type, companies, year, db, auth)
     auth.jwt_required()
     for company in companies:
@@ -229,7 +229,7 @@ def year_quarter_month_day_report_handler(output_type, companies, year, db, auth
     return app_reports.year_quarter_month_day_report(db, companies, year, output_type)
 
 
-def quarter_month_report_handler(output_type, companies, year, quarter, db, auth):
+async def quarter_month_report_handler(output_type, companies, year, quarter, db, auth):
     log.input(output_type, companies, year, quarter, db, auth)
     auth.jwt_required()
     for company in companies:
@@ -238,7 +238,8 @@ def quarter_month_report_handler(output_type, companies, year, quarter, db, auth
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
     return app_reports.quarter_month_report(db, companies, year, quarter, output_type)
 
-def quarter_month_day_report_handler(output_type, companies, year, quarter, db, auth):
+
+async def quarter_month_day_report_handler(output_type, companies, year, quarter, db, auth):
     log.input(output_type, companies, year, quarter, db, auth)
     auth.jwt_required()
     for company in companies:

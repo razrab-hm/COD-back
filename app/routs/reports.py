@@ -26,7 +26,7 @@ async def year_quarter_month(output_type: str = Body(...),
                        companies: list = Body(...),
                        db: Session = Depends(get_db),
                        auth: AuthJWT = Depends()):
-    return handlers.year_quarter_month_report_handler(output_type, companies, year, db, auth)
+    return await handlers.year_quarter_month_report_handler(output_type, companies, year, db, auth)
 
 
 @router.post('/year_quarter')
@@ -35,7 +35,7 @@ async def year_quarter(output_type: str = Body(...),
                  companies: list = Body(...),
                  db: Session = Depends(get_db),
                  auth: AuthJWT = Depends()):
-    return handlers.year_quarter_report_handler(output_type, companies, year, db, auth)
+    return await handlers.year_quarter_report_handler(output_type, companies, year, db, auth)
 
 
 @router.post('/year_quarter_month_day')
@@ -44,7 +44,7 @@ async def year_quarter_month_day(output_type: str = Body(...),
                            companies: list = Body(...),
                            db: Session = Depends(get_db),
                            auth: AuthJWT = Depends()):
-    return handlers.year_quarter_month_day_report_handler(output_type, companies, year, db, auth)
+    return await handlers.year_quarter_month_day_report_handler(output_type, companies, year, db, auth)
 
 
 @router.post('/quarter_month')
@@ -54,7 +54,7 @@ async def quarter_month(output_type: str = Body(...),
                   companies: list = Body(...),
                   db: Session = Depends(get_db),
                   auth: AuthJWT = Depends()):
-    return handlers.quarter_month_report_handler(output_type, companies, year, quarter, db, auth)
+    return await handlers.quarter_month_report_handler(output_type, companies, year, quarter, db, auth)
 
 
 @router.post('/quarter_month_day')
@@ -64,7 +64,7 @@ async def quarter_month_day(output_type: str = Body(...),
                   companies: list = Body(...),
                   db: Session = Depends(get_db),
                   auth: AuthJWT = Depends()):
-    return handlers.quarter_month_day_report_handler(output_type, companies, year, quarter, db, auth)
+    return await handlers.quarter_month_day_report_handler(output_type, companies, year, quarter, db, auth)
 
 
 @router.get('/dates')
