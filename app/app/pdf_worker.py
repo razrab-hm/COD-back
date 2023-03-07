@@ -9,8 +9,7 @@ from roman import toRoman
 from fastapi.responses import FileResponse
 
 
-async def initialize_document(title, data, header_rows=[]):
-    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
+def initialize_document(title, data, savefile, header_rows=[]):
     doc = SimpleDocTemplate(
         savefile,
         pagesize=A4,
@@ -89,8 +88,6 @@ async def initialize_document(title, data, header_rows=[]):
 
     doc.build(elements)
 
-    return FileResponse(savefile)
-
 
 def month_day_report(dataset, year):
     month_name = dataset.month_name.unique()[0]
@@ -110,7 +107,10 @@ def month_day_report(dataset, year):
 
     title = f'Month by Day Report - {month_name} {year}'
 
-    return await initialize_document(title, table_data)
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
+
+    initialize_document(title, table_data, savefile=savefile)
+    return FileResponse(savefile)
 
 
 def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
@@ -132,7 +132,10 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
 
     title = f'Year by months/quarters - {year}'
 
-    return await initialize_document(title, table_data, header_rows)
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
+
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile)
+    return FileResponse(savefile)
 
 
 def year_quarter_report(dataset, quarters_sum, year):
@@ -145,7 +148,10 @@ def year_quarter_report(dataset, quarters_sum, year):
 
     title = f'Year by Quarter Report - {year}'
 
-    return await initialize_document(title, table_data)
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
+
+    initialize_document(title, table_data, savefile=savefile)
+    return FileResponse(savefile)
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
@@ -179,7 +185,10 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     title = f'Year by day/months/quarters - {year}'
 
-    return await initialize_document(title, table_data, header_rows)
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
+
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile)
+    return FileResponse(savefile)
 
 
 def quarter_month_report(dataset, month_sums, month_names, year, quarter):
@@ -192,7 +201,10 @@ def quarter_month_report(dataset, month_sums, month_names, year, quarter):
 
     title = f'Quarterly by months/quarters - {toRoman(quarter)} Quarter {year}'
 
-    return await initialize_document(title, table_data)
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
+
+    initialize_document(title, table_data, savefile=savefile)
+    return FileResponse(savefile)
 
 
 def quarter_month_day_report(dataset, months_sum, year, quarter):
@@ -220,5 +232,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
 
     title = f'Quarterly by days/months - {toRoman(quarter)} Quarter {year}'
 
-    return await initialize_document(title, table_data, header_rows)
+    savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile)
+    return FileResponse(savefile)
