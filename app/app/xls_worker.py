@@ -131,17 +131,17 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
             for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date']].values:
                 if day_ds[4] not in dates:
-                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', round(date_average_sum.get(day_ds[4]), 2), round(date_hash_sum.get(day_ds[4]), 2)], row_counter)
+                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', round(date_average_sum.get(day_ds[4]), 3), round(date_hash_sum.get(day_ds[4]), 2)], row_counter)
                     row_counter += 1
                     dates.append(day_ds[4])
 
-            insert_data(ws, [f'{month_name} Total', round(months_sum_average.get(month_name), 2), round(months_sum.get(month_name), 2)], row_counter, True)
+            insert_data(ws, [f'{month_name} Total', round(months_sum_average.get(month_name), 3), round(months_sum.get(month_name), 2)], row_counter, True)
             row_counter += 1
 
-        insert_data(ws, [f'{toRoman(quarter[0])} Quarter', round(quarter_sum_average.get(quarter[0]), 2), round(quarter_sum.get(quarter[0]), 2)], row_counter, True)
+        insert_data(ws, [f'{toRoman(quarter[0])} Quarter', round(quarter_sum_average.get(quarter[0]), 3), round(quarter_sum.get(quarter[0]), 2)], row_counter, True)
         row_counter += 1
 
-    insert_data(ws, ['Totals:', round(dataset.average.sum(), 2), round(dataset.hash.sum(), 2)], row_counter, True)
+    insert_data(ws, ['Totals:', round(dataset.average.sum(), 3), round(dataset.hash.sum(), 2)], row_counter, True)
 
     wb.save(savefile)
 

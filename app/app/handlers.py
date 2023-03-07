@@ -196,7 +196,10 @@ def month_day_report_handler(output_type, companies, year, month, db, auth):
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.month_day_report(db, companies, year, month, output_type)
+    try:
+        return app_reports.month_day_report(db, companies, year, month, output_type)
+    except:
+        raise HTTPException(status_code=409, detail="Data is empty")
 
 
 def year_quarter_month_report_handler(output_type, companies, year, db, auth):
@@ -206,7 +209,10 @@ def year_quarter_month_report_handler(output_type, companies, year, db, auth):
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.year_quarter_month_report(db, companies, year, output_type)
+    try:
+        return app_reports.year_quarter_month_report(db, companies, year, output_type)
+    except:
+        raise HTTPException(status_code=409, detail="Data is empty")
 
 
 def year_quarter_report_handler(output_type, companies, year, db, auth):
@@ -216,7 +222,10 @@ def year_quarter_report_handler(output_type, companies, year, db, auth):
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.year_quarter_report(db, companies, year, output_type)
+    try:
+        return app_reports.year_quarter_report(db, companies, year, output_type)
+    except:
+        raise HTTPException(status_code=409, detail="Data is empty")
 
 
 def year_quarter_month_day_report_handler(output_type, companies, year, db, auth):
@@ -226,7 +235,10 @@ def year_quarter_month_day_report_handler(output_type, companies, year, db, auth
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.year_quarter_month_day_report(db, companies, year, output_type)
+    try:
+        return app_reports.year_quarter_month_day_report(db, companies, year, output_type)
+    except:
+        raise HTTPException(status_code=409, detail="Data is empty")
 
 
 def quarter_month_report_handler(output_type, companies, year, quarter, db, auth):
@@ -236,7 +248,10 @@ def quarter_month_report_handler(output_type, companies, year, quarter, db, auth
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.quarter_month_report(db, companies, year, quarter, output_type)
+    try:
+        return app_reports.quarter_month_report(db, companies, year, quarter, output_type)
+    except:
+        raise HTTPException(status_code=409, detail="Data is empty")
 
 
 def quarter_month_day_report_handler(output_type, companies, year, quarter, db, auth):
@@ -246,7 +261,10 @@ def quarter_month_day_report_handler(output_type, companies, year, quarter, db, 
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.quarter_month_day_report(db, companies, year, quarter, output_type)
+    try:
+        return app_reports.quarter_month_day_report(db, companies, year, quarter, output_type)
+    except:
+        raise HTTPException(status_code=409, detail="Data is empty")
 
 
 def logout_handler(db, auth):
