@@ -46,6 +46,9 @@ def month_day_report(db, companies, year, month, output):
     dataset['day']: Series = dataset.date.dt.day
     dataset['month_name']: Series = dataset.date.dt.month_name()
 
+    if not dataset.hash.sum():
+        raise HTTPException(status_code=409, detail="Data is empty")
+
     if output == 'xlsx':
         return xls_worker.month_day_report(dataset, year)
     elif output == 'pdf':
@@ -70,6 +73,9 @@ def year_quarter_month_report(db, companies, year, output):
 
     months_sum: Series = dataset.groupby('month_name').hash.sum()
 
+    if not dataset.hash.sum():
+        raise HTTPException(status_code=409, detail="Data is empty")
+
     if output == 'xlsx':
         return xls_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
     elif output == 'pdf':
@@ -86,6 +92,9 @@ def year_quarter_report(db, companies, year, output):
 
     dataset['quarter']: Series = dataset.date.dt.quarter
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
+
+    if not dataset.hash.sum():
+        raise HTTPException(status_code=409, detail="Data is empty")
 
     if output == 'xlsx':
         return xls_worker.year_quarter_report(dataset, quarters_sum, year)
@@ -114,6 +123,9 @@ def year_quarter_month_day_report(db, companies, year, output):
     months_sum: Series = month_group.hash.sum()
     months_sum_average = month_group.average.sum()
 
+    if not dataset.hash.sum():
+        raise HTTPException(status_code=409, detail="Data is empty")
+
     if output == 'xlsx':
         return xls_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
     elif output == 'pdf':
@@ -137,6 +149,9 @@ def quarter_month_report(db, companies, year, quarter, output):
     month_names = dataset.month_name.unique()
     month_sums = dataset.groupby('month').hash.sum()
 
+    if not dataset.hash.sum():
+        raise HTTPException(status_code=409, detail="Data is empty")
+
     if output == 'xlsx':
         return xls_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
     elif output == 'pdf':
@@ -159,6 +174,9 @@ def quarter_month_day_report(db, companies, year, quarter, output):
     dataset['month_name']: Series = dataset.date.dt.month_name()
 
     months_sum = dataset.groupby('month_name').hash.sum()
+
+    if not dataset.hash.sum():
+        raise HTTPException(status_code=409, detail="Data is empty")
 
     if output == 'xlsx':
         return xls_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
