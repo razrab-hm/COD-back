@@ -95,7 +95,9 @@ def get_dates(db: Session):
     years = [min_year]
     for i in range(1, max_year - min_year):
         years.append(min_year+i)
-    years.append(max_year)
+
+    if max_year not in years:
+        years.append(max_year)
 
     return {'years': years, 'quarters': quarters, 'months': months}
 
