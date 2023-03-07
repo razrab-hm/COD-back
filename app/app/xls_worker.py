@@ -11,6 +11,15 @@ from fastapi.responses import FileResponse
 
 
 savefile = 'files/xls.xls'
+counter = 0
+
+
+def update_savefile():
+    global savefile, counter
+    savefile = f'files/xls{counter}.xls'
+    counter += 1
+    if counter == 100:
+        counter = 0
 
 
 class Style(Enum):
@@ -38,6 +47,7 @@ def get_xls_data(file: UploadFile):
 
 
 def initialize_workbook(titles):
+    update_savefile()
     wb = openpyxl.Workbook()
     ws: Worksheet = wb.active
 

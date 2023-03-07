@@ -7,9 +7,19 @@ from fastapi.responses import FileResponse
 
 
 savefile = 'files/pdf.pdf'
+counter = 0
+
+
+def update_savefile():
+    global savefile, counter
+    savefile = f'files/pdf{counter}.pdf'
+    counter += 1
+    if counter == 100:
+        counter = 0
 
 
 def initialize_document(title, data, header_rows=[]):
+    update_savefile()
     doc = SimpleDocTemplate(
         savefile,
         pagesize=A4,
