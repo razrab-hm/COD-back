@@ -189,7 +189,7 @@ def get_xls_handler(file, db, company_id, auth):
     return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
 
 
-def month_day_report_handler(output_type, companies, year, month, db, auth):
+async def month_day_report_handler(output_type, companies, year, month, db, auth):
     log.input(output_type, companies, year, month, db, auth)
     auth.jwt_required()
     for company in companies:

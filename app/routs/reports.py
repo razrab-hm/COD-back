@@ -17,7 +17,7 @@ async def month_day(output_type: str = Body(...),
                        companies: list = Body(...),
                        db: Session = Depends(get_db),
                        auth: AuthJWT = Depends()):
-    return handlers.month_day_report_handler(output_type, companies, year, month, db, auth)
+    return await handlers.month_day_report_handler(output_type, companies, year, month, db, auth)
 
 
 @router.post('/year_quarter_month')
