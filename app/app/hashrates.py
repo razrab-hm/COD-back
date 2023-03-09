@@ -28,34 +28,46 @@ def get_hashrate_by_company_id(db: Session, company_id: int, access_level):
         return db.query(db_hashrates.Hashrate).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
 
 
-def get_data_from_file(file, db, company_id, user_id):
-    log.input(file, db, company_id, user_id)
+def get_data_from_file(file):
+    log.input(file)
     data = xls_worker.get_xls_data(file)
     hashrate_list = []
-    for date, hashrate in data:
+    for date, average in data:
+        try:
+            average = round(float(average.replace(',', '.')), 3)
+        except:
+            average = round(float(str(average.replace(',', '.')[:-1])))
+
+        hashrate = round(average * 86400 / 1000, 2)
+
+        hashrate_list.append([date, average, hashrate])
+
+    return hashrate_list
+
+
+def upload_data(hashrate_list, db, user_id, company_id):
+    log.input(hashrate_list, db, user_id, company_id)
+    output_info = []
+    for date, average, hashrate in hashrate_list:
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
-        if type(hashrate) is str:
-            try:
-                hashrate = float(hashrate.replace(',', '.'))
-            except:
-                hashrate = float(str(hashrate.replace(',', '.')[:-1]))
         if not db_hashrate:
-            to_db_hashrate = db_hashrates.Hashrate(date=date, average=round(hashrate, 3), hash=round(hashrate * 86400 / 1000, 2), company_id=company_id, user_id=user_id)
+            to_db_hashrate = db_hashrates.Hashrate(date=date, average=average, hash=hashrate, company_id=company_id, user_id=user_id)
             to_output_hashrate = to_db_hashrate.__dict__
             to_output_hashrate['status'] = 'new'
-            hashrate_list.append(to_output_hashrate)
+            output_info.append(to_output_hashrate)
             db.add(to_db_hashrate)
         else:
-            db_hashrate.average = round(hashrate, 3)
-            db_hashrate.hash = round(hashrate*86400/1000, 2)
+            db_hashrate.average = average
+            db_hashrate.hash = hashrate
             db_hashrate.user_id = user_id
             to_output_hashrate = db_hashrate.__dict__
             to_output_hashrate['status'] = 'updated'
-            hashrate_list.append(to_output_hashrate)
+            output_info.append(to_output_hashrate)
 
         db.commit()
-    log.output(hashrate_list)
-    return hashrate_list
+
+    log.output(output_info)
+    return output_info
 
 
 def get_hashrate_by_user_id(db, user_id):
