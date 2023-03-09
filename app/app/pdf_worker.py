@@ -9,7 +9,7 @@ from roman import toRoman
 from fastapi.responses import FileResponse
 
 
-def initialize_document(title, data, savefile, header_rows=[]):
+def initialize_document(title, data, savefile, header_rows=[], yqmd=False):
     doc = SimpleDocTemplate(
         savefile,
         pagesize=A4,
@@ -36,13 +36,21 @@ def initialize_document(title, data, savefile, header_rows=[]):
         colWidths=(width - 70) / 3
     )
 
-    table.setStyle(TableStyle(
-        [
-            ('ALIGN', (1, 0), (1, 0), 'CENTER'),
-            ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
-            ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),
-        ]
-    ))
+    if yqmd:
+        table.setStyle(TableStyle(
+            [
+                ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+                ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
+                ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),
+            ]
+        ))
+    else:
+        table.setStyle(TableStyle(
+            [
+                ('ALIGN', (1, 0), (1, -1), 'CENTER'),
+                ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),
+            ]
+        ))
 
     border = colors.Color(0.819, 0.827, 0.839, alpha=1)
     border_thickness = 1.5
@@ -188,7 +196,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile)
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile, yqmd=True)
     return FileResponse(savefile)
 
 
