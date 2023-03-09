@@ -42,6 +42,8 @@ def get_data_from_file(file, db, company_id):
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
         if db_hashrate:
             hashrate_object['current'] = db_hashrate['average']
+        else:
+            hashrate_object['current'] = 0
 
         hashrate_object['new'] = average
         hashrate_object['date'] = date
