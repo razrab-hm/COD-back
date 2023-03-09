@@ -92,19 +92,20 @@ def get_count_active_root_users(db):
 
 def update_user(update_data, db: Session, auth):
     log.input(update_data, db, auth)
+    user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
     if update_data.role == 'root':
         check_access(db, auth, 1)
     elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
         check_access(db, auth, 2)
-        if get_access_level(db, update_data.id) < 3:
-            HTTPException(status_code=405, detail="You don't have permissions")
+        if update_data.role != 'admin' and update_data.id == user.id:
+            raise HTTPException(status_code=405, detail="You don't have permissions")
+        # if get_access_level(db, update_data.id) < 3:
+        #     HTTPException(status_code=405, detail="You don't have permissions")
     else:
         if update_data.id != auth.get_jwt_subject() and get_current_user(db, auth).role == 'manager':
             HTTPException(status_code=405, detail="You can't manage password to other user")
         else:
             HTTPException(status_code=405, detail="You don't have permissions")
-
-    user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
 
     root_access = get_access_level(db, auth.get_jwt_subject())
     to_access = get_access_level(db, user.id)
