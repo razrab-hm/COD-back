@@ -28,19 +28,25 @@ def get_hashrate_by_company_id(db: Session, company_id: int, access_level):
         return db.query(db_hashrates.Hashrate).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
 
 
-def get_data_from_file(file):
+def get_data_from_file(file, db, company_id):
     log.input(file)
     data = xls_worker.get_xls_data(file)
     hashrate_list = []
     for date, average in data:
+        hashrate_object = {}
         try:
             average = round(float(str(average).replace(',', '.')), 3)
         except:
             average = round(float(str(average.replace(',', '.')[:-1])))
 
-        hashrate = round(average * 86400 / 1000, 2)
+        db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
+        if db_hashrate:
+            hashrate_object['current'] = db_hashrate['average']
 
-        hashrate_list.append([date, average, hashrate])
+        hashrate_object['new'] = average
+        hashrate_object['date'] = date
+        # hashrate = round(average * 86400 / 1000, 2)
+        hashrate_list.append(hashrate_object)
 
     return hashrate_list
 
