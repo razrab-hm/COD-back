@@ -2,6 +2,7 @@ import random
 import threading
 
 from reportlab.lib import colors
+from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
@@ -38,7 +39,7 @@ def initialize_document(title, data, savefile, header_rows=[]):
 
     table.setStyle(TableStyle(
         [
-            ('ALIGN', (1, 0), (1, -1), 'TA_CENTRE'),
+            ('ALIGN', (1, 0), (1, -1), TA_JUSTIFY),
             ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),
         ]
     ))
