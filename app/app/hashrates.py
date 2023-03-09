@@ -34,7 +34,7 @@ def get_data_from_file(file):
     hashrate_list = []
     for date, average in data:
         try:
-            average = round(float(average.replace(',', '.')), 3)
+            average = round(float(str(average).replace(',', '.')), 3)
         except:
             average = round(float(str(average.replace(',', '.')[:-1])))
 
