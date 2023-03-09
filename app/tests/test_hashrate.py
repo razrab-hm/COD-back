@@ -83,7 +83,7 @@ def test_import_hashrate_good(user):
     response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
 
     assert response.status_code == 200
-    assert type(response.json()[0]) == list
+    assert type(response.json()[0]) == dict
 
 
 @pytest.mark.parametrize('user, company_id', [
