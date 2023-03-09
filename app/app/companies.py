@@ -43,18 +43,18 @@ def update_company(db: Session, update_data, access_level, user_id):
 
     if update_data.title:
         company.title = update_data.title
-    if update_data.contact_fio:
-        company.contact_fio = update_data.contact_fio
+    # if update_data.contact_fio:
+    company.contact_fio = update_data.contact_fio
     if update_data.contact_email:
         company.contact_email = update_data.contact_email
-    if update_data.img_logo:
-        company.img_logo = update_data.img_logo
-    if update_data.contact_phone:
-        company.contact_phone = update_data.contact_phone
-    if update_data.description:
-        company.description = update_data.description
+    # if update_data.img_logo:
+    #     company.img_logo = update_data.img_logo
+    # if update_data.contact_phone:
+    company.contact_phone = update_data.contact_phone
+    # if update_data.description:
+    company.description = update_data.description
     if update_data.inactive:
-        if update_data.inactive == 'True':
+        if update_data.inactive.lower() == 'true':
             company.inactive = True
         else:
             company.inactive = False

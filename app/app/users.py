@@ -130,13 +130,13 @@ def update_user(update_data, db: Session, auth):
         user.role = update_data.role
     if update_data.password:
         user.hash_password = hashlib.md5(update_data.password.encode('utf-8')).hexdigest()
-    if update_data.first_name:
-        user.first_name = update_data.first_name
-    if update_data.last_name:
-        user.last_name = update_data.last_name
+    # if update_data.first_name:
+    user.first_name = update_data.first_name
+    # if update_data.last_name:
+    user.last_name = update_data.last_name
 
     if update_data.inactive:
-        if update_data.inactive == 'True':
+        if update_data.inactive.lower() == 'true':
             user.inactive = True
         else:
             user.inactive = False
