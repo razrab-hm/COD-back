@@ -30,12 +30,12 @@ def get_my_hashrates(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_my_hashrates_handler(auth, db)
 
 
-@router.post("/import/{company_id}", response_model=list[hashrates.HashrateImport])
+@router.post("/import/{company_id}", response_model=list)
 def upload(company_id: int, file: UploadFile = File(...), db: Session = Depends(get_db), auth: AuthJWT = Depends()):
     return handlers.get_xls_handler(file, db, company_id, auth)
 
 
-@router.post("/import/{company_id}/save")
+@router.post("/import/{company_id}/save", response_model=list)
 def save_upload(company_id: int, hashrate_list: list = Body(...), auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.save_upload(company_id, hashrate_list, auth, db)
 
