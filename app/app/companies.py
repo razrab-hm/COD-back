@@ -54,7 +54,7 @@ def update_company(db: Session, update_data, access_level, user_id):
     # if update_data.description:
     company.description = update_data.description
     if update_data.inactive:
-        if update_data.inactive.lower() == 'true':
+        if update_data.inactive == 'True':
             company.inactive = True
         else:
             company.inactive = False

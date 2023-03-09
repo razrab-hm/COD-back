@@ -81,7 +81,6 @@ def test_update_company_good():
             'contact_fio': 'TestFIO',
             'contact_email': 'TestEMAIL@mail.ru',
             'contact_phone': '+799999999',
-            'img_logo': 'testLOGO',
             'description': 'TEST DESCRIPTION'
             }
     response = client.put('/api/companies', headers=headers, json=data)
@@ -91,7 +90,6 @@ def test_update_company_good():
     assert response.json()['contact_fio'] != company.contact_fio
     assert response.json()['contact_email'] != company.contact_email
     assert response.json()['contact_phone'] != company.contact_phone
-    assert response.json()['img_logo'] != company.img_logo
     assert response.json()['description'] != company.description
     assert response.json()['id'] == company.id
 

@@ -29,9 +29,10 @@ class Company(Base):
 
     @validates("title", "contact_fio")
     def validate_title(self, key, field):
-        for symbol in field:
-            if symbol not in symbols:
-                raise HTTPException(status_code=406, detail="Symbols in your fields not ascii symbols or numerics")
+        if field:
+            for symbol in field.lower():
+                if symbol not in symbols:
+                    raise HTTPException(status_code=406, detail="Symbols in your fields not ascii symbols or numerics")
         return field
 
     @validates("contact_email")
@@ -58,8 +59,8 @@ class Company(Base):
 
     @validates("description")
     def validate_description(self, key, description):
-        description = description.lower()
-        for symbol in description:
-            if symbol not in description_symbols:
-                raise HTTPException(status_code=406, detail="Description symbols incorrect")
+        if description:
+            for symbol in description.lower():
+                if symbol not in description_symbols:
+                    raise HTTPException(status_code=406, detail="Description symbols incorrect")
         return description

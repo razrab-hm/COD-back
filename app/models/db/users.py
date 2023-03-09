@@ -52,19 +52,19 @@ class User(Base):
 
     @validates("first_name", "last_name")
     def validate_fields(self, key, field):
-        field = field.lower()
-        for symbol in field:
-            if symbol not in symbols:
-                raise HTTPException(status_code=406, detail="Symbols in your firstname or lastname not ascii symbols or numerics")
+        if field:
+            for symbol in field.lower():
+                if symbol not in symbols:
+                    raise HTTPException(status_code=406, detail="Symbols in your firstname or lastname not ascii symbols or numerics")
         return field
 
     @validates("description")
     def validate_description(self, key, description):
-        description = description.lower()
-        for symbol in description:
-            if symbol not in description_symbols:
-                raise HTTPException(status_code=406,
-                                    detail="Symbols in your description not ascii symbols or numerics")
+        if description:
+            for symbol in description.lower():
+                if symbol not in description_symbols:
+                    raise HTTPException(status_code=406,
+                                        detail="Symbols in your description not ascii symbols or numerics")
         return description
 
 
