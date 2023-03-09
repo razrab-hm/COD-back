@@ -38,7 +38,7 @@ def initialize_document(title, data, savefile, header_rows=[]):
 
     table.setStyle(TableStyle(
         [
-            ('ALIGN', (1, 0), (1, -1), 'CENTER'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
             ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),
         ]
     ))

@@ -186,7 +186,7 @@ def get_xls_handler(file, db, company_id, auth):
         raise HTTPException(status_code=406, detail="You don't have permissions")
     if access_level == 2:
         app_companies.check_user_in_company(db, auth.get_jwt_subject(), company_id)
-    return app_hashrates.get_data_from_file(file, db, company_id)
+    return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
 
 
 def save_upload(company_id, hashrate_list, auth, db):
