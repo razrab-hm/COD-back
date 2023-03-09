@@ -136,7 +136,7 @@ def update_user(update_data, db: Session, auth):
     user.last_name = update_data.last_name
 
     if update_data.inactive:
-        if update_data.inactive == 'True':
+        if update_data.inactive.lower() == 'true':
             user.inactive = True
         else:
             user.inactive = False
