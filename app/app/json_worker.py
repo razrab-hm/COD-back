@@ -33,9 +33,9 @@ def year_quarter_report(dataset, quarters_sum, year):
     report = []
 
     for quarter_pk, quarter_sum in quarters_sum.items():
-        report.append({'total': round(quarter_sum, 2), 'Quarter': quarter_pk})
+        report.append({'total': f"{round(quarter_sum, 2): .2f}", 'Quarter': quarter_pk})
 
-    return {'report': report, 'total': round(float(dataset.hash.sum()), 2), 'year': year}
+    return {'report': report, 'total': f"{round(float(dataset.hash.sum()), 2): .2f}", 'year': year}
 
 
 def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
