@@ -36,7 +36,7 @@ def update_company(db: Session, update_data, access_level, user_id):
         check_user_in_company(db, user_id, update_data.id)
         if company.inactive:
             raise HTTPException(status_code=406, detail="You don't have permissions")
-        if update_data.inactive:
+        if update_data.inactive.lower() == 'true':
             raise HTTPException(status_code=406, detail="You don't have permissions")
     elif access_level == 3:
         raise HTTPException(status_code=406, detail="You don't have permissions")
