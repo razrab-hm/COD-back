@@ -12,12 +12,19 @@ from app.app import xls_worker
 
 def create_hashrate(db: Session, hashrate: dto_hashrates.HashrateBase):
     log.input(db, hashrate)
-    db_hash = db_hashrates.Hashrate(date=hashrate.date, average=hashrate.average, hash=hashrate.hash, company_id=hashrate.company_id)
-    db.add(db_hash)
-    db.commit()
-    db.refresh(db_hash)
-    log.output(db_hash)
-    return db_hash
+    db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == hashrate.date).filter(
+        db_hashrates.Hashrate.company_id == hashrate.company_id).first()
+    hashrate_object = {}
+    if db_hashrate:
+        hashrate_object['current'] = db_hashrate['average']
+    else:
+        hashrate_object['current'] = 0
+
+    hashrate_object['new'] = round(hashrate.average, 3)
+    hashrate_object['date'] = hashrate.date
+
+    log.output(hashrate_object)
+    return [hashrate_object]
 
 
 def get_hashrate_by_company_id(db: Session, company_id: int, access_level, from_date, to_date):

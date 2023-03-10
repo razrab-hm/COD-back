@@ -5,8 +5,7 @@ from pydantic import BaseModel
 
 class HashrateBase(BaseModel):
     date: date
-    average: int
-    hash: int
+    average: float
     company_id: int
 
 
