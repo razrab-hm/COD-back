@@ -15,6 +15,7 @@ def create_hashrate(db: Session, hashrate: dto_hashrates.HashrateBase):
     db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == hashrate.date).filter(
         db_hashrates.Hashrate.company_id == hashrate.company_id).first()
     hashrate_object = {}
+    print(db_hashrate)
     if db_hashrate:
         hashrate_object['current'] = db_hashrate['average']
     else:
@@ -57,6 +58,7 @@ def get_data_from_file(file, db, company_id):
             average = round(float(str(average).replace(',', '.')[:-1]))
 
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
+
         if db_hashrate:
             hashrate_object['current'] = db_hashrate['average']
         else:
