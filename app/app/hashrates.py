@@ -18,7 +18,7 @@ def create_hashrate(db: Session, hashrate: dto_hashrates.HashrateBase):
     if db_hashrate:
         hashrate_object['current'] = db_hashrate.average
     else:
-        hashrate_object['current'] = 0
+        hashrate_object['current'] = None
 
     hashrate_object['new'] = round(hashrate.average, 3)
     hashrate_object['date'] = hashrate.date
@@ -61,7 +61,7 @@ def get_data_from_file(file, db, company_id):
         if db_hashrate:
             hashrate_object['current'] = db_hashrate.average
         else:
-            hashrate_object['current'] = 0
+            hashrate_object['current'] = None
 
         hashrate_object['new'] = average
         hashrate_object['date'] = date
