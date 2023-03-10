@@ -23,15 +23,26 @@ def test_create_hashrate_good(user):
     assert response.status_code == 201
     assert res_data[0]['date'] == data['date']
 
+    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+
+    assert response.json()[0]['status'] == 'new'
+
+    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+
+    assert response.json()[0]['status'] == 'updated'
+
 
 @pytest.mark.parametrize('user, company_id, status_code, detail', [
     [user_creator.user, 1, 406, "You don't have permissions"],
     [user_creator.admin_user, 2, 403, "Company does not exist"],
-    [user_creator.root_user, 2, 403, "Company does not exist"]
+    [user_creator.root_user, 2, 403, "Company does not exist"],
+    [user_creator.admin_user, 2, 406, "You don't have permissions"]
 ])
 def test_create_hashrate_bad(user, company_id, status_code, detail):
     company = company_creator.company()
     user = user(company=company.id)
+    if user.role == 'admin' and status_code == 406:
+        company2 = company_creator.company("Test2Company", 2)
     headers = conftest.auth_user(user)
 
     data = {
@@ -80,7 +91,17 @@ def test_import_hashrate_good(user):
     response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
 
     assert response.status_code == 200
-    assert type(response.json()[0]) == dict
+    assert response.json()[0] == {'current': 0, 'date': '2021-09-30', 'new': 1.0}
+
+    res_data = response.json()
+
+    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+
+    assert response.json()[0]['status'] == 'new'
+
+    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+
+    assert response.json()[0]['status'] == 'updated'
 
 
 @pytest.mark.parametrize('user, company_id', [
@@ -112,3 +133,45 @@ def test_import_hashrate_company_bad():
 
     assert response.status_code == 403
     assert response.json()['detail'] == "Company does not exist"
+
+
+def test_update_hashrate_good():
+    company = company_creator.company()
+    user = user_creator.admin_user(company=company.id)
+    headers = conftest.auth_user(user)
+
+    data = {
+        'date': '2023-02-06',
+        'average': 20.0,
+        'company_id': company.id
+    }
+
+    response = client.post('/api/hashrates', headers=headers, json=data)
+
+    res_data = response.json()
+
+    assert response.status_code == 201
+    assert res_data[0]['date'] == data['date']
+
+    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+
+    assert response.json()[0]['status'] == 'new'
+
+    response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
+
+    assert response.json()[0]['average'] == 20.0
+
+    update_data = {
+        "id": response.json()[0]['id'],
+        "average": 30.0
+    }
+
+    response = client.put('/api/hashrates/', headers=headers, json=update_data)
+
+    assert response.json()['average'] == 30.0
+
+    response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
+
+    assert response.json()[0]['average'] == 30.0
+
+

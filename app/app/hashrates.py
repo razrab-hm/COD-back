@@ -37,7 +37,7 @@ def get_hashrate_by_company_id(db: Session, company_id: int, access_level, from_
             query = query.filter(db_hashrates.Hashrate.date <= to_date)
         return query.all()
     else:
-        query = db.query(db_hashrates.Hashrate).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id)
+        query = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.company_id == company_id)
         if from_date:
             query = query.filter(db_hashrates.Hashrate.date >= from_date)
         if to_date:
@@ -75,14 +75,16 @@ def upload_data(hashrate_list, db, user_id, company_id):
     log.input(hashrate_list, db, user_id, company_id)
     output_info = []
     for hr in hashrate_list:
+        to_output_hashrate = {}
+        print(hr)
         average = hr['new']
         date = hr['date']
+
         hashrate = round(average*3600*24/1000, 2)
 
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
         if not db_hashrate:
             to_db_hashrate = db_hashrates.Hashrate(date=date, average=average, hash=hashrate, company_id=company_id, user_id=user_id)
-            to_output_hashrate = to_db_hashrate.__dict__
             to_output_hashrate['status'] = 'new'
             output_info.append(to_output_hashrate)
             db.add(to_db_hashrate)
@@ -90,7 +92,6 @@ def upload_data(hashrate_list, db, user_id, company_id):
             db_hashrate.average = average
             db_hashrate.hash = hashrate
             db_hashrate.user_id = user_id
-            to_output_hashrate = db_hashrate.__dict__
             to_output_hashrate['status'] = 'updated'
             output_info.append(to_output_hashrate)
 
