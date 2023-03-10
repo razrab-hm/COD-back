@@ -93,6 +93,17 @@ def get_company_hashrate_handler(company_id, db, auth, from_date, to_date):
     return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level, from_date, to_date)
 
 
+def update_hashrate_handler(hashrate, db, auth):
+    user_id = auth.get_jwt_subject()
+    access_level = app_users.get_access_level(db, user_id)
+    company_id = app_hashrates.get_hashrate_company(db, hashrate.id)
+    if access_level == 2:
+        app_companies.check_user_in_company(db, user_id, company_id)
+    elif access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
+    return app_hashrates.update_hashrate_data(hashrate, db, user_id)
+
+
 def get_all_hashrates_handler(db, auth):
     log.input(db, auth)
     app_users.check_access(db, auth, 1)

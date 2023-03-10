@@ -31,6 +31,13 @@ def get_company_hashrates(company_id: int,
     return handlers.get_company_hashrate_handler(company_id, db, auth, from_date, to_date)
 
 
+@router.put('/')
+def update_hashrate(data: dto_hashrates.HashrateUpdate,
+                    db: Session = Depends(get_db),
+                    auth: AuthJWT = Depends()):
+    return handlers.update_hashrate_handler(data, db, auth)
+
+
 @router.get('/me', response_model=list[hashrates.HashrateCreate])
 def get_my_hashrates(auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
     return handlers.get_my_hashrates_handler(auth, db)

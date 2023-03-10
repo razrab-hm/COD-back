@@ -10,6 +10,11 @@ class HashrateBase(BaseModel):
     company_id: int
 
 
+class HashrateUpdate(BaseModel):
+    id: int
+    average: float
+
+
 class Hashrate(BaseModel):
     id: int
     date: date

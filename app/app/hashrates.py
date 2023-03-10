@@ -1,4 +1,5 @@
 import pandas as pd
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.app.db import engine
@@ -129,4 +130,26 @@ def get_dates(db: Session):
         years.append(max_year)
 
     return {'years': years, 'quarters': quarters, 'months': months}
+
+
+def get_hashrate_company(db, hashrate_id):
+    hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.id == hashrate_id).first()
+    return hashrate.company_id
+
+
+def update_hashrate_data(hashrate, db, user_id):
+    db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.id == hashrate.id).first()
+    if not db_hashrate:
+        raise HTTPException(status_code=404, detail="Data does not exist")
+
+    average = round(hashrate.average, 3)
+    hashr = round(average * 3600 * 24 / 1000, 2)
+    db_hashrate.average = hashrate.average
+    db_hashrate.hash = hashr
+    db_hashrate.user_id = user_id
+
+    db.commit()
+    db.refresh(db_hashrate)
+    log.output(db_hashrate)
+    return db_hashrate
 
