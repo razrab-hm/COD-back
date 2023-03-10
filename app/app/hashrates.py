@@ -17,7 +17,7 @@ def create_hashrate(db: Session, hashrate: dto_hashrates.HashrateBase):
     hashrate_object = {}
     print(db_hashrate)
     if db_hashrate:
-        hashrate_object['current'] = db_hashrate['average']
+        hashrate_object['current'] = db_hashrate.average
     else:
         hashrate_object['current'] = 0
 
