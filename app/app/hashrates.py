@@ -26,14 +26,14 @@ def get_hashrate_by_company_id(db: Session, company_id: int, access_level, from_
         if from_date:
             query = query.filter(db_hashrates.Hashrate.date >= from_date)
         if to_date:
-            query = query.filter(db_hashrates.Hashrate.date <= from_date)
+            query = query.filter(db_hashrates.Hashrate.date <= to_date)
         return query.all()
     else:
         query = db.query(db_hashrates.Hashrate).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id)
         if from_date:
             query = query.filter(db_hashrates.Hashrate.date >= from_date)
         if to_date:
-            query = query.filter(db_hashrates.Hashrate.date <= from_date)
+            query = query.filter(db_hashrates.Hashrate.date <= to_date)
         return query.all()
 
 
