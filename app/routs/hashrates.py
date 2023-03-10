@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Body
+from datetime import date
+
+from fastapi import APIRouter, Depends, UploadFile, File, Body, Query
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
@@ -21,8 +23,12 @@ def get_all_hashrates(db: Session = Depends(get_db), auth: AuthJWT = Depends()):
 
 
 @router.get('/company/{company_id}', response_model=list[hashrates.HashrateCreate])
-def get_company_hashrates(company_id: int, db: Session = Depends(get_db), auth: AuthJWT = Depends()):
-    return handlers.get_company_hashrate_handler(company_id, db, auth)
+def get_company_hashrates(company_id: int,
+                          from_date: date = Query(default=None),
+                          to_date: date = Query(default=None),
+                          db: Session = Depends(get_db),
+                          auth: AuthJWT = Depends()):
+    return handlers.get_company_hashrate_handler(company_id, db, auth, from_date, to_date)
 
 
 @router.get('/me', response_model=list[hashrates.HashrateCreate])

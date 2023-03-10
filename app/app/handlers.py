@@ -86,11 +86,11 @@ def get_my_hashrates_handler(auth: AuthJWT, db):
     return app_hashrates.get_hashrate_by_user_id(db, auth.get_jwt_subject())
 
 
-def get_company_hashrate_handler(company_id, db, auth):
+def get_company_hashrate_handler(company_id, db, auth, from_date, to_date):
     log.input(company_id, db, auth)
     user_id = auth.get_jwt_subject()
     access_level = app_users.get_access_level(db, user_id)
-    return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level)
+    return app_hashrates.get_hashrate_by_company_id(db, company_id, access_level, from_date, to_date)
 
 
 def get_all_hashrates_handler(db, auth):
@@ -186,7 +186,7 @@ def get_xls_handler(file, db, company_id, auth):
         raise HTTPException(status_code=406, detail="You don't have permissions")
     if access_level == 2:
         app_companies.check_user_in_company(db, auth.get_jwt_subject(), company_id)
-    return app_hashrates.get_data_from_file(file, db, company_id, auth.get_jwt_subject())
+    return app_hashrates.get_data_from_file(file, db, company_id)
 
 
 def save_upload(company_id, hashrate_list, auth, db):
