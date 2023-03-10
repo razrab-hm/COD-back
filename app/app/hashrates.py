@@ -15,7 +15,6 @@ def create_hashrate(db: Session, hashrate: dto_hashrates.HashrateBase):
     db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == hashrate.date).filter(
         db_hashrates.Hashrate.company_id == hashrate.company_id).first()
     hashrate_object = {}
-    print(db_hashrate)
     if db_hashrate:
         hashrate_object['current'] = db_hashrate.average
     else:
@@ -60,7 +59,7 @@ def get_data_from_file(file, db, company_id):
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
 
         if db_hashrate:
-            hashrate_object['current'] = db_hashrate['average']
+            hashrate_object['current'] = db_hashrate.average
         else:
             hashrate_object['current'] = 0
 
@@ -75,7 +74,11 @@ def get_data_from_file(file, db, company_id):
 def upload_data(hashrate_list, db, user_id, company_id):
     log.input(hashrate_list, db, user_id, company_id)
     output_info = []
-    for date, average, hashrate in hashrate_list:
+    for hr in hashrate_list:
+        average = hr['new']
+        date = hr['date']
+        hashrate = round(average*3600*24/1000, 2)
+
         db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
         if not db_hashrate:
             to_db_hashrate = db_hashrates.Hashrate(date=date, average=average, hash=hashrate, company_id=company_id, user_id=user_id)
