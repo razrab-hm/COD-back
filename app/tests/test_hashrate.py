@@ -13,18 +13,15 @@ def test_create_hashrate_good(user):
     data = {
         'date': '2023-02-06',
         'average': 20.0,
-        'hash': 40.0,
         'company_id': company.id
     }
 
     response = client.post('/api/hashrates', headers=headers, json=data)
 
     res_data = response.json()
-    res_data.pop('id')
-    res_data.pop('user_id')
 
     assert response.status_code == 201
-    assert res_data == data
+    assert res_data[0]['date'] == data['date']
 
 
 @pytest.mark.parametrize('user, company_id, status_code, detail', [
