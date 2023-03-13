@@ -271,6 +271,8 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
         for i in companies_id:
             if i in companies:
                 suc = True
+            else:
+                raise HTTPException(status_code=406, detail="You don't have permissions")
         if not (suc or companies == companies_id):
             raise HTTPException(status_code=406, detail="You don't have permissions")
     elif access_level == 3:
