@@ -99,6 +99,8 @@ def update_user(update_data, db: Session, auth):
         check_access(db, auth, 2)
         if update_data.role != 'admin' and update_data.id == auth.get_jwt_subject() and update_data.role:
             raise HTTPException(status_code=406, detail="You don't have permissions")
+        if (update_data.role == 'admin' or update_data.role == 'manager') and update_data.id == auth.get_jwt_subject() and get_current_user(db, auth).role == 'root':
+            raise HTTPException(status_code=406, detail="You don't have permissions")
         # if get_access_level(db, update_data.id) < 3:
         #     HTTPException(status_code=405, detail="You don't have permissions")
     else:
