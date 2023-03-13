@@ -98,19 +98,19 @@ def update_user(update_data, db: Session, auth):
     elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
         check_access(db, auth, 2)
         if update_data.role != 'admin' and update_data.id == user.id and update_data.role:
-            raise HTTPException(status_code=406, detail="You don't have permissions")
+            raise HTTPException(status_code=406, detail="You don't have permissions 1")
         # if get_access_level(db, update_data.id) < 3:
         #     HTTPException(status_code=405, detail="You don't have permissions")
     else:
         if update_data.id != auth.get_jwt_subject() and get_current_user(db, auth).role == 'manager':
-            HTTPException(status_code=405, detail="You can't manage password to other user")
+            HTTPException(status_code=406, detail="You can't manage password to other user")
         else:
-            HTTPException(status_code=405, detail="You don't have permissions")
+            HTTPException(status_code=406, detail="You don't have permissions")
 
     root_access = get_access_level(db, auth.get_jwt_subject())
     to_access = get_access_level(db, user.id)
     if root_access >= to_access and auth.get_jwt_subject() != user.id and root_access != 1:
-        raise HTTPException(status_code=406, detail="You don't have permissions")
+        raise HTTPException(status_code=406, detail="You don't have permissions 2")
     if auth.get_jwt_subject() == user.id:
         if str(update_data.inactive).lower() == 'true':
             raise HTTPException(status_code=406, detail="You can't set inactive to yourself")
