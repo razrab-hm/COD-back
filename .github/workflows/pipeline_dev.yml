@@ -1,0 +1,57 @@
+# This is a basic workflow to help you get started with Actions
+
+name: pipeline
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "dev" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: start docker
+        run: docker compose up -d
+
+      - name: install depends
+        run: pip install -r requirements.txt
+
+      - name: Start test
+        run: pytest
+
+  deploy:
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: docker build
+        run: docker build --tag ${{ secrets.DOCKER_LOGIN }}/back:prod .
+
+      - name: docker login
+        run: docker login --username '${{ secrets.DOCKER_LOGIN }}' --password '${{ secrets.DOCKER_PASSWORD }}'
+
+      - name: docker push
+        run: docker push ${{ secrets.DOCKER_LOGIN }}/back:prod
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd docker
+            docker rmi ${{ secrets.DOCKER_LOGIN }}/back:prod --force
+            docker compose down
+            docker login --username '${{ secrets.DOCKER_LOGIN }}' --password '${{ secrets.DOCKER_PASSWORD }}'
+            docker compose up -d
+            docker system prune -a
