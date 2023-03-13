@@ -245,15 +245,15 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
             users.extend(query.filter(db_users.User.role != 'root').all())
 
-        query = db.query(db_users.User)
+        #query = db.query(db_users.User)
 
-        if company_ids != [0]:
-            if company_ids == [-1]:
-                user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
+        #if company_ids != [0]:
+        #    if company_ids == [-1]:
+        #        user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
 
-                query = query.filter(db_users.User.id.notin_(user_ids))
+        #        query = query.filter(db_users.User.id.notin_(user_ids))
 
-        users.extend(query.filter(db_users.User.role != 'root').all())
+        #users.extend(query.filter(db_users.User.role != 'root').all())
 
         for user in users:
             while users.count(user) > 1:
