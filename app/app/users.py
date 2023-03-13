@@ -252,6 +252,7 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
                 query = db.query(db_users.User)
                 user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
                 query = query.filter(db_users.User.id.notin_(user_ids))
+
                 users.extend(query.filter(db_users.User.role != 'root').all())
 
         for user in users:
@@ -270,8 +271,6 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
         for i in companies_id:
             if i in companies:
                 suc = True
-            else:
-                raise HTTPException(status_code=406, detail="You don't have permissions")
         if not (suc or companies == companies_id):
             raise HTTPException(status_code=406, detail="You don't have permissions")
     elif access_level == 3:
