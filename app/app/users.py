@@ -280,7 +280,10 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
                 raise HTTPException(status_code=406, detail="You don't have permissions")
             companies_id_to_check.remove(i)
         
-        suc = False
+        if companies_id_to_check:
+            suc = False
+        else:
+            suc = True
         for i in companies_id_to_check:
             print(i, admin_companies, user_companies, companies_id_to_check)
             if i in admin_companies:
