@@ -269,6 +269,7 @@ def update_user_companies(db, companies_id, user_id, access_level, from_user_id)
         companies = app_companies.get_user_companies(from_user_id, db)
         suc = False
         for i in companies_id:
+            print(i, companies)
             if i in companies:
                 suc = True
             else:

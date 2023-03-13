@@ -103,7 +103,7 @@ def set_inactive_company(db: Session, company_id):
 def get_user_companies(user_id, db):
     log.input(user_id, db)
     companies = db.query(db_companies.Company).join(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
-    log.output(companies)
+    log.output([company.id for company in companies])
     return [company.id for company in companies]
 
 
