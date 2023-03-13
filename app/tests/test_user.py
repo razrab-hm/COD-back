@@ -275,7 +275,7 @@ def test_update_user_password_bad(updater, to_update):
     res_data = response.json()
 
     assert response.status_code == 406
-    # assert res_data['detail'] == "You don't have permissions"
+    assert res_data['detail'] == "You don't have permissions"
 
 
 @pytest.mark.parametrize('updater, to_update', [
