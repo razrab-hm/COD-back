@@ -49,6 +49,7 @@ def initialize_workbook(titles):
     ws.column_dimensions['A'].width = 30
     ws.column_dimensions['B'].width = 15
     ws.column_dimensions['C'].width = 40
+    ws.column_dimensions['D'].width = 20
 
     insert_data(ws, titles, 1, True)
 
@@ -68,67 +69,108 @@ def insert_data(ws, data, row_counter, is_header=False):
             cell.fill = Style.FILL.value
 
 
-def month_day_report(dataset, year):
+def month_day_report(dataset, year, sview):
+    year = str(year)
     savefile = f'files/xls{random.randint(0, 100)}.xls'
-    wb, ws = initialize_workbook(['Date', 'Year', 'Days Hashrate (EH)'])
+    if sview:
+        wb, ws = initialize_workbook(['Date', 'Year', 'Days Hashrate (EH)', 'BTC'])
+    else:
+        wb, ws = initialize_workbook(['Date', 'Year', 'Days Hashrate (EH)'])
     row_counter = 2
 
     date_hash_sum = dataset.groupby('date').hash.sum()
 
     dates = []
 
-    for day, hash_rate, average, month_name, date in dataset[['day', 'hash', 'average', 'month_name', 'date']].values:
+    for day, hash_rate, average, month_name, date, total_profit in dataset[['day', 'hash', 'average', 'month_name', 'date', 'total_profit']].values:
         if date not in dates:
-            insert_data(ws, [f'{month_name} {day}, {year}', year, f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " ")], row_counter)
+            if sview:
+                insert_data(ws, [f'{month_name} {day}, {year}', year,
+                                 f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " "), f'{total_profit:.8f}'], row_counter)
+            else:
+                insert_data(ws, [f'{month_name} {day}, {year}', year, f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " ")], row_counter)
+
             row_counter += 1
             dates.append(date)
 
-    insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
+    if sview:
+        insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " "), f'{dataset.total_profit.sum():.8f}'], row_counter, True)
+    else:
+        insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
 
     wb.save(savefile)
 
     return FileResponse(savefile)
 
 
-def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
+def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year, total_profit_month, total_profit_quarter, sview):
+    year = str(year)
     savefile = f'files/xls{random.randint(0, 100)}.xls'
-    wb, ws = initialize_workbook(['Month', 'Year', 'Month hashrate (EH)'])
+    if sview:
+        wb, ws = initialize_workbook(['Month', 'Year', 'Month hashrate (EH)', 'BTC'])
+    else:
+        wb, ws = initialize_workbook(['Month', 'Year', 'Month hashrate (EH)'])
+
     row_counter = 2
 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            insert_data(ws, [month_name, year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")], row_counter)
+            if sview:
+                insert_data(ws, [month_name, year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " "), f'{total_profit_month.get(month_name):.8f}'], row_counter)
+            else:
+                insert_data(ws, [month_name, year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")], row_counter)
             row_counter += 1
 
-        insert_data(ws, [f'{toRoman(quarter[0])} Quarter', year, f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " ")], row_counter, True)
+        if sview:
+            insert_data(ws, [f'{toRoman(quarter[0])} Quarter', year, f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " "), f'{total_profit_quarter.get(quarter[0]):.8f}'], row_counter, True)
+        else:
+            insert_data(ws, [f'{toRoman(quarter[0])} Quarter', year, f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " ")], row_counter, True)
         row_counter += 1
 
-    insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
+    if sview:
+        insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " "), f'{dataset.total_profit.sum():.8f}'], row_counter, True)
+    else:
+        insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
 
     wb.save(savefile)
 
     return FileResponse(savefile)
 
 
-def year_quarter_report(dataset, quarters_sum, year):
+def year_quarter_report(dataset, quarters_sum, year, total_profit_qurter, sview):
+    year = str(year)
     savefile = f'files/xls{random.randint(0, 100)}.xls'
-    wb, ws = initialize_workbook(['Quarter', 'Year', 'Quarter hashrate (EH)'])
+    if sview:
+        wb, ws = initialize_workbook(['Quarter', 'Year', 'Quarter hashrate (EH)', 'BTC'])
+    else:
+        wb, ws = initialize_workbook(['Quarter', 'Year', 'Quarter hashrate (EH)'])
+
     row_counter = 2
 
     for quarter_pk, quarter_sum in quarters_sum.items():
-        insert_data(ws, [f'{toRoman(quarter_pk)} Quarter', year, f"{round(quarter_sum, 2):_.2f}".replace("_", " ")], row_counter)
+        if sview:
+            insert_data(ws, [f'{toRoman(quarter_pk)} Quarter', year, f"{round(quarter_sum, 2):_.2f}".replace("_", " "), f'{total_profit_qurter.get(quarter_pk):.8f}'], row_counter)
+        else:
+            insert_data(ws, [f'{toRoman(quarter_pk)} Quarter', year, f"{round(quarter_sum, 2):_.2f}".replace("_", " ")], row_counter)
         row_counter += 1
-
-    insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
+    if sview:
+        insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " "), f'{dataset.total_profit.sum():.8f}'], row_counter, True)
+    else:
+        insert_data(ws, ['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
 
     wb.save(savefile)
 
     return FileResponse(savefile)
 
 
-def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
+def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average, total_profit_month, total_profit_quarter, sview):
+    year = str(year)
     savefile = f'files/xls{random.randint(0, 100)}.xls'
-    wb, ws = initialize_workbook(['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)'])
+    if sview:
+        wb, ws = initialize_workbook(['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)', 'BTC'])
+    else:
+        wb, ws = initialize_workbook(
+            ['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)'])
     row_counter = 2
 
     date_hash_sum = dataset.groupby('date').hash.sum()
@@ -138,44 +180,79 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date']].values:
+            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date', 'total_profit']].values:
                 if day_ds[4] not in dates:
-                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " ")], row_counter)
+                    if sview:
+                        insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " "), f'{day_ds[5]:.8f}'], row_counter)
+                    else:
+                        insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " ")], row_counter)
+
                     row_counter += 1
                     dates.append(day_ds[4])
 
-            insert_data(ws, [f'{month_name} Total', f"{round(months_sum_average.get(month_name), 3):_.3f}".replace("_", " "), f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")], row_counter, True)
+            if sview:
+                insert_data(ws, [f'{month_name} Total', f"{round(months_sum_average.get(month_name), 3):_.3f}".replace("_", " "), f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " "), f'{total_profit_month.get(month_name):.8f}'], row_counter, True)
+            else:
+                insert_data(ws, [f'{month_name} Total',
+                                 f"{round(months_sum_average.get(month_name), 3):_.3f}".replace("_", " "),
+                                 f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")], row_counter, True)
+
             row_counter += 1
 
-        insert_data(ws, [f'{toRoman(quarter[0])} Quarter', f"{round(quarter_sum_average.get(quarter[0]), 3):_.3f}".replace("_", " "), f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " ")], row_counter, True)
+        if sview:
+            insert_data(ws, [f'{toRoman(quarter[0])} Quarter', f"{round(quarter_sum_average.get(quarter[0]), 3):_.3f}".replace("_", " "), f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " "), f'{total_profit_quarter.get(quarter[0]):.8f}'], row_counter, True)
+        else:
+            insert_data(ws, [f'{toRoman(quarter[0])} Quarter', f"{round(quarter_sum_average.get(quarter[0]), 3):_.3f}".replace("_", " "), f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " ")], row_counter, True)
+
         row_counter += 1
 
-    insert_data(ws, ['Totals:', f"{round(dataset.average.sum(), 3):_.3f}".replace("_", " "), f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
+    if sview:
+        insert_data(ws, ['Totals:', f"{round(dataset.average.sum(), 3):_.3f}".replace("_", " "), f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " "), f'{dataset.total_profit.sum():.8f}'], row_counter, True)
+    else:
+        insert_data(ws, ['Totals:', f"{round(dataset.average.sum(), 3):_.3f}".replace("_", " "), f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
 
     wb.save(savefile)
 
     return FileResponse(savefile)
 
 
-def quarter_month_report(dataset, month_sums, month_names, year, quarter):
+def quarter_month_report(dataset, month_sums, month_names, year, quarter, total_profit_month, sview):
+    year = str(year)
     savefile = f'files/xls{random.randint(0, 100)}.xls'
-    wb, ws = initialize_workbook(['Month', 'Year', 'Months/Quarterly Hashrate (EH)'])
+    if sview:
+        wb, ws = initialize_workbook(['Month', 'Year', 'Months/Quarterly Hashrate (EH)', 'BTC'])
+    else:
+        wb, ws = initialize_workbook(
+            ['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)'])
+
     row_counter = 2
 
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
-        insert_data(ws, [month_name, year, f"{round(month_sum, 2):_.2f}".replace("_", " ")], row_counter)
+        if sview:
+            insert_data(ws, [month_name, year, f"{round(month_sum, 2):_.2f}".replace("_", " "), f'{total_profit_month.get(month_pk):.8f}'], row_counter)
+        else:
+            insert_data(ws, [month_name, year, f"{round(month_sum, 2):_.2f}".replace("_", " ")], row_counter)
+
         row_counter += 1
 
-    insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
+    if sview:
+        insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " "), f'{dataset.total_profit.sum():.8f}'], row_counter, True)
+    else:
+        insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
 
     wb.save(savefile)
 
     return FileResponse(savefile)
 
 
-def quarter_month_day_report(dataset, months_sum, year, quarter):
+def quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_month, sview):
+    year = str(year)
     savefile = f'files/xls{random.randint(0, 100)}.xls'
-    wb, ws = initialize_workbook(['Date', 'Year', 'Days/Months Hashrate (EH)'])
+    if sview:
+        wb, ws = initialize_workbook(['Date', 'Year', 'Days/Months Hashrate (EH)', 'BTC'])
+    else:
+        wb, ws = initialize_workbook(['Date', 'Year', 'Days/Months Hashrate (EH)'])
+
     row_counter = 2
 
     date_hash_sum = dataset.groupby('date').hash.sum()
@@ -183,16 +260,27 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
     dates = []
 
     for month_name in dataset.month_name.unique():
-        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date']].values:
+        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date', 'total_profit']].values:
             if day_ds[3] not in dates:
-                insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " ")], row_counter)
+                if sview:
+                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " "), f'{day_ds[4]:.8f}'], row_counter)
+                else:
+                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " ")], row_counter)
+
                 row_counter += 1
                 dates.append(day_ds[3])
 
-        insert_data(ws, [f'{month_name} Total', year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")], row_counter, True)
+        if sview:
+            insert_data(ws, [f'{month_name} Total', year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " "), f'{total_profit_month.get(month_name):.8f}'], row_counter, True)
+        else:
+            insert_data(ws, [f'{month_name} Total', year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")], row_counter, True)
+
         row_counter += 1
 
-    insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
+    if sview:
+        insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " "), f'{dataset.total_profit.sum():.8f}'], row_counter, True)
+    else:
+        insert_data(ws, [f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")], row_counter, True)
 
     wb.save(savefile)
 

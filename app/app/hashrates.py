@@ -105,7 +105,7 @@ def get_data_from_file(file, db, company_id, user_id):
                                                        hash=hashrate,
                                                        company_id=company_id,
                                                        user_id=user_id,
-                                                       additional_value=total_profit)
+                                                       total_profit=total_profit)
                 to_output_hashrate['status'] = 'new'
                 output_info.append(to_output_hashrate)
                 db.add(to_db_hashrate)
