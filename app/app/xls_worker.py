@@ -19,20 +19,27 @@ class Style(Enum):
 
 def get_xls_data(file: UploadFile):
     if file.filename.split('.')[-1] == 'csv':
-
         csv = pd.read_csv(file.file)
-        # if type(csv.values[0][0]) == str:
-        return zip(csv[csv.keys()[0]], csv[csv.keys()[1]])
-        # else:
-        #     return zip(csv[csv.keys()[1]], csv[csv.keys()[0]])
+
+        try:
+            if type(csv.values[0][2]) == float:
+                return zip(csv[csv.keys()[0]], csv[csv.keys()[1]], csv[csv.keys()[2]]), True
+        except:
+            pass
+
+        return zip(csv[csv.keys()[0]], csv[csv.keys()[1]]), False
 
     else:
         xls = pd.ExcelFile(file.file)
         sheet: DataFrame = xls.parse(0)
-        # if type(sheet.values[0][0]) == str:
-        return zip(sheet[sheet.keys()[0]], sheet[sheet.keys()[1]])
-        # else:
-        #     return zip(sheet[sheet.keys()[1]], sheet[sheet.keys()[0]])
+
+        try:
+            if type(sheet.values[0][2]) == float:
+                return zip(sheet[sheet.keys()[0]], sheet[sheet.keys()[1]], sheet[sheet.keys()[2]]), True
+        except:
+            pass
+
+        return zip(sheet[sheet.keys()[0]], sheet[sheet.keys()[1]]), False
 
 
 def initialize_workbook(titles):

@@ -53,3 +53,11 @@ def save_upload(company_id: int, hashrate_list: list = Body(...), auth: AuthJWT 
     return handlers.save_upload(company_id, hashrate_list, auth, db)
 
 
+@router.delete('/company/{company_id}')
+def delete_hashrates_by_dates(company_id: int,
+                              from_date: date = Body(...),
+                              to_date: date = Body(...),
+                              db: Session = Depends(get_db),
+                              auth: AuthJWT = Depends()):
+    return handlers.delete_hashrates_by_dates_handler(company_id, db, auth, from_date, to_date)
+

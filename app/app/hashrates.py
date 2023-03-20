@@ -45,30 +45,79 @@ def get_hashrate_by_company_id(db: Session, company_id: int, access_level, from_
         return query.all()
 
 
-def get_data_from_file(file, db, company_id):
+def get_data_from_file(file, db, company_id, user_id):
     log.input(file)
-    data = xls_worker.get_xls_data(file)
-    hashrate_list = []
-    for date, average in data:
-        hashrate_object = {}
-        try:
-            average = round(float(str(average).replace(',', '.')), 3)
-        except:
-            average = round(float(str(average).replace(',', '.')[:-1]))
+    data, is_total = xls_worker.get_xls_data(file)
+    output_info = []
+    if not is_total:
+        for date, average in data:
+            try:
+                average = round(float(str(average).replace(',', '.')), 3)
+            except:
+                average = round(float(str(average).replace(',', '.')[:-1]))
 
-        db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(db_hashrates.Hashrate.company_id == company_id).first()
+            to_output_hashrate = {}
 
-        if db_hashrate:
-            hashrate_object['current'] = db_hashrate.average
-        else:
-            hashrate_object['current'] = None
+            hashrate = round(average * 3600 * 24 / 1000, 2)
 
-        hashrate_object['new'] = average
-        hashrate_object['date'] = date
-        # hashrate = round(average * 86400 / 1000, 2)
-        hashrate_list.append(hashrate_object)
+            db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(
+                db_hashrates.Hashrate.company_id == company_id).first()
 
-    return hashrate_list
+            if not db_hashrate:
+                to_db_hashrate = db_hashrates.Hashrate(date=date,
+                                                       average=average,
+                                                       hash=hashrate, company_id=company_id, user_id=user_id)
+                to_output_hashrate['status'] = 'new'
+                output_info.append(to_output_hashrate)
+                db.add(to_db_hashrate)
+            else:
+                db_hashrate.average = average
+                db_hashrate.hash = hashrate
+                db_hashrate.user_id = user_id
+                to_output_hashrate['status'] = 'updated'
+                output_info.append(to_output_hashrate)
+
+            db.commit()
+
+        log.output(output_info)
+        return output_info
+
+    else:
+        for date, average, total_profit in data:
+            print('hello')
+            try:
+                average = round(float(str(average).replace(',', '.')), 3)
+            except:
+                average = round(float(str(average).replace(',', '.')[:-1]))
+            to_output_hashrate = {}
+
+            hashrate = round(average * 3600 * 24 / 1000, 2)
+
+            db_hashrate = db.query(db_hashrates.Hashrate).filter(db_hashrates.Hashrate.date == date).filter(
+                db_hashrates.Hashrate.company_id == company_id).first()
+
+            if not db_hashrate:
+                to_db_hashrate = db_hashrates.Hashrate(date=date,
+                                                       average=average,
+                                                       hash=hashrate,
+                                                       company_id=company_id,
+                                                       user_id=user_id,
+                                                       additional_value=total_profit)
+                to_output_hashrate['status'] = 'new'
+                output_info.append(to_output_hashrate)
+                db.add(to_db_hashrate)
+            else:
+                db_hashrate.average = average
+                db_hashrate.hash = hashrate
+                db_hashrate.user_id = user_id
+                db_hashrate.total_profit = total_profit
+                to_output_hashrate['status'] = 'updated'
+                output_info.append(to_output_hashrate)
+
+            db.commit()
+
+        log.output(output_info)
+        return output_info
 
 
 def upload_data(hashrate_list, db, user_id, company_id):
@@ -165,4 +214,15 @@ def update_hashrate_data(hashrate, db, user_id):
     db.refresh(db_hashrate)
     log.output(db_hashrate)
     return db_hashrate
+
+
+def delete_hashrates_by_dates(db, company_id, from_date, to_date):
+    query = db.query(db_hashrates.Hashrate).\
+        filter(db_hashrates.Hashrate.company_id == company_id).\
+        filter(db_hashrates.Hashrate.date >= from_date).\
+        filter(db_hashrates.Hashrate.date <= to_date).delete()
+
+    db.commit()
+
+    return {'detail': f'success, deleted {query} values.'}
 
