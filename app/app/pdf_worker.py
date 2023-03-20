@@ -9,7 +9,7 @@ from roman import toRoman
 from fastapi.responses import FileResponse
 
 
-def initialize_document(title, data, savefile, header_rows=[], yqmd=False):
+def initialize_document(title, data, savefile, header_rows=[], yqmd=False, sview=False):
     doc = SimpleDocTemplate(
         savefile,
         pagesize=A4,
@@ -31,10 +31,16 @@ def initialize_document(title, data, savefile, header_rows=[], yqmd=False):
     title = Paragraph(title, title_style)
     elements.append(title)
 
-    table = Table(
-        data,
-        colWidths=(width - 70) / 3
-    )
+    if sview:
+        table = Table(
+            data,
+            colWidths=(width - 70) / 4
+        )
+    else:
+        table = Table(
+            data,
+            colWidths=(width - 70) / 3
+        )
 
     if yqmd:
         table.setStyle(TableStyle(
@@ -98,32 +104,44 @@ def initialize_document(title, data, savefile, header_rows=[], yqmd=False):
     doc.build(elements)
 
 
-def month_day_report(dataset, year):
+def month_day_report(dataset, year, sview):
     month_name = dataset.month_name.unique()[0]
 
     table_data = [['Date', 'Year', 'Days Hashrate (EH)']]
+
+    if sview:
+        table_data[0].append('BTC')
 
     date_hash_sum = dataset.groupby('date').hash.sum()
 
     dates = []
 
-    for day, hash, average, date in dataset[['day', 'hash', 'average', 'date']].values:
+    for day, hash, average, date, total_profit in dataset[['day', 'hash', 'average', 'date', 'total_profit']].values:
         if date not in dates:
             table_data.append([f'{month_name[0:3]}. {day}, {year}', year, f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " ")])
             dates.append(date)
 
+            if sview:
+                table_data[-1].append(f'{total_profit:.8f}')
+
     table_data.append(['Totals', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
+
+    if sview:
+        table_data[-1].append(f'{dataset.total_profit.sum():.8f}')
 
     title = f'Month by Day Report - {month_name} {year}'
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, savefile=savefile)
+    initialize_document(title, table_data, savefile=savefile, sview=sview)
     return FileResponse(savefile)
 
 
-def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year):
+def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year, total_profit_month, total_profit_quarter, sview):
     table_data = [['Month', 'Year', 'Month hashrate (EH)']]
+
+    if sview:
+        table_data[0].append('BTC')
 
     header_rows = []
     row_counter = 1
@@ -133,38 +151,59 @@ def year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, 
             table_data.append([month_name, year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")])
             row_counter += 1
 
+            if sview:
+                table_data[-1].append(f'{total_profit_month.get(month_name):.8f}')
+
         table_data.append([f'{toRoman(quarter[0])} Quarter', year, f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " ")])
         header_rows.append(row_counter)
         row_counter += 1
 
+        if sview:
+            table_data[-1].append(f'{total_profit_quarter.get(quarter[0]):.8f}')
+
     table_data.append(['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
+
+    if sview:
+        table_data[-1].append(f'{dataset.total_profit.sum():.8f}')
 
     title = f'Year by months/quarters - {year}'
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile)
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile, sview=sview)
     return FileResponse(savefile)
 
 
-def year_quarter_report(dataset, quarters_sum, year):
+def year_quarter_report(dataset, quarters_sum, year, total_profit_qurter, sview):
     table_data = [['Quarter', 'Year', 'Quarter hashrate (EH)']]
+
+    if sview:
+        table_data[0].append('BTC')
 
     for quarter_pk, quarter_sum in quarters_sum.items():
         table_data.append([f'{toRoman(quarter_pk)} Quarter', year, f"{round(quarter_sum, 2):_.2f}".replace("_", " ")])
 
+        if sview:
+            table_data[-1].append(f'{total_profit_qurter.get(quarter_pk):.8f}')
+
     table_data.append(['Totals:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
+
+    if sview:
+        table_data[-1].append(f'{dataset.total_profit.sum():.8f}')
 
     title = f'Year by Quarter Report - {year}'
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, savefile=savefile)
+    initialize_document(title, table_data, savefile=savefile, sview=sview)
     return FileResponse(savefile)
 
 
-def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average):
+def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average, total_profit_month, total_profit_quarter, sview):
     table_data = [['Day/Months/Quarters', 'Average Hashrate (PH/s)', 'Day/Months/Quarters Hashrate (EH)']]
+
+    if sview:
+        table_data[0].append('BTC')
 
     header_rows = []
     row_counter = 1
@@ -176,48 +215,72 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     for quarter in quarter_groups:
         for month_name in dataset.loc[dataset.quarter == quarter[0]].month_name.unique():
-            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date']].values:
+            for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date', 'total_profit']].values:
                 if day_ds[4] not in dates:
                     table_data.append([f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " ")])
                     row_counter += 1
                     dates.append(day_ds[4])
 
+                    if sview:
+                        table_data[-1].append(f'{day_ds[5]:.8f}')
+
             table_data.append([f'{month_name} Total', f"{round(months_sum_average.get(month_name), 3):_.3f}".replace("_", " "), f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")])
             header_rows.append(row_counter)
             row_counter += 1
+
+            if sview:
+                table_data[-1].append(f'{total_profit_month.get(month_name):.8f}')
 
         table_data.append([f'{toRoman(quarter[0])} Quarter', f"{round(quarter_sum_average.get(quarter[0]), 3):_.3f}".replace("_", " "), f"{round(quarter_sum.get(quarter[0]), 2):_.2f}".replace("_", " ")])
         header_rows.append(row_counter)
         row_counter += 1
 
+        if sview:
+            table_data[-1].append(f'{total_profit_quarter.get(quarter[0]):.8f}')
+
     table_data.append(['Totals:', f"{round(dataset.average.sum(), 3):_.3f}".replace("_", " "), f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
+
+    if sview:
+        table_data[-1].append(f'{dataset.total_profit.sum():.8f}')
 
     title = f'Year by day/months/quarters - {year}'
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile, yqmd=True)
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile, yqmd=True, sview=sview)
     return FileResponse(savefile)
 
 
-def quarter_month_report(dataset, month_sums, month_names, year, quarter):
+def quarter_month_report(dataset, month_sums, month_names, year, quarter, total_profit_month, sview):
     table_data = [['Month', 'Year', 'Months/Quarterly Hashrate (EH)']]
+
+    if sview:
+        table_data[0].append('BTC')
 
     for (month_pk, month_sum), month_name in zip(month_sums.items(), month_names):
         table_data.append([month_name, year, f"{round(month_sum, 2):_.2f}".replace("_", " ")])
 
+        if sview:
+            table_data[-1].append(f'{total_profit_month.get(month_pk):.8f}')
+
     table_data.append([f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
+
+    if sview:
+        table_data[-1].append(f'{dataset.total_profit.sum():.8f}')
 
     title = f'Quarterly by months/quarters - {toRoman(quarter)} Quarter {year}'
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, savefile=savefile)
+    initialize_document(title, table_data, savefile=savefile, sview=sview)
     return FileResponse(savefile)
 
 
-def quarter_month_day_report(dataset, months_sum, year, quarter):
+def quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_month, sview):
     table_data = [['Date', 'Year', 'Days/Months Hashrate (EH)']]
+
+    if sview:
+        table_data[0].append('BTC')
 
     header_rows = []
     row_counter = 1
@@ -227,21 +290,30 @@ def quarter_month_day_report(dataset, months_sum, year, quarter):
     dates = []
 
     for month_name in dataset.month_name.unique():
-        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date']].values:
+        for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date', 'total_profit']].values:
             if day_ds[3] not in dates:
                 table_data.append([f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " ")])
                 row_counter += 1
                 dates.append(day_ds[3])
 
+                if sview:
+                    table_data[-1].append(f'{day_ds[4]:.8f}')
+
         table_data.append([f'{month_name} Total', year, f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")])
         header_rows.append(row_counter)
         row_counter += 1
 
+        if sview:
+            table_data[-1].append(f'{total_profit_month.get(month_name):.8f}')
+
     table_data.append([f'Totals {toRoman(quarter)} Quarter:', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
+
+    if sview:
+        table_data[-1].append(f'{dataset.total_profit.sum():.8f}')
 
     title = f'Quarterly by days/months - {toRoman(quarter)} Quarter {year}'
 
     savefile = f'files/pdf{random.randint(0, 100)}.pdf'
 
-    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile)
+    initialize_document(title, table_data, header_rows=header_rows, savefile=savefile, sview=sview)
     return FileResponse(savefile)

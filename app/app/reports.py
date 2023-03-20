@@ -56,7 +56,7 @@ def month_day_report(db, companies, year, month, output, sview):
     elif output == 'pdf':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
-        return pdf_worker.month_day_report(dataset, year)
+        return pdf_worker.month_day_report(dataset, year, sview)
     else:
         return json_worker.month_day_report(dataset, year, sview)
 
@@ -87,7 +87,7 @@ def year_quarter_month_report(db, companies, year, output, sview):
     elif output == 'pdf':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
-        return pdf_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
+        return pdf_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year, total_profit_month, total_profit_quarter, sview)
     else:
         return json_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year, total_profit_month, total_profit_quarter, sview)
 
@@ -110,7 +110,7 @@ def year_quarter_report(db, companies, year, output, sview):
     elif output == 'pdf':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
-        return pdf_worker.year_quarter_report(dataset, quarters_sum, year)
+        return pdf_worker.year_quarter_report(dataset, quarters_sum, year, total_profit_qurter, sview)
     else:
         return json_worker.year_quarter_report(dataset, quarters_sum, year, total_profit_qurter, sview)
 
@@ -144,7 +144,7 @@ def year_quarter_month_day_report(db, companies, year, output, sview):
     elif output == 'pdf':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
-        return pdf_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
+        return pdf_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average, total_profit_month, total_profit_quarter, sview)
     else:
         return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average, total_profit_month, total_profit_quarter, sview)
 
@@ -172,7 +172,7 @@ def quarter_month_report(db, companies, year, quarter, output, sview):
     elif output == 'pdf':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
-        return pdf_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
+        return pdf_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter, total_profit_month, sview)
     else:
         return json_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter, total_profit_month, sview)
 
@@ -201,6 +201,6 @@ def quarter_month_day_report(db, companies, year, quarter, output, sview):
     elif output == 'pdf':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
-        return pdf_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
+        return pdf_worker.quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_month, sview)
     else:
         return json_worker.quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_month, sview)
