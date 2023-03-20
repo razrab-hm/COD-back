@@ -35,7 +35,7 @@ def auto_insert(dataset, year):
     return dataset
 
 
-def month_day_report(db, companies, year, month, output):
+def month_day_report(db, companies, year, month, output, sview):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -58,10 +58,10 @@ def month_day_report(db, companies, year, month, output):
             raise HTTPException(status_code=409, detail="Data is empty")
         return pdf_worker.month_day_report(dataset, year)
     else:
-        return json_worker.month_day_report(dataset, year)
+        return json_worker.month_day_report(dataset, year, sview)
 
 
-def year_quarter_month_report(db, companies, year, output):
+def year_quarter_month_report(db, companies, year, output, sview):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -77,6 +77,9 @@ def year_quarter_month_report(db, companies, year, output):
 
     months_sum: Series = dataset.groupby('month_name').hash.sum()
 
+    total_profit_month: Series = dataset.groupby('month_name').total_profit.sum()
+    total_profit_quarter: Series = quarter_groups.total_profit.sum()
+
     if output == 'xlsx':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
@@ -86,10 +89,10 @@ def year_quarter_month_report(db, companies, year, output):
             raise HTTPException(status_code=409, detail="Data is empty")
         return pdf_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
     else:
-        return json_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year)
+        return json_worker.year_quarter_month_report(dataset, quarter_groups, months_sum, quarter_sum, year, total_profit_month, total_profit_quarter, sview)
 
 
-def year_quarter_report(db, companies, year, output):
+def year_quarter_report(db, companies, year, output, sview):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -97,6 +100,8 @@ def year_quarter_report(db, companies, year, output):
 
     dataset['quarter']: Series = dataset.date.dt.quarter
     quarters_sum: Series = dataset.groupby('quarter').hash.sum()
+
+    total_profit_qurter = dataset.groupby('quarter').total_profit.sum()
 
     if output == 'xlsx':
         if not dataset.hash.sum():
@@ -107,10 +112,10 @@ def year_quarter_report(db, companies, year, output):
             raise HTTPException(status_code=409, detail="Data is empty")
         return pdf_worker.year_quarter_report(dataset, quarters_sum, year)
     else:
-        return json_worker.year_quarter_report(dataset, quarters_sum, year)
+        return json_worker.year_quarter_report(dataset, quarters_sum, year, total_profit_qurter, sview)
 
 
-def year_quarter_month_day_report(db, companies, year, output):
+def year_quarter_month_day_report(db, companies, year, output, sview):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -129,6 +134,9 @@ def year_quarter_month_day_report(db, companies, year, output):
     months_sum: Series = month_group.hash.sum()
     months_sum_average = month_group.average.sum()
 
+    total_profit_month = month_group.total_profit.sum()
+    total_profit_quarter = quarter_groups.total_profit.sum()
+
     if output == 'xlsx':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
@@ -138,10 +146,10 @@ def year_quarter_month_day_report(db, companies, year, output):
             raise HTTPException(status_code=409, detail="Data is empty")
         return pdf_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
     else:
-        return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average)
+        return json_worker.year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, quarter_sum, months_sum_average, quarter_sum_average, total_profit_month, total_profit_quarter, sview)
 
 
-def quarter_month_report(db, companies, year, quarter, output):
+def quarter_month_report(db, companies, year, quarter, output, sview):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -155,6 +163,7 @@ def quarter_month_report(db, companies, year, quarter, output):
 
     month_names = dataset.month_name.unique()
     month_sums = dataset.groupby('month').hash.sum()
+    total_profit_month = dataset.groupby('month').total_profit.sum()
 
     if output == 'xlsx':
         if not dataset.hash.sum():
@@ -165,10 +174,10 @@ def quarter_month_report(db, companies, year, quarter, output):
             raise HTTPException(status_code=409, detail="Data is empty")
         return pdf_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
     else:
-        return json_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter)
+        return json_worker.quarter_month_report(dataset, month_sums, month_names, year, quarter, total_profit_month, sview)
 
 
-def quarter_month_day_report(db, companies, year, quarter, output):
+def quarter_month_day_report(db, companies, year, quarter, output, sview):
     statement = db.query(db_hashrates.Hashrate).filter(extract('year', db_hashrates.Hashrate.date) == year).filter(db_hashrates.Hashrate.company_id.in_(companies)).statement
     dataset = pd.read_sql(statement, engine)
 
@@ -183,6 +192,8 @@ def quarter_month_day_report(db, companies, year, quarter, output):
 
     months_sum = dataset.groupby('month_name').hash.sum()
 
+    total_profit_month = dataset.groupby('month_name').total_profit.sum()
+
     if output == 'xlsx':
         if not dataset.hash.sum():
             raise HTTPException(status_code=409, detail="Data is empty")
@@ -192,4 +203,4 @@ def quarter_month_day_report(db, companies, year, quarter, output):
             raise HTTPException(status_code=409, detail="Data is empty")
         return pdf_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
     else:
-        return json_worker.quarter_month_day_report(dataset, months_sum, year, quarter)
+        return json_worker.quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_month, sview)

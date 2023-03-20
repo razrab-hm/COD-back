@@ -10,6 +10,6 @@ class Hashrate(Base):
     date = Column(Date)
     average = Column(Float)
     hash = Column(Float)
-    total_profit = Column(String(15))
+    total_profit = Column(Float)
     company_id = Column(Integer, ForeignKey('company.id'))
     user_id = Column(Integer, ForeignKey('user.id'))

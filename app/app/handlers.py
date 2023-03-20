@@ -9,7 +9,7 @@ import app.app.hashrates as app_hashrates
 import app.app.reports as app_reports
 from app.app.logger import log
 from app.models.dto import (companies as dto_companies,
-                        users as dto_users)
+                            users as dto_users)
 from app.models.dto import hashrates as dto_hashrates
 
 
@@ -217,7 +217,8 @@ async def month_day_report_handler(output_type, companies, year, month, db, auth
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.month_day_report(db, companies, year, month, output_type)
+    sview = app_users.get_current_user(db, auth).superview
+    return app_reports.month_day_report(db, companies, year, month, output_type, sview)
 
 
 async def year_quarter_month_report_handler(output_type, companies, year, db, auth):
@@ -227,7 +228,8 @@ async def year_quarter_month_report_handler(output_type, companies, year, db, au
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.year_quarter_month_report(db, companies, year, output_type)
+    sview = app_users.get_current_user(db, auth).superview
+    return app_reports.year_quarter_month_report(db, companies, year, output_type, sview)
 
 
 async def year_quarter_report_handler(output_type, companies, year, db, auth):
@@ -237,7 +239,8 @@ async def year_quarter_report_handler(output_type, companies, year, db, auth):
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.year_quarter_report(db, companies, year, output_type)
+    sview = app_users.get_current_user(db, auth).superview
+    return app_reports.year_quarter_report(db, companies, year, output_type, sview)
 
 
 async def year_quarter_month_day_report_handler(output_type, companies, year, db, auth):
@@ -247,7 +250,8 @@ async def year_quarter_month_day_report_handler(output_type, companies, year, db
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.year_quarter_month_day_report(db, companies, year, output_type)
+    sview = app_users.get_current_user(db, auth).superview
+    return app_reports.year_quarter_month_day_report(db, companies, year, output_type, sview)
 
 
 async def quarter_month_report_handler(output_type, companies, year, quarter, db, auth):
@@ -257,7 +261,8 @@ async def quarter_month_report_handler(output_type, companies, year, quarter, db
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.quarter_month_report(db, companies, year, quarter, output_type)
+    sview = app_users.get_current_user(db, auth).superview
+    return app_reports.quarter_month_report(db, companies, year, quarter, output_type, sview)
 
 
 async def quarter_month_day_report_handler(output_type, companies, year, quarter, db, auth):
@@ -267,7 +272,8 @@ async def quarter_month_day_report_handler(output_type, companies, year, quarter
         app_companies.check_company_exists(db, company)
     if app_users.get_access_level(db, auth.get_jwt_subject()) != 1:
         app_users.check_user_in_companies(db, auth.get_jwt_subject(), companies)
-    return app_reports.quarter_month_day_report(db, companies, year, quarter, output_type)
+    sview = app_users.get_current_user(db, auth).superview
+    return app_reports.quarter_month_day_report(db, companies, year, quarter, output_type, sview)
 
 
 def logout_handler(db, auth):

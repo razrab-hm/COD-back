@@ -66,7 +66,10 @@ def get_data_from_file(file, db, company_id, user_id):
             if not db_hashrate:
                 to_db_hashrate = db_hashrates.Hashrate(date=date,
                                                        average=average,
-                                                       hash=hashrate, company_id=company_id, user_id=user_id)
+                                                       hash=hashrate,
+                                                       company_id=company_id,
+                                                       user_id=user_id,
+                                                       total_profit=0.0)
                 to_output_hashrate['status'] = 'new'
                 output_info.append(to_output_hashrate)
                 db.add(to_db_hashrate)
