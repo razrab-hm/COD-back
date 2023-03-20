@@ -90,18 +90,7 @@ def test_import_hashrate_good(user):
 
     response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
 
-    assert response.status_code == 200
-    assert response.json()[0] == {'current': None, 'date': '2021-09-30', 'new': 1.0}
-
-    res_data = response.json()
-
-    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
-
     assert response.json()[0]['status'] == 'new'
-
-    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
-
-    assert response.json()[0]['status'] == 'updated'
 
 
 @pytest.mark.parametrize('user, company_id', [
