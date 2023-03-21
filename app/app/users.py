@@ -93,7 +93,8 @@ def get_count_active_root_users(db):
 def update_user(update_data, db: Session, auth):
     log.input(update_data, db, auth)
     user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
-    if update_data.role == 'root':
+    admin_user = get_current_user(db, auth)
+    if admin_user.role == 'root':
         check_access(db, auth, 1)
     elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
         check_access(db, auth, 2)
