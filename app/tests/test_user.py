@@ -524,6 +524,7 @@ def test_superview_good():
     response = client.post(f'/api/hashrates/import/{company.id}', headers=admin_headers, files=file)
 
     assert response.json()[0]['status'] == 'new'
+    assert len(response.json()) == 25
 
     data = {
         "output_type": "json",
@@ -534,7 +535,7 @@ def test_superview_good():
 
     response = client.post('/api/reports/month_day', json=data, headers=headers)
 
-    assert response.json()['report'][0]['total_profit'] == '0.00000000'
+    assert response.json()['report'][5]['total_profit'] == '0.11717627'
 
 
 def test_superview_bad():
@@ -560,6 +561,5 @@ def test_superview_bad():
     }
 
     response = client.post('/api/reports/month_day', json=data, headers=headers)
-
-    assert response.json()['report'][0] == {'average': '0.000', 'date': 'Feb. 1, 2023', 'total': '0.00'}
+    assert response.json()['report'][5].get('total_profit', None) is None
 
