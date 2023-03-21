@@ -508,3 +508,58 @@ def test_set_me_inactive2():
 
     data = client.put(f'/api/users', json=data, headers=headers)
     assert data.json()['detail'] == "You can't set inactive to yourself"
+
+
+def test_superview_good():
+    company = company_creator.company()
+
+    user = user_creator.superview_user(company=company.id)
+    headers = conftest.auth_user(user)
+
+    admin = user_creator.admin_user(company=company.id)
+    admin_headers = conftest.auth_user(admin)
+
+    file = {'file': open('test2.xls', 'rb')}
+
+    response = client.post(f'/api/hashrates/import/{company.id}', headers=admin_headers, files=file)
+
+    assert response.json()[0]['status'] == 'new'
+
+    data = {
+        "output_type": "json",
+        "year": 2023,
+        "month": 2,
+        "companies": [company.id],
+    }
+
+    response = client.post('/api/reports/month_day', json=data, headers=headers)
+
+    assert response.json()['report'][0]['total_profit'] == '0.00000000'
+
+
+def test_superview_bad():
+    company = company_creator.company()
+
+    user = user_creator.user(company=company.id)
+    headers = conftest.auth_user(user)
+
+    admin = user_creator.admin_user(company=company.id)
+    admin_headers = conftest.auth_user(admin)
+
+    file = {'file': open('test2.xls', 'rb')}
+
+    response = client.post(f'/api/hashrates/import/{company.id}', headers=admin_headers, files=file)
+
+    assert response.json()[0]['status'] == 'new'
+
+    data = {
+        "output_type": "json",
+        "year": 2023,
+        "month": 2,
+        "companies": [company.id],
+    }
+
+    response = client.post('/api/reports/month_day', json=data, headers=headers)
+
+    assert response.json()['report'][0] == {'average': '0.000', 'date': 'Feb. 1, 2023', 'total': '0.00'}
+

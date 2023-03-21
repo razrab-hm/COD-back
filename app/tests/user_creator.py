@@ -102,3 +102,29 @@ def inactive_user():
     return db_user
 
 
+def superview_user(username='svuser', email='svuser@mail.ru', company=100):
+    db = core_db.get_core_db()
+
+    db_user = users.User(username=username,
+                         email=email,
+                         last_name='last_namesv',
+                         first_name='first_namesv',
+                         hash_password=hashlib.md5('qwerty'.encode('utf-8')).hexdigest(),
+                         role='manager', inactive=False, superview=True)
+
+    db.add(db_user)
+    db.commit()
+    if company == 100:
+        try:
+            company_creator.company('StandardCompany', 100)
+        except:
+            pass
+    if company:
+        user_company = users.UserCompany(company_id=company, user_id=db_user.id)
+        db.add(user_company)
+        db.commit()
+        db.refresh(user_company)
+
+    db.refresh(db_user)
+    db.close()
+    return db_user

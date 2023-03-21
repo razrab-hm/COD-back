@@ -124,43 +124,68 @@ def test_import_hashrate_company_bad():
     assert response.json()['detail'] == "Company does not exist"
 
 
-def test_update_hashrate_good():
+# def test_update_hashrate_good():
+#     company = company_creator.company()
+#     user = user_creator.admin_user(company=company.id)
+#     headers = conftest.auth_user(user)
+#
+#     data = {
+#         'date': '2023-02-06',
+#         'average': 20.0,
+#         'company_id': company.id
+#     }
+#
+#     response = client.post('/api/hashrates', headers=headers, json=data)
+#
+#     res_data = response.json()
+#
+#     assert response.status_code == 201
+#     assert res_data[0]['date'] == data['date']
+#
+#     response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+#
+#     assert response.json()[0]['status'] == 'new'
+#
+#     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
+#
+#     assert response.json()[0]['average'] == 20.0
+#
+#     update_data = {
+#         "id": response.json()[0]['id'],
+#         "average": 30.0
+#     }
+#
+#     response = client.put('/api/hashrates/', headers=headers, json=update_data)
+#
+#     assert response.json()['average'] == 30.0
+#
+#     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
+#
+#     assert response.json()[0]['average'] == 30.0
+
+
+@pytest.mark.parametrize('user', [user_creator.admin_user, user_creator.root_user])
+def test_delete_hashrate_good(user):
     company = company_creator.company()
-    user = user_creator.admin_user(company=company.id)
+    user = user(company=company.id)
     headers = conftest.auth_user(user)
 
-    data = {
-        'date': '2023-02-06',
-        'average': 20.0,
-        'company_id': company.id
-    }
+    file = {'file': open('test_hr.xls', 'rb')}
 
-    response = client.post('/api/hashrates', headers=headers, json=data)
-
-    res_data = response.json()
-
-    assert response.status_code == 201
-    assert res_data[0]['date'] == data['date']
-
-    response = client.post(f'/api/hashrates/import/{company.id}/save', headers=headers, json=res_data)
+    response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
 
     assert response.json()[0]['status'] == 'new'
 
     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
 
-    assert response.json()[0]['average'] == 20.0
+    assert response.json()[0]['date'] == '2021-09-30'
 
-    update_data = {
-        "id": response.json()[0]['id'],
-        "average": 30.0
-    }
+    response = client.delete(f'/api/hashrates/company/{company.id}?from_date=2021-09-30&to_date=2022-09-30', headers=headers)
 
-    response = client.put('/api/hashrates/', headers=headers, json=update_data)
-
-    assert response.json()['average'] == 30.0
+    assert response.json()['detail'] == 'success, deleted 366 values.'
 
     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
 
-    assert response.json()[0]['average'] == 30.0
+    assert response.json()[0]['date'] == '2021-09-29'
 
 

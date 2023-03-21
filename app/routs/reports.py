@@ -12,11 +12,11 @@ router = APIRouter(prefix='/reports', tags=["reports"])
 
 @router.post('/month_day')
 async def month_day(output_type: str = Body(...),
-                       year: int = Body(...),
-                       month: int = Body(...),
-                       companies: list = Body(...),
-                       db: Session = Depends(get_db),
-                       auth: AuthJWT = Depends()):
+                    year: int = Body(...),
+                    month: int = Body(...),
+                    companies: list = Body(...),
+                    db: Session = Depends(get_db),
+                    auth: AuthJWT = Depends()):
     return await handlers.month_day_report_handler(output_type, companies, year, month, db, auth)
 
 
