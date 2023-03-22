@@ -258,6 +258,7 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
         return []
 
 
+
 def update_user_companies(db, companies_id, user_id, access_level, from_user_id):
     log.input(db, companies_id, user_id, access_level, from_user_id)
     if access_level == 2:
