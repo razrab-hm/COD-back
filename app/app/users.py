@@ -246,12 +246,12 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
         for user in users:
             while users.count(user) > 1:
-                print('count > 1')
+                print('count > 1', user.username)
                 users.remove(user)
 
         users2 = users.copy()
         for user in users2:
-            print(user)
+            print(user.username)
 
         return users
     else:
