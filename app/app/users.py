@@ -94,27 +94,19 @@ def update_user(update_data, db: Session, auth):
     log.input(update_data, db, auth)
     user = db.query(db_users.User).filter(db_users.User.id == update_data.id).first()
     admin_user = get_current_user(db, auth)
-    if admin_user.role == 'root':
-        check_access(db, auth, 1)
-    elif update_data.email or (update_data.role and update_data.role != 'root') or (update_data.password and auth.get_jwt_subject() != update_data.id):
-        check_access(db, auth, 2)
-        if update_data.role != 'admin' and update_data.id == user.id and update_data.role:
-            raise HTTPException(status_code=406, detail="You don't have permissions")
-        # if get_access_level(db, update_data.id) < 3:
-        #     HTTPException(status_code=405, detail="You don't have permissions")
-    else:
-        if update_data.id != auth.get_jwt_subject() and get_current_user(db, auth).role == 'manager':
-            HTTPException(status_code=405, detail="You can't manage password to other user")
-        else:
-            HTTPException(status_code=405, detail="You don't have permissions")
 
-    root_access = get_access_level(db, auth.get_jwt_subject())
-    to_access = get_access_level(db, user.id)
-    if root_access >= to_access and auth.get_jwt_subject() != user.id and root_access != 1:
+    if admin_user.role == 'admin':
+        if update_data.role == 'root':
+            raise HTTPException(status_code=406, detail="You don't have permissions")
+        if user.role == 'admin':
+            raise HTTPException(status_code=406, detail="You don't have permissions")
+
+    elif admin_user.role == 'manager':
         raise HTTPException(status_code=406, detail="You don't have permissions")
-    if auth.get_jwt_subject() == user.id:
-        if str(update_data.inactive).lower() == 'true':
-            raise HTTPException(status_code=406, detail="You can't set inactive to yourself")
+
+    if admin_user.id == user.id:
+        if update_data.role != user.role or str(update_data.inactive).lower() == 'true':
+            raise HTTPException(status_code=406, detail="You can't manage your data")
 
     if update_data.username:
         if not get_user_by_username(db, update_data.username):
@@ -132,9 +124,7 @@ def update_user(update_data, db: Session, auth):
         user.role = update_data.role
     if update_data.password:
         user.hash_password = hashlib.md5(update_data.password.encode('utf-8')).hexdigest()
-    # if update_data.first_name:
     user.first_name = update_data.first_name
-    # if update_data.last_name:
     user.last_name = update_data.last_name
 
     if update_data.inactive:
