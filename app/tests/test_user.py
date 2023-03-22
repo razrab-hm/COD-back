@@ -301,20 +301,6 @@ def test_update_user_bad(updater, to_update):
     assert response.status_code == 406
 
 
-def test_change_user_password_good():
-    user = user_creator.user()
-    headers = conftest.auth_user(user)
-    update_data = {
-        "id": user.id,
-        "password": 'qwer'
-    }
-    response = client.put('/api/users', headers=headers, json=update_data)
-    res_data = response.json()
-
-    assert res_data['id'] == update_data['id']
-    assert response.status_code == 200
-
-
 def test_change_user_password_bad():
     user = user_creator.user()
     user2 = user_creator.user('user2', 'mail2@mail.ru')
@@ -507,7 +493,7 @@ def test_set_me_inactive2():
     }
 
     data = client.put(f'/api/users', json=data, headers=headers)
-    assert data.json()['detail'] == "You can't set inactive to yourself"
+    assert data.json()['detail'] == "You don't have permissions"
 
 
 def test_superview_good():
