@@ -248,6 +248,10 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
             while users.count(user) > 1:
                 print('count > 1')
                 users.remove(user)
+
+        for user in users:
+            print(dict(user))
+
         return users
     else:
         return []
