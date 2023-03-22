@@ -179,13 +179,21 @@ def get_inactive(db, auth: AuthJWT):
 
 def add_company_handler(company_id, user_id, auth, db):
     log.input(company_id, user_id, auth, db)
-    app_users.check_access(db, auth, 1)
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    if access_level == 2:
+        app_companies.check_user_in_company(db, auth.get_jwt_subject(), company_id)
+    elif access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
     return app_users.add_user_company(company_id, user_id, db)
 
 
 def remove_company_handler(company_id, user_id, auth, db):
     log.input(company_id, user_id, auth, db)
-    app_users.check_access(db, auth, 1)
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    if access_level == 2:
+        app_companies.check_user_in_company(db, auth.get_jwt_subject(), company_id)
+    elif access_level == 3:
+        raise HTTPException(status_code=406, detail="You don't have permissions")
     return app_users.remove_user_company(company_id, user_id, db)
 
 
