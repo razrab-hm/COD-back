@@ -251,7 +251,7 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
         users2 = users.copy()
         for user in users2:
-            print(dict(user))
+            print(user)
 
         return users
     else:
