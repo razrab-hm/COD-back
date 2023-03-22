@@ -234,15 +234,12 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
             users.extend(query.filter(db_users.User.role != 'root').all())
 
-        query = db.query(db_users.User)
-
         if company_ids != [0]:
             if company_ids == [-1]:
+                query = db.query(db_users.User)
                 user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
-
                 query = query.filter(db_users.User.id.notin_(user_ids))
-
-        users.extend(query.filter(db_users.User.role != 'root').all())
+                users.extend(query.filter(db_users.User.role != 'root').all())
 
         for user in users:
             while users.count(user) > 1:
@@ -256,7 +253,6 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
         return users
     else:
         return []
-
 
 
 def update_user_companies(db, companies_id, user_id, access_level, from_user_id):
