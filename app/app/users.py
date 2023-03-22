@@ -249,7 +249,8 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
                 print('count > 1')
                 users.remove(user)
 
-        for user in users:
+        users2 = users.copy()
+        for user in users2:
             print(dict(user))
 
         return users
