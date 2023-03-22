@@ -178,7 +178,7 @@ def test_delete_hashrate_good(user):
 
     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
 
-    assert response.json()[0]['date'] == '2022-04-30'
+    assert response.json()[0]['date'] == '2021-09-30'
 
     response = client.delete(f'/api/hashrates/company/{company.id}?from_date=2021-09-30&to_date=2022-09-30', headers=headers)
 
