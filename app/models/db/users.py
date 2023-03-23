@@ -56,7 +56,7 @@ class User(Base):
         if field:
             for symbol in field.lower():
                 if symbol not in symbols:
-                    raise HTTPException(status_code=406, detail="Symbols in your firstname or lastname not ascii symbols or numerics")
+                    raise HTTPException(status_code=406, detail=f"Symbols in your {key} not ascii symbols or numerics")
         return field
 
     @validates("description")
