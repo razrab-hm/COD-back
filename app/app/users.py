@@ -215,24 +215,11 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
     elif access_level == 2:
         companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
+        companies_ = []
         users = []
 
-        for company_id in companies_id:
-            company_id = company_id[0]
-            query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id)
-            if role != 'all':
-                query = query.filter(db_users.User.role == role)
-
-            if company_ids != [0]:
-                if company_ids and companies_id != [-1]:
-                    query = query.filter(db_users.UserCompany.company_id.in_(company_ids))
-
-            if inactive:
-                query = query.filter(db_users.User.inactive == True)
-            else:
-                query = query.filter(db_companies.Company.inactive != True)
-
-            users.extend(query.filter(db_users.User.role != 'root').all())
+        for i in companies_id:
+            companies_.append(i[0])
 
         if company_ids != [0]:
             if company_ids == [-1]:
@@ -241,16 +228,51 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
                 query = query.filter(db_users.User.id.notin_(user_ids))
                 users.extend(query.filter(db_users.User.role != 'root').all())
 
-        for user in users:
-            while users.count(user) > 1:
-                print('count > 1', user.username)
-                users.remove(user)
-
-        users2 = users.copy()
-        for user in users2:
-            print(user.username)
+        else:
+            query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id.in_(companies_))
+            users.extend(query.filter(db_users.User.role != 'root').all())
 
         return users
+
+
+    # elif access_level == 2:
+    #     companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
+    #     users = []
+    #
+    #     for company_id in companies_id:
+    #         company_id = company_id[0]
+    #         query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id)
+    #         if role != 'all':
+    #             query = query.filter(db_users.User.role == role)
+    #
+    #         if company_ids != [0]:
+    #             if company_ids and companies_id != [-1]:
+    #                 query = query.filter(db_users.UserCompany.company_id.in_(company_ids))
+    #
+    #         if inactive:
+    #             query = query.filter(db_users.User.inactive == True)
+    #         else:
+    #             query = query.filter(db_companies.Company.inactive != True)
+    #
+    #         users.extend(query.filter(db_users.User.role != 'root').all())
+    #
+    #     if company_ids != [0]:
+    #         if company_ids == [-1]:
+    #             query = db.query(db_users.User)
+    #             user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
+    #             query = query.filter(db_users.User.id.notin_(user_ids))
+    #             users.extend(query.filter(db_users.User.role != 'root').all())
+    #
+    #     for user in users:
+    #         while users.count(user) > 1:
+    #             print('count > 1', user.username)
+    #             users.remove(user)
+    #
+    #     users2 = users.copy()
+    #     for user in users2:
+    #         print(user.username)
+
+        # return users
     else:
         return []
 
