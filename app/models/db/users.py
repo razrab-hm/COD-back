@@ -33,7 +33,7 @@ class User(Base):
         username = username.lower()
         for symbol in username:
             if symbol not in symbols:
-                raise HTTPException(status_code=406, detail="Symbols in your username not ascii symbols or numerics")
+                raise HTTPException(status_code=406, detail=f"{key} contains incorrect symbols")
         return username
 
     @validates("email")
@@ -41,7 +41,7 @@ class User(Base):
         email = email.lower()
         for symbol in email:
             if symbol not in email_symobls:
-                raise HTTPException(status_code=406, detail="Symbols in your email not ascii symbols or numerics")
+                raise HTTPException(status_code=406, detail=f"{key} contains incorrect symbols")
         spemail = email.split('@')
         if len(spemail) != 2:
             raise HTTPException(status_code=406, detail="Email is not valid")
@@ -56,7 +56,7 @@ class User(Base):
         if field:
             for symbol in field.lower():
                 if symbol not in symbols:
-                    raise HTTPException(status_code=406, detail=f"Symbols in your {key} not ascii symbols or numerics")
+                    raise HTTPException(status_code=406, detail=f"{key} contains incorrect symbols")
         return field
 
     @validates("description")
@@ -65,7 +65,7 @@ class User(Base):
             for symbol in description.lower():
                 if symbol not in description_symbols:
                     raise HTTPException(status_code=406,
-                                        detail="Symbols in your description not ascii symbols or numerics")
+                                        detail=f"{key} contains incorrect symbols")
         return description
 
 

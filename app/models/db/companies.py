@@ -32,7 +32,7 @@ class Company(Base):
         if field:
             for symbol in field.lower():
                 if symbol not in symbols:
-                    raise HTTPException(status_code=406, detail="Symbols in your fields not ascii symbols or numerics")
+                    raise HTTPException(status_code=406, detail=f"{key} contains incorrect symbols")
         return field
 
     @validates("contact_email")
@@ -40,7 +40,7 @@ class Company(Base):
         email = email.lower()
         for symbol in email:
             if symbol not in email_symobls:
-                raise HTTPException(status_code=406, detail="Symbols in your email not ascii symbols or numerics")
+                raise HTTPException(status_code=406, detail=f"{key} contains incorrect symbols")
         spemail = email.split('@')
         if len(spemail) != 2:
             raise HTTPException(status_code=406, detail="Email is not valid")
@@ -62,5 +62,5 @@ class Company(Base):
         if description:
             for symbol in description.lower():
                 if symbol not in description_symbols:
-                    raise HTTPException(status_code=406, detail="Description symbols incorrect")
+                    raise HTTPException(status_code=406, detail=f"{key} contains incorrect symbols")
         return description
