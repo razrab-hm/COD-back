@@ -244,7 +244,6 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
         return users
 
-
     # elif access_level == 2:
     #     companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
     #     users = []
