@@ -181,10 +181,17 @@ def create_user(db: Session, user):
 def get_company_users(db, company_id, access_level, from_user_id):
     log.input(db, company_id, access_level, from_user_id)
     if access_level == 1:
-        return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
+        if get_user_by_id(db, from_user_id).superview:
+            return db.query(db_users.User).join(db_users.UserCompany).filter(db_users.UserCompany.company_id == company_id).all()
+        else:
+            return db.query(db_users.User).join(db_users.UserCompany).filter(
+                db_users.UserCompany.company_id == company_id).filter(db_users.User.superview != True).all()
     elif access_level == 2:
         if db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(and_(db_users.UserCompany.company_id == company_id, db_users.UserCompany.user_id == from_user_id)).first():
-            return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).all()
+            if get_user_by_id(db, from_user_id).superview:
+                return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).all()
+            else:
+                return db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id == company_id).filter(db_users.User.superview != True).all()
         else:
             return []
     else:
