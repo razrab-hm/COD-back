@@ -211,7 +211,10 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
         if inactive:
             query = query.filter(db_users.User.inactive == True)
 
-        return query.all()
+        if get_user_by_id(db, user_id).superview:
+            return query.filter(db_users.User).all()
+        else:
+            return query.filter(db_users.User).filter(db_users.User.superview != True).all()
 
     elif access_level == 2:
         companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
@@ -223,13 +226,20 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
 
         if company_ids != [0]:
             if company_ids == [-1]:
-                query = db.query(db_users.User)
+                if get_user_by_id(db, user_id).superview:
+                    query = db.query(db_users.User)
+                else:
+                    query = db.query(db_users.User).filter(db_users.User.superview != True)
+
                 user_ids = [i[0] for i in db.query(db_users.UserCompany.user_id).all()]
                 query = query.filter(db_users.User.id.notin_(user_ids))
                 users.extend(query.filter(db_users.User.role != 'root').all())
 
         else:
-            query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id.in_(companies_))
+            if get_user_by_id(db, user_id).superview:
+                query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id.in_(companies_))
+            else:
+                query = db.query(db_users.User).join(db_users.UserCompany).join(db_companies.Company).filter(db_users.UserCompany.company_id.in_(companies_)).filter(db_users.User.superview != True)
             users.extend(query.filter(db_users.User.role != 'root').all())
 
         return users
