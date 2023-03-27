@@ -24,7 +24,7 @@ class User(Base):
     role = Column(String(10))
     description = Column(String(50))
     inactive = Column(Boolean)
-    superview = Column(Boolean)
+    superview = Column(Boolean, default=False)
     company = relationship('UserCompany')
     hashrate = relationship('Hashrate')
 

@@ -2,7 +2,7 @@ import hashlib
 
 from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
-from sqlalchemy import and_
+from sqlalchemy import and_, not_
 from sqlalchemy.orm import Session
 
 from app.app.logger import log
@@ -212,9 +212,9 @@ def get_all_users(db, access_level, user_id, role, company_ids, inactive):
             query = query.filter(db_users.User.inactive == True)
 
         if get_user_by_id(db, user_id).superview:
-            return query.filter(db_users.User).all()
+            return query.all()
         else:
-            return query.filter(db_users.User).filter(db_users.User.superview != True).all()
+            return query.filter(db_users.User.superview != True).all()
 
     elif access_level == 2:
         companies_id = db.query(db_users.UserCompany.company_id).join(db_companies.Company).filter(db_users.UserCompany.user_id == user_id).filter(db_companies.Company.inactive != True).all()
