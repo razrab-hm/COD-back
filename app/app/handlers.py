@@ -321,3 +321,13 @@ def update_company_users_handler(company_id, users_id, auth, db):
 def delete_hashrates_by_dates_handler(company_id, db, auth, from_date, to_date):
     app_users.check_access(db, auth, 2)
     return app_hashrates.delete_hashrates_by_dates(db, company_id, from_date, to_date)
+
+
+def remove_user_handler(user_id, auth, db):
+    access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    if access_level == 1:
+        if user_id == auth.get_jwt_subject():
+            raise HTTPException(status_code=406, detail="You can't delete yourself")
+        return app_users.remove_user(user_id, db)
+    else:
+        raise HTTPException(status_code=406, detail="You don't have permissions")

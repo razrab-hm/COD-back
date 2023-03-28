@@ -95,4 +95,6 @@ def update_user_companies(user_id: int = Body(...),
     return handlers.update_user_companies_handler(user_id, companies_id, auth, db)
 
 
-
+@router.delete('/remove/{user_id}')
+def remove_user(user_id: int, auth: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    return handlers.remove_user_handler(user_id, auth, db)

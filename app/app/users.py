@@ -329,3 +329,11 @@ def new_user_with_companies(user, db, auth, access_level):
     else:
         raise HTTPException(status_code=406, detail="You don't have permissions")
 
+
+def remove_user(user_id, db):
+    db.query(db_users.UserCompany).filter(db_users.UserCompany.user_id == user_id).delete()
+    db.commit()
+    db.query(db_users.User).filter(db_users.User.id == user_id).delete()
+    db.commit()
+    return {'detail': 'success'}
+
