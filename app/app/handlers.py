@@ -335,3 +335,4 @@ def remove_user_handler(user_id, auth, db):
         return app_users.remove_user(user_id, db)
     else:
         raise HTTPException(status_code=406, detail="You don't have permissions")
+
