@@ -308,6 +308,8 @@ def update_user_companies_handler(user_id, companies_id, auth, db):
 def new_user_handler(user, db, auth):
     log.input(user, db, auth)
     access_level = app_users.get_access_level(db, auth.get_jwt_subject())
+    if app_users.get_user_by_username(db, user.username):
+        raise HTTPException(409, "User already exists")
     return app_users.new_user_with_companies(user, db, auth, access_level)
 
 
