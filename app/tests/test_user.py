@@ -24,7 +24,7 @@ def test_register_good(username, email, password):
     assert response.status_code == 201
 
 
-@pytest.mark.parametrize('username, email, password, detail', [['user', 'abc@mail.ru', 'qwerty', 'Username already registered'],
+@pytest.mark.parametrize('username, email, password, detail', [['user', 'abc@mail.ru', 'qwerty', 'Username already exists'],
                                                                ['user2', 'user@mail.ru', 'qwerty', 'Email already registered'],
                                                                ['user2', 'unvalidmail1', 'qwerty', 'Email is not valid'],
                                                                ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid'],

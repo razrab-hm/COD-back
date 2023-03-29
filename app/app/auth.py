@@ -17,7 +17,7 @@ def check_username_in_base(db, username, login=False):
     user = get_user_by_username(db, username)
     if not login:
         if user:
-            raise HTTPException(status_code=406, detail="Username already registered")
+            raise HTTPException(status_code=406, detail="Username already exists")
     else:
         if not user:
             raise HTTPException(status_code=401, detail='Username or password incorrect')
