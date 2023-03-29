@@ -229,3 +229,4 @@ def delete_hashrates_by_dates(db, company_id, from_date, to_date):
 
     return {'detail': f'success, deleted {query} values.'}
 
+
