@@ -104,3 +104,4 @@ def check_inactive_company(db, user_id, role):
 @AuthJWT.load_config
 def get_config():
     return dto_users.Settings()
+
