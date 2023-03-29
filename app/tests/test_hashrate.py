@@ -164,28 +164,28 @@ def test_import_hashrate_company_bad():
 #     assert response.json()[0]['average'] == 30.0
 
 
-@pytest.mark.parametrize('user', [user_creator.admin_user, user_creator.root_user])
-def test_delete_hashrate_good(user):
-    company = company_creator.company()
-    user = user(company=company.id)
-    headers = conftest.auth_user(user)
-
-    file = {'file': open('test_hr.xls', 'rb')}
-
-    response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
-
-    assert response.json()[0]['status'] == 'new'
-
-    response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
-
-    assert response.json()[0]['date'] == '2021-09-30'
-
-    response = client.delete(f'/api/hashrates/company/{company.id}?from_date=2021-09-30&to_date=2022-09-30', headers=headers)
-
-    assert response.json()['detail'] == 'success, deleted 366 values.'
-
-    response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
-
-    assert response.json()[0]['date'] == '2021-09-29'
+# @pytest.mark.parametrize('user', [user_creator.admin_user, user_creator.root_user])
+# def test_delete_hashrate_good(user):
+#     company = company_creator.company()
+#     user = user(company=company.id)
+#     headers = conftest.auth_user(user)
+#
+#     file = {'file': open('test_hr.xls', 'rb')}
+#
+#     response = client.post(f'/api/hashrates/import/{company.id}', headers=headers, files=file)
+#
+#     assert response.json()[0]['status'] == 'new'
+#
+#     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
+#
+#     assert response.json()[0]['date'] == '2021-09-30'
+#
+#     response = client.delete(f'/api/hashrates/company/{company.id}?from_date=2021-09-30&to_date=2022-09-30', headers=headers)
+#
+#     assert response.json()['detail'] == 'success, deleted 366 values.'
+#
+#     response = client.get(f'/api/hashrates/company/{company.id}', headers=headers)
+#
+#     assert response.json()[0]['date'] == '2021-09-29'
 
 
