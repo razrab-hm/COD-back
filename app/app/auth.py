@@ -29,7 +29,7 @@ def check_email_in_base(db, email, login=False):
     user = get_user_by_email(db, email)
     if not login:
         if user:
-            raise HTTPException(status_code=406, detail="Email already registered")
+            raise HTTPException(status_code=406, detail="Email already exists")
     else:
         if not user:
             raise HTTPException(status_code=401, detail='Username or password incorrect')

@@ -25,7 +25,7 @@ def test_register_good(username, email, password):
 
 
 @pytest.mark.parametrize('username, email, password, detail', [['user', 'abc@mail.ru', 'qwerty', 'Username already exists'],
-                                                               ['user2', 'user@mail.ru', 'qwerty', 'Email already registered'],
+                                                               ['user2', 'user@mail.ru', 'qwerty', 'Email already exists'],
                                                                ['user2', 'unvalidmail1', 'qwerty', 'Email is not valid'],
                                                                ['user2', 'unvalidmail2@mail', 'qwerty', 'Email is not valid'],
                                                                ['<div>', 'hello@mail.ru', 'qwerty', 'Symbols in your username not ascii symbols or numerics']])
