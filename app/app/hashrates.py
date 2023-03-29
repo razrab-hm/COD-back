@@ -54,7 +54,7 @@ def get_data_from_file(file, db, company_id, user_id):
             try:
                 average = round(float(str(average).replace(',', '.')), 3)
             except:
-                average = round(float(str(average).replace(',', '.')[:-1]))
+                average = round(float(str(average).replace(',', '.')[:-1]), 3)
 
             to_output_hashrate = {}
 
@@ -91,7 +91,7 @@ def get_data_from_file(file, db, company_id, user_id):
             try:
                 average = round(float(str(average).replace(',', '.')), 3)
             except:
-                average = round(float(str(average).replace(',', '.')[:-1]))
+                average = round(float(str(average).replace(',', '.')[:-1]), 3)
             to_output_hashrate = {}
 
             hashrate = round(average * 3600 * 24 / 1000, 2)
