@@ -164,3 +164,8 @@ def update_company_users(db, users_id, company_id, access_level, user_id):
     db.commit()
 
     return {'updated_users': response}
+
+
+def get_company_by_name(company_name, db):
+    return db.query(db_companies.Company).filter(db_companies.Company.title == company_name).first()
+

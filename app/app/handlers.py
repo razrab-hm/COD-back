@@ -15,6 +15,8 @@ from app.models.dto import hashrates as dto_hashrates
 
 def create_company_handler(auth: AuthJWT, company: dto_companies.CompanyBase, db: Session):
     log.input(auth, company, dto_companies, db)
+    if app_companies.get_company_by_name(company.title, db):
+        raise HTTPException(409, "Company title already exists")
     app_users.check_access(db, auth, 1)
     return app_companies.create_company(db, company)
 
