@@ -258,6 +258,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_mo
     row_counter = 2
 
     date_hash_sum = dataset.groupby('date').hash.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -265,7 +266,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_mo
         for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'date', 'total_profit']].values:
             if day_ds[3] not in dates:
                 if sview:
-                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " "), f'{day_ds[4]:.8f}'], row_counter)
+                    insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " "), f'{date_total_profit_sum.get(day_ds[3]):.8f}'], row_counter)
                 else:
                     insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', year, f"{round(date_hash_sum.get(day_ds[3]), 2):_.2f}".replace("_", " ")], row_counter)
 

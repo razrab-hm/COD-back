@@ -128,6 +128,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_mo
     report = []
 
     date_hash_sum = dataset.groupby('date').hash.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -138,7 +139,7 @@ def quarter_month_day_report(dataset, months_sum, year, quarter, total_profit_mo
                 dates.append(day_ds[3])
 
                 if sview:
-                    report[-1]['total_profit'] = f'{day_ds[4]:.8f}'
+                    report[-1]['total_profit'] = f'{date_total_profit_sum.get(day_ds[3]):.8f}'
 
         report.append({'type': 'month', 'date': f'{month_name}', 'total': f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")})
 
