@@ -6,6 +6,7 @@ def month_day_report(dataset, year, sview):
 
     date_hash_sum = dataset.groupby('date').hash.sum()
     date_average_sum = dataset.groupby('date').average.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -16,7 +17,7 @@ def month_day_report(dataset, year, sview):
                           replace("_", " "), 'date': f'{month_name[0:3]}. {day}, {year}'})
 
             if sview:
-                report[-1]['total_profit'] = f'{total_profit:.8f}'
+                report[-1]['total_profit'] = f'{date_total_profit_sum.get(date):.8f}'
 
             dates.append(date)
 
@@ -73,6 +74,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     date_hash_sum = dataset.groupby('date').hash.sum()
     date_average_sum = dataset.groupby('date').average.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -85,7 +87,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
                     dates.append(day_ds[4])
 
                     if sview:
-                        report[-1]['total_profit'] = f'{day_ds[5]:.8f}'
+                        report[-1]['total_profit'] = f'{date_total_profit_sum.get(day_ds[4]):.8f}'
 
             report.append({'type': 'month', 'date': f'{month_name}', 'total': f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " "),
                            'average': f"{round(months_sum_average.get(month_name), 3):_.3f}".replace("_", " ")})

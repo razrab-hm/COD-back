@@ -113,6 +113,7 @@ def month_day_report(dataset, year, sview):
         table_data[0].append('BTC')
 
     date_hash_sum = dataset.groupby('date').hash.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -122,7 +123,7 @@ def month_day_report(dataset, year, sview):
             dates.append(date)
 
             if sview:
-                table_data[-1].append(f'{total_profit:.8f}')
+                table_data[-1].append(f'{date_total_profit_sum.get(date):.8f}')
 
     table_data.append(['Totals', year, f"{round(dataset.hash.sum(), 2):_.2f}".replace("_", " ")])
 
@@ -210,6 +211,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     date_hash_sum = dataset.groupby('date').hash.sum()
     date_average_sum = dataset.groupby('date').average.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -222,7 +224,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
                     dates.append(day_ds[4])
 
                     if sview:
-                        table_data[-1].append(f'{day_ds[5]:.8f}')
+                        table_data[-1].append(f'{date_total_profit_sum.get(day_ds[4]):.8f}')
 
             table_data.append([f'{month_name} Total', f"{round(months_sum_average.get(month_name), 3):_.3f}".replace("_", " "), f"{round(months_sum.get(month_name), 2):_.2f}".replace("_", " ")])
             header_rows.append(row_counter)

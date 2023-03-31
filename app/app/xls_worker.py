@@ -79,6 +79,7 @@ def month_day_report(dataset, year, sview):
     row_counter = 2
 
     date_hash_sum = dataset.groupby('date').hash.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -86,7 +87,7 @@ def month_day_report(dataset, year, sview):
         if date not in dates:
             if sview:
                 insert_data(ws, [f'{month_name} {day}, {year}', year,
-                                 f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " "), f'{total_profit:.8f}'], row_counter)
+                                 f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " "), f'{date_total_profit_sum.get(date):.8f}'], row_counter)
             else:
                 insert_data(ws, [f'{month_name} {day}, {year}', year, f"{round(date_hash_sum.get(date), 2):_.2f}".replace("_", " ")], row_counter)
 
@@ -175,6 +176,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
 
     date_hash_sum = dataset.groupby('date').hash.sum()
     date_average_sum = dataset.groupby('date').average.sum()
+    date_total_profit_sum = dataset.groupby('date').total_profit.sum()
 
     dates = []
 
@@ -183,7 +185,7 @@ def year_quarter_month_day_report(dataset, quarter_groups, year, months_sum, qua
             for day_ds in dataset.loc[dataset.month_name == month_name][['day', 'hash', 'month_name', 'average', 'date', 'total_profit']].values:
                 if day_ds[4] not in dates:
                     if sview:
-                        insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " "), f'{day_ds[5]:.8f}'], row_counter)
+                        insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " "), f'{date_total_profit_sum.get(day_ds[4]):.8f}'], row_counter)
                     else:
                         insert_data(ws, [f'{month_name} {day_ds[0]}, {year}', f"{round(date_average_sum.get(day_ds[4]), 3):_.3f}".replace("_", " "), f"{round(date_hash_sum.get(day_ds[4]), 2):_.2f}".replace("_", " ")], row_counter)
 
